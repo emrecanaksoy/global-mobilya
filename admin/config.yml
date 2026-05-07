@@ -1,0 +1,80 @@
+backend:
+  name: github
+  repo: emrecanaksoyea34-a11y/global-kapak-mobilyaa
+  branch: main
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
+
+site_url: https://globalkapakmobilya.netlify.app
+display_url: https://globalkapakmobilya.netlify.app
+logo_url: https://globalkapakmobilya.netlify.app/resim/logo.png
+
+media_folder: "resim/yonetilen"
+public_folder: "/resim/yonetilen"
+
+locale: 'tr'
+
+collections:
+  
+  # ÜRÜNLER
+  - name: "urunler"
+    label: "🛒 Ürünler"
+    label_singular: "Ürün"
+    folder: "urun"
+    create: true
+    slug: "urun-{{slug}}"
+    extension: "html"
+    format: "frontmatter"
+    summary: "{{title}} - {{kategori}}"
+    fields:
+      - { label: "Ürün Adı", name: "title", widget: "string" }
+      - { label: "Kategori", name: "kategori", widget: "select", options: ["Düz Membran Kapak", "Çerçeveli", "Özel Ölçü"] }
+      - { label: "Kısa Açıklama", name: "kisa_aciklama", widget: "string", required: false }
+      - { label: "Ana Resim", name: "ana_resim", widget: "image", required: false }
+      - { label: "Detaylı Açıklama", name: "body", widget: "markdown" }
+      - { label: "Popüler mi?", name: "populer", widget: "boolean", default: false, required: false }
+      - { label: "Yeni mi?", name: "yeni", widget: "boolean", default: false, required: false }
+
+  # BLOG
+  - name: "blog"
+    label: "📝 Blog Yazıları"
+    label_singular: "Blog Yazısı"
+    folder: "blog"
+    create: true
+    slug: "blog-{{slug}}"
+    extension: "html"
+    format: "frontmatter"
+    summary: "{{title}} - {{tarih}}"
+    fields:
+      - { label: "Başlık", name: "title", widget: "string" }
+      - { label: "Kategori", name: "kategori", widget: "select", options: ["Membran Kapak", "Bakım", "Dekorasyon", "İpuçları", "Sektör Haberleri"] }
+      - { label: "Yayın Tarihi", name: "tarih", widget: "datetime" }
+      - { label: "Kapak Resmi", name: "kapak_resim", widget: "image", required: false }
+      - { label: "Özet", name: "ozet", widget: "string" }
+      - { label: "İçerik", name: "body", widget: "markdown" }
+      - { label: "Etiketler", name: "etiketler", widget: "list", required: false }
+
+  # AYARLAR
+  - name: "ayarlar"
+    label: "⚙️ Site Ayarları"
+    files:
+      - file: "ayarlar/iletisim.yml"
+        label: "📞 İletişim Bilgileri"
+        name: "iletisim"
+        fields:
+          - { label: "Telefon", name: "telefon", widget: "string" }
+          - { label: "WhatsApp Numarası", name: "whatsapp", widget: "string", hint: "Format: 905050151035" }
+          - { label: "E-posta", name: "email", widget: "string" }
+          - { label: "Adres", name: "adres", widget: "text" }
+          - { label: "Çalışma Saatleri", name: "calisma_saatleri", widget: "string" }
+      
+      - file: "ayarlar/firma.yml"
+        label: "🏢 Firma Bilgileri"
+        name: "firma"
+        fields:
+          - { label: "Firma Adı", name: "firma_adi", widget: "string" }
+          - { label: "Slogan", name: "slogan", widget: "string" }
+          - { label: "Hakkında Yazısı", name: "hakkinda", widget: "markdown" }
+          - { label: "Yıllık Deneyim", name: "deneyim", widget: "string" }
+          - { label: "Fabrika m²", name: "fabrika_m2", widget: "string" }
+          - { label: "Garanti Süresi", name: "garanti", widget: "string" }
