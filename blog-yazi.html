@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog Yazısı | Global Kapak Mobilya</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--navy:#0B1F4B;--gold:#C8A96E;--white:#fff;--gray:#f7f7f7;--border:#e5e5e5;--text:#333;--muted:#777;}
+body{font-family:'Open Sans',sans-serif;color:var(--text);line-height:1.7;}
+a{text-decoration:none;color:inherit;}
+img{max-width:100%;height:auto;display:block;}
+
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:65px;position:sticky;top:0;z-index:999;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.nav-logo img{height:48px;}
+.nav-menu{display:flex;flex:1;justify-content:center;}
+.nav-menu a{font-size:11.5px;font-weight:600;color:var(--navy);padding:6px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:.3px;}
+.nav-menu a:hover,.nav-menu a.active{background:var(--navy);color:var(--white);}
+.nav-cta{background:var(--gold);color:var(--navy);font-size:11.5px;font-weight:700;padding:8px 14px;border-radius:4px;font-family:'Montserrat',sans-serif;}
+.hamburger{display:none;background:none;border:none;font-size:24px;cursor:pointer;color:var(--navy);}
+
+.breadcrumb{background:var(--gray);padding:12px 40px;font-size:12px;color:var(--muted);}
+.breadcrumb a{color:var(--navy);font-weight:600;}
+.breadcrumb span{margin:0 6px;color:var(--border);}
+
+.loading{text-align:center;padding:80px 40px;}
+
+.article{max-width:800px;margin:40px auto;padding:0 40px;}
+.art-cat{display:inline-block;background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:5px 12px;border-radius:3px;letter-spacing:1.5px;text-transform:uppercase;font-family:'Montserrat',sans-serif;margin-bottom:14px;}
+.article h1{font-family:'Montserrat',sans-serif;font-size:36px;font-weight:800;color:var(--navy);margin-bottom:16px;line-height:1.3;}
+.art-meta{display:flex;gap:20px;font-size:13px;color:var(--muted);margin-bottom:30px;font-weight:500;}
+.art-cover{width:100%;aspect-ratio:16/9;background:#f5f8fc;background-size:cover;background-position:center;border-radius:8px;margin-bottom:30px;}
+
+.art-body{font-size:16px;line-height:1.9;color:var(--text);}
+.art-body p{margin-bottom:18px;}
+.art-body h2{font-family:'Montserrat',sans-serif;font-size:24px;color:var(--navy);margin:30px 0 14px;}
+.art-body h3{font-family:'Montserrat',sans-serif;font-size:18px;color:var(--navy);margin:24px 0 10px;}
+.art-body ul,.art-body ol{padding-left:24px;margin-bottom:18px;}
+.art-body li{margin-bottom:8px;}
+.art-body strong{color:var(--navy);}
+.art-body blockquote{border-left:4px solid var(--gold);padding:14px 24px;background:var(--gray);margin:24px 0;font-style:italic;color:var(--muted);border-radius:0 6px 6px 0;}
+
+.art-tags{margin-top:40px;padding-top:30px;border-top:1px solid var(--border);}
+.art-tags strong{font-family:'Montserrat',sans-serif;font-size:13px;color:var(--navy);margin-right:10px;}
+.tag{display:inline-block;background:var(--gray);color:var(--navy);padding:5px 12px;border-radius:3px;font-size:12px;font-weight:600;margin:0 6px 6px 0;}
+
+.share-box{background:var(--gray);padding:24px;border-radius:8px;margin-top:30px;text-align:center;}
+.share-box h4{font-family:'Montserrat',sans-serif;font-size:14px;color:var(--navy);margin-bottom:14px;}
+.share-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.share-btns a{padding:8px 18px;background:var(--white);border-radius:4px;font-size:12px;font-weight:600;border:1px solid var(--border);}
+
+.error{text-align:center;padding:80px 40px;}
+
+footer{background:#060E22;padding:40px;color:rgba(255,255,255,.5);text-align:center;font-size:13px;margin-top:60px;}
+footer a{color:var(--gold);}
+
+@media(max-width:768px){nav{padding:0 16px;}.nav-menu{display:none;position:absolute;top:65px;left:0;right:0;background:var(--white);flex-direction:column;padding:14px;}.nav-menu.open{display:flex;}.hamburger{display:block;}.nav-cta{display:none;}.article{padding:0 20px;}.article h1{font-size:24px;}.breadcrumb{padding:12px 20px;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="resim/logo.png" alt="Global Kapak Mobilya">
+  </a>
+  <div class="nav-menu" id="nm">
+    <a href="index.html">Anasayfa</a>
+    <a href="tedarikcilerimiz.html">Tedarikçilerimiz</a>
+    <a href="urunler.html">Ürünlerimiz</a>
+    <a href="hakkimizda.html">Hakkımızda</a>
+    <a href="galeri.html">Galeri</a>
+    <a href="blog.html" class="active">Blog</a>
+    <a href="iletisim.html">İletişim</a>
+  </div>
+  <a href="iletisim.html" class="nav-cta">Teklif Al</a>
+  <button class="hamburger" onclick="document.getElementById('nm').classList.toggle('open')">☰</button>
+</nav>
+
+<div class="breadcrumb">
+  <a href="index.html">Anasayfa</a><span>›</span>
+  <a href="blog.html">Blog</a><span>›</span>
+  <strong style="color:var(--navy);" id="bc-blog">Yükleniyor...</strong>
+</div>
+
+<div id="article-container">
+  <div class="loading">⏳ Yazı yükleniyor...</div>
+</div>
+
+<footer>
+  <p>© 2026 Global Kapak Mobilya — <a href="iletisim.html">İletişim</a></p>
+</footer>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const blogId = params.get('id');
+
+async function loadBlog() {
+  const container = document.getElementById('article-container');
+  const bcBlog = document.getElementById('bc-blog');
+  
+  if (!blogId) {
+    container.innerHTML = `<div class="error"><h2>⚠️ Yazı Bulunamadı</h2><p><a href="blog.html">← Tüm Yazılar</a></p></div>`;
+    return;
+  }
+
+  try {
+    const response = await fetch(`_data/blog/${blogId}.json`);
+    if (!response.ok) throw new Error('Yazı bulunamadı');
+    const post = await response.json();
+    
+    document.title = `${post.title} | Global Kapak Mobilya`;
+    bcBlog.textContent = post.title;
+    
+    const tarih = post.tarih ? new Date(post.tarih).toLocaleDateString('tr-TR', {year:'numeric',month:'long',day:'numeric'}) : '';
+    const tagsHtml = (post.etiketler || []).map(t => `<span class="tag">${t}</span>`).join('');
+    const bodyHtml = simpleMarkdown(post.body || '');
+    
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent(post.title);
+    
+    container.innerHTML = `
+      <article class="article">
+        <span class="art-cat">${post.kategori || 'Blog'}</span>
+        <h1>${post.title}</h1>
+        <div class="art-meta">
+          <span>📅 ${tarih}</span>
+          <span>👤 Global Kapak Mobilya</span>
+        </div>
+        ${post.kapak_resim ? `<div class="art-cover" style="background-image:url('${post.kapak_resim}');"></div>` : ''}
+        <p style="font-size:18px;color:var(--muted);font-style:italic;margin-bottom:30px;">${post.ozet || ''}</p>
+        <div class="art-body">${bodyHtml}</div>
+        ${tagsHtml ? `<div class="art-tags"><strong>Etiketler:</strong> ${tagsHtml}</div>` : ''}
+        <div class="share-box">
+          <h4>📤 Bu Yazıyı Paylaş</h4>
+          <div class="share-btns">
+            <a href="https://www.facebook.com/sharer/sharer.php?u=${url}" target="_blank">Facebook</a>
+            <a href="https://twitter.com/intent/tweet?url=${url}&text=${title}" target="_blank">Twitter</a>
+            <a href="https://wa.me/?text=${title} ${url}" target="_blank">WhatsApp</a>
+            <a href="https://www.linkedin.com/sharing/share-offsite/?url=${url}" target="_blank">LinkedIn</a>
+          </div>
+        </div>
+      </article>
+    `;
+  } catch (err) {
+    container.innerHTML = `<div class="error"><h2>⚠️ Yazı Bulunamadı</h2><p><a href="blog.html">← Tüm Yazılar</a></p></div>`;
+  }
+}
+
+function simpleMarkdown(md) {
+  if (!md) return '';
+  let html = md;
+  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  html = html.replace(/^>\s+(.+)$/gim, '<blockquote>$1</blockquote>');
+  html = html.replace(/^\s*-\s+(.+)$/gim, '<li>$1</li>');
+  html = html.replace(/(<li>[\s\S]*?<\/li>)/g, m => `<ul>${m}</ul>`);
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+  
+  const blocks = html.split(/\n\n+/);
+  html = blocks.map(b => {
+    b = b.trim();
+    if (!b) return '';
+    if (b.startsWith('<h') || b.startsWith('<ul') || b.startsWith('<ol') || b.startsWith('<bl')) return b;
+    return `<p>${b.replace(/\n/g, '<br>')}</p>`;
+  }).join('\n');
+  
+  return html;
+}
+
+loadBlog();
+</script>
+</body>
+</html>

@@ -434,15 +434,7 @@ footer{background:#060E22;padding:50px 40px 24px;}
 <!-- BLOG -->
 <section class="blog-section" id="blog">
   <div class="sec-head"><div class="sec-tag">Blog & Makaleler</div><h2>Faydalı İçerikler</h2><p>Membran kapak, bakım ve dekorasyon hakkında bilgi edinin.</p><div class="sec-line"></div></div>
-  <div class="blog-grid">
-    <a href="blog.html" class="blog-card"><div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div><div class="blog-body"><div class="blog-cat">Membran Kapak</div><h3>Blog Yazısı Başlığı Buraya Gelir</h3><p>Kısa özet metni buraya. 1-2 cümle.</p><div class="blog-more">Devamını Oku →</div></div></a>
-    <a href="blog.html" class="blog-card"><div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div><div class="blog-body"><div class="blog-cat">Dekorasyon</div><h3>Blog Yazısı Başlığı Buraya Gelir</h3><p>Kısa özet metni buraya. 1-2 cümle.</p><div class="blog-more">Devamını Oku →</div></div></a>
-    <a href="blog.html" class="blog-card"><div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div><div class="blog-body"><div class="blog-cat">İpuçları</div><h3>Blog Yazısı Başlığı Buraya Gelir</h3><p>Kısa özet metni buraya. 1-2 cümle.</p><div class="blog-more">Devamını Oku →</div></div></a>
-  </div>
-  <div style="text-align:center;margin-top:32px;">
-    <a href="blog.html" style="display:inline-block;background:var(--navy);color:var(--white);padding:13px 32px;font-size:13px;font-weight:700;border-radius:4px;font-family:'Montserrat',sans-serif;letter-spacing:.5px;">Tüm Blog Yazılarını Gör →</a>
-  </div>
-</section>
+  <div class="blog-grid" id="blogGrid"><!-- JavaScript dolduracak --></div></section>
 
 <!-- FOOTER -->
 <footer>
@@ -523,5 +515,91 @@ function goToProdSlide(index) {
   showProdSlide(index);
 }
 </script>
+
+<script>
+// Anasayfa için ürün ve blog yükleyici
+async function loadHomePage() {
+  // ÜRÜNLERİ YÜKLE
+  try {
+    const idxRes = await fetch('_data/urunler-index.json');
+    const ids = idxRes.ok ? await idxRes.json() : [];
+    
+    const products = [];
+    for (const id of ids.slice(0, 12)) {
+      try {
+        const r = await fetch('_data/urunler/' + id + '.json');
+        if (r.ok) { 
+          const d = await r.json(); 
+          d.id = id;
+          products.push(d); 
+        }
+      } catch(e) {}
+    }
+    
+    const prodTrack = document.getElementById('prodTrack');
+    if (prodTrack && products.length > 0) {
+      prodTrack.innerHTML = products.map(p => `
+        <div class="prod-slide">
+          <a href="urun.html?id=${p.id}" class="prod-card">
+            <div class="prod-img" style="background-image:url('${p.ana_resim || 'resim/logo.png'}');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"></div>
+            <div class="prod-body">
+              <div class="prod-cat">${p.kategori || ''}</div>
+              <h3>${p.title}</h3>
+              <p>${p.kisa_aciklama || ''}</p>
+            </div>
+          </a>
+        </div>
+      `).join('');
+    } else if (prodTrack) {
+      prodTrack.innerHTML = '<div style="padding:40px;text-align:center;color:#777;width:100%;">Yakında ürünlerimiz burada görünecek.</div>';
+    }
+  } catch(err) {
+    console.log('Ürün yükleme hatası:', err);
+  }
+  
+  // BLOG YÜKLE
+  try {
+    const idxRes = await fetch('_data/blog-index.json');
+    const ids = idxRes.ok ? await idxRes.json() : [];
+    
+    const posts = [];
+    for (const id of ids.slice(0, 3)) {
+      try {
+        const r = await fetch('_data/blog/' + id + '.json');
+        if (r.ok) { 
+          const d = await r.json(); 
+          d.id = id;
+          posts.push(d); 
+        }
+      } catch(e) {}
+    }
+    
+    posts.sort((a, b) => new Date(b.tarih) - new Date(a.tarih));
+    
+    const blogGrid = document.getElementById('blogGrid');
+    if (blogGrid && posts.length > 0) {
+      blogGrid.innerHTML = posts.slice(0, 3).map(p => {
+        const tarih = p.tarih ? new Date(p.tarih).toLocaleDateString('tr-TR') : '';
+        return `
+          <a href="blog-yazi.html?id=${p.id}" class="blog-card">
+            <div class="blog-img" style="background-image:url('${p.kapak_resim || 'resim/logo.png'}');"></div>
+            <div class="blog-body">
+              <div class="blog-cat">${p.kategori || ''}</div>
+              <h3>${p.title}</h3>
+              <p>${p.ozet || ''}</p>
+              <div class="blog-meta"><span>${tarih}</span></div>
+            </div>
+          </a>
+        `;
+      }).join('');
+    }
+  } catch(err) {
+    console.log('Blog yükleme hatası:', err);
+  }
+}
+
+loadHomePage();
+</script>
+
 </body>
 </html>

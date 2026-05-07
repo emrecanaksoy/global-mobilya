@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Global Kapak Mobilya ürün detayı">
+<title>Ürün Detayı | Global Kapak Mobilya</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--navy:#0B1F4B;--navy2:#1A3A7A;--navy3:#2453A8;--gold:#C8A96E;--white:#fff;--gray:#f7f7f7;--border:#e5e5e5;--text:#333;--muted:#777;}
+body{font-family:'Open Sans',sans-serif;color:var(--text);}
+a{text-decoration:none;color:inherit;}
+img{max-width:100%;height:auto;display:block;}
+
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:65px;position:sticky;top:0;z-index:999;box-shadow:0 2px 8px rgba(0,0,0,.06);gap:8px;}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0;}
+.nav-logo img{height:48px;width:auto;}
+.nav-menu{display:flex;gap:0;align-items:center;flex:1;justify-content:center;}
+.nav-menu a{font-size:11.5px;font-weight:600;color:var(--navy);padding:6px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;}
+.nav-menu a:hover,.nav-menu a.active{background:var(--navy);color:var(--white);}
+.nav-cta{background:var(--gold);color:var(--navy);font-size:11.5px;font-weight:700;padding:8px 14px;border-radius:4px;font-family:'Montserrat',sans-serif;white-space:nowrap;}
+.hamburger{display:none;background:none;border:none;font-size:24px;cursor:pointer;color:var(--navy);}
+
+.breadcrumb{background:var(--gray);border-bottom:1px solid var(--border);padding:12px 40px;font-size:12px;color:var(--muted);}
+.breadcrumb a{color:var(--navy3);font-weight:600;}
+.breadcrumb span{margin:0 6px;color:var(--border);}
+
+/* LOADING */
+.loading{text-align:center;padding:80px 40px;color:var(--muted);}
+.loading svg{width:50px;height:50px;animation:spin 1s linear infinite;}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+/* ÜRÜN DETAY */
+.pd-wrapper{max-width:1100px;margin:0 auto;padding:40px;display:grid;grid-template-columns:1fr 1fr;gap:50px;}
+.pd-gallery{position:sticky;top:80px;align-self:start;}
+.pd-main-img{width:100%;aspect-ratio:1;background:#f5f8fc;background-size:contain;background-repeat:no-repeat;background-position:center;border-radius:6px;border:1px solid var(--border);position:relative;cursor:zoom-in;}
+.pd-zoom{position:absolute;top:14px;right:14px;width:38px;height:38px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--white);}
+
+.pd-info .pd-cat{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-family:'Montserrat',sans-serif;}
+.pd-info h1{font-family:'Montserrat',sans-serif;font-size:32px;font-weight:800;color:var(--navy);margin-bottom:14px;}
+.pd-info .pd-rating{display:flex;align-items:center;gap:10px;margin-bottom:20px;font-size:13px;color:var(--muted);}
+.pd-info .pd-rating .stars{color:var(--gold);font-size:14px;}
+.pd-desc{font-size:14px;line-height:1.9;color:var(--text);margin-bottom:26px;}
+.pd-features{background:var(--gray);padding:20px 24px;border-radius:6px;margin-bottom:26px;}
+.pd-features h4{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:12px;letter-spacing:1.5px;text-transform:uppercase;}
+.pd-features ul{list-style:none;padding:0;}
+.pd-features li{font-size:13px;padding:6px 0;color:var(--text);}
+.pd-features li::before{content:"✓ ";color:var(--gold);font-weight:700;margin-right:6px;}
+
+.pd-colors{margin-bottom:26px;}
+.pd-colors h4{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:12px;letter-spacing:1.5px;text-transform:uppercase;}
+.color-list{display:flex;gap:10px;flex-wrap:wrap;}
+.color{padding:8px 14px;background:var(--gray);border:2px solid var(--border);border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;}
+.color:hover,.color.active{border-color:var(--gold);background:var(--white);}
+
+.pd-actions{display:flex;gap:12px;margin-bottom:30px;flex-wrap:wrap;}
+.btn-primary{background:var(--gold);color:var(--navy);padding:14px 30px;font-size:13px;font-weight:700;border-radius:4px;font-family:'Montserrat',sans-serif;border:none;cursor:pointer;flex:1;text-align:center;}
+.btn-secondary{background:transparent;color:var(--navy);padding:14px 30px;font-size:13px;font-weight:600;border-radius:4px;font-family:'Montserrat',sans-serif;border:1.5px solid var(--navy);cursor:pointer;text-align:center;}
+
+/* MARKDOWN BODY */
+.pd-body{padding:40px 0;border-top:1px solid var(--border);margin-top:40px;line-height:1.9;font-size:14px;color:var(--text);max-width:800px;margin-left:auto;margin-right:auto;}
+.pd-body h2,.pd-body h3{font-family:'Montserrat',sans-serif;color:var(--navy);margin:24px 0 12px;}
+.pd-body p{margin-bottom:14px;}
+.pd-body ul,.pd-body ol{padding-left:24px;margin-bottom:14px;}
+.pd-body li{margin-bottom:6px;}
+.pd-body strong{color:var(--navy);}
+
+/* HATA */
+.error{text-align:center;padding:80px 40px;}
+.error h2{color:var(--navy);font-family:'Montserrat',sans-serif;margin-bottom:14px;}
+
+/* FOOTER */
+footer{background:#060E22;padding:40px;color:rgba(255,255,255,.5);text-align:center;font-size:13px;margin-top:60px;}
+footer a{color:var(--gold);}
+
+@media(max-width:1024px){nav{padding:0 20px;}.nav-menu a{padding:6px 8px;font-size:11px;}.pd-wrapper{grid-template-columns:1fr;padding:24px;gap:30px;}.pd-gallery{position:static;}}
+@media(max-width:768px){nav{padding:0 16px;}.nav-menu{display:none;position:absolute;top:65px;left:0;right:0;background:var(--white);flex-direction:column;padding:14px 16px;border-bottom:1px solid var(--border);}.nav-menu.open{display:flex;}.hamburger{display:block;}.nav-cta{display:none;}.pd-info h1{font-size:24px;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="resim/logo.png" alt="Global Kapak Mobilya">
+  </a>
+  <div class="nav-menu" id="nm">
+    <a href="index.html">Anasayfa</a>
+    <a href="tedarikcilerimiz.html">Tedarikçilerimiz</a>
+    <a href="urunler.html" class="active">Ürünlerimiz</a>
+    <a href="hakkimizda.html">Hakkımızda</a>
+    <a href="galeri.html">Galeri</a>
+    <a href="blog.html">Blog</a>
+    <a href="iletisim.html">İletişim</a>
+  </div>
+  <a href="iletisim.html" class="nav-cta">Teklif Al</a>
+  <button class="hamburger" onclick="document.getElementById('nm').classList.toggle('open')">☰</button>
+</nav>
+
+<div class="breadcrumb" id="breadcrumb">
+  <a href="index.html">Anasayfa</a><span>›</span>
+  <a href="urunler.html">Ürünler</a><span>›</span>
+  <strong style="color:var(--navy);" id="bc-product">Yükleniyor...</strong>
+</div>
+
+<!-- ÜRÜN İÇERİĞİ - JavaScript dolduracak -->
+<div id="product-container">
+  <div class="loading">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="50 100"/></svg>
+    <p style="margin-top:20px;">Ürün yükleniyor...</p>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 Global Kapak Mobilya — <a href="iletisim.html">İletişim</a></p>
+</footer>
+
+<script>
+// URL'den ürün ID'sini al
+const params = new URLSearchParams(window.location.search);
+const productId = params.get('id');
+
+async function loadProduct() {
+  const container = document.getElementById('product-container');
+  const bcProduct = document.getElementById('bc-product');
+  
+  if (!productId) {
+    container.innerHTML = `
+      <div class="error">
+        <h2>⚠️ Ürün Bulunamadı</h2>
+        <p>Lütfen geçerli bir ürün seçin.</p>
+        <p style="margin-top:20px;"><a href="urunler.html" class="btn-primary" style="display:inline-block;">← Ürünlere Dön</a></p>
+      </div>
+    `;
+    return;
+  }
+
+  try {
+    // JSON dosyasını yükle
+    const response = await fetch(`_data/urunler/${productId}.json`);
+    if (!response.ok) throw new Error('Ürün bulunamadı');
+    const product = await response.json();
+    
+    // Sayfa başlığını güncelle
+    document.title = `${product.title} | Global Kapak Mobilya`;
+    bcProduct.textContent = product.title;
+    
+    // Renkler
+    const renkler = product.renkler || ['Beyaz', 'Antrasit', 'Ceviz', 'Bej', 'Lacivert'];
+    const renkHtml = renkler.map((r, i) => 
+      `<div class="color${i === 0 ? ' active' : ''}" onclick="selectColor(this)">${r}</div>`
+    ).join('');
+    
+    // Markdown'ı basit HTML'e çevir
+    const bodyHtml = simpleMarkdown(product.body || '');
+    
+    container.innerHTML = `
+      <div class="pd-wrapper">
+        <div class="pd-gallery">
+          <div class="pd-main-img" style="background-image:url('${product.ana_resim || 'resim/logo.png'}');">
+            <div class="pd-zoom">🔍</div>
+          </div>
+        </div>
+        <div class="pd-info">
+          <div class="pd-cat">${product.kategori || ''}</div>
+          <h1>${product.title}</h1>
+          <div class="pd-rating">
+            <span class="stars">★★★★★</span>
+            <span>(Yeni Ürün)</span>
+          </div>
+          <p class="pd-desc">${product.kisa_aciklama || ''}</p>
+          
+          <div class="pd-features">
+            <h4>Öne Çıkan Özellikler</h4>
+            <ul>
+              <li>Yüksek kalite MDF + PVC membran</li>
+              <li>Su ve neme dayanıklı</li>
+              <li>Kolay temizlenebilir</li>
+              <li>5 yıl garanti</li>
+              <li>5 iş gününde teslimat</li>
+            </ul>
+          </div>
+          
+          <div class="pd-colors">
+            <h4>Renk Seçenekleri</h4>
+            <div class="color-list">${renkHtml}</div>
+          </div>
+          
+          <div class="pd-actions">
+            <a href="iletisim.html?urun=${encodeURIComponent(product.title)}" class="btn-primary">📱 WhatsApp ile Sipariş</a>
+            <a href="iletisim.html" class="btn-secondary">Teklif İste</a>
+          </div>
+        </div>
+      </div>
+      
+      ${bodyHtml ? `<div class="pd-body">${bodyHtml}</div>` : ''}
+    `;
+    
+  } catch (err) {
+    container.innerHTML = `
+      <div class="error">
+        <h2>⚠️ Ürün Bulunamadı</h2>
+        <p>"${productId}" adlı ürün mevcut değil veya kaldırılmış.</p>
+        <p style="margin-top:20px;"><a href="urunler.html" class="btn-primary" style="display:inline-block;">← Ürünlere Dön</a></p>
+      </div>
+    `;
+  }
+}
+
+// Basit Markdown → HTML
+function simpleMarkdown(md) {
+  if (!md) return '';
+  let html = md;
+  
+  // Headers
+  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+  html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+  
+  // Bold
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  
+  // Italic
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  
+  // Lists (- )
+  html = html.replace(/^\s*-\s+(.+)$/gim, '<li>$1</li>');
+  html = html.replace(/(<li>[\s\S]*?<\/li>)/g, m => `<ul>${m}</ul>`);
+  
+  // Links
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+  
+  // Paragraphs
+  const blocks = html.split(/\n\n+/);
+  html = blocks.map(b => {
+    b = b.trim();
+    if (!b) return '';
+    if (b.startsWith('<h') || b.startsWith('<ul') || b.startsWith('<ol')) return b;
+    return `<p>${b.replace(/\n/g, '<br>')}</p>`;
+  }).join('\n');
+  
+  return html;
+}
+
+function selectColor(el) {
+  document.querySelectorAll('.color').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Sayfa yüklenince ürünü getir
+loadProduct();
+</script>
+</body>
+</html>

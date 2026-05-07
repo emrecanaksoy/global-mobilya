@@ -16,65 +16,66 @@ locale: 'tr'
 
 collections:
   
-  # ÜRÜNLER
+  # ÜRÜNLER - JSON formatında
   - name: "urunler"
     label: "🛒 Ürünler"
     label_singular: "Ürün"
-    folder: "urun"
+    folder: "_data/urunler"
     create: true
-    slug: "urun-{{slug}}"
-    extension: "html"
-    format: "frontmatter"
+    delete: true
+    slug: "{{slug}}"
+    extension: "json"
+    format: "json"
     summary: "{{title}} - {{kategori}}"
     fields:
-      - { label: "Ürün Adı", name: "title", widget: "string" }
+      - { label: "Ürün Adı", name: "title", widget: "string", hint: "Örn: Çerçeveli Klasik Membran Kapak" }
       - { label: "Kategori", name: "kategori", widget: "select", options: ["Düz Membran Kapak", "Çerçeveli", "Özel Ölçü"] }
-      - { label: "Kısa Açıklama", name: "kisa_aciklama", widget: "string", required: false }
-      - { label: "Ana Resim", name: "ana_resim", widget: "image", required: false }
-      - { label: "Detaylı Açıklama", name: "body", widget: "markdown" }
-      - { label: "Popüler mi?", name: "populer", widget: "boolean", default: false, required: false }
-      - { label: "Yeni mi?", name: "yeni", widget: "boolean", default: false, required: false }
+      - { label: "Kısa Açıklama", name: "kisa_aciklama", widget: "string", hint: "Ürün kartında görünür", required: false }
+      - { label: "Ana Resim", name: "ana_resim", widget: "image", required: false, hint: "Yüksek çözünürlüklü ürün resmi" }
+      - { label: "Detaylı Açıklama", name: "body", widget: "markdown", required: false, hint: "Markdown desteklenir (kalın, italik, başlık vb.)" }
+      - { label: "Renk Seçenekleri", name: "renkler", widget: "list", required: false, default: ["Beyaz", "Antrasit", "Ceviz", "Bej", "Lacivert"], hint: "Her satıra bir renk yazın" }
+      - { label: "⭐ Popüler Ürün", name: "populer", widget: "boolean", default: false, required: false }
+      - { label: "🆕 Yeni Ürün", name: "yeni", widget: "boolean", default: false, required: false }
 
-  # BLOG
+  # BLOG YAZILARI
   - name: "blog"
     label: "📝 Blog Yazıları"
     label_singular: "Blog Yazısı"
-    folder: "blog"
+    folder: "_data/blog"
     create: true
-    slug: "blog-{{slug}}"
-    extension: "html"
-    format: "frontmatter"
-    summary: "{{title}} - {{tarih}}"
+    delete: true
+    slug: "{{slug}}"
+    extension: "json"
+    format: "json"
+    summary: "{{title}}"
     fields:
       - { label: "Başlık", name: "title", widget: "string" }
       - { label: "Kategori", name: "kategori", widget: "select", options: ["Membran Kapak", "Bakım", "Dekorasyon", "İpuçları", "Sektör Haberleri"] }
       - { label: "Yayın Tarihi", name: "tarih", widget: "datetime" }
       - { label: "Kapak Resmi", name: "kapak_resim", widget: "image", required: false }
-      - { label: "Özet", name: "ozet", widget: "string" }
+      - { label: "Özet", name: "ozet", widget: "string", hint: "1-2 cümlelik kısa özet" }
       - { label: "İçerik", name: "body", widget: "markdown" }
-      - { label: "Etiketler", name: "etiketler", widget: "list", required: false }
+      - { label: "Etiketler", name: "etiketler", widget: "list", required: false, hint: "Örn: bakım, ipucu" }
 
-  # AYARLAR
+  # SİTE AYARLARI
   - name: "ayarlar"
     label: "⚙️ Site Ayarları"
     files:
-      - file: "ayarlar/iletisim.yml"
+      - file: "_data/ayarlar/iletisim.json"
         label: "📞 İletişim Bilgileri"
         name: "iletisim"
+        format: "json"
         fields:
-          - { label: "Telefon", name: "telefon", widget: "string" }
-          - { label: "WhatsApp Numarası", name: "whatsapp", widget: "string", hint: "Format: 905050151035" }
-          - { label: "E-posta", name: "email", widget: "string" }
+          - { label: "Telefon", name: "telefon", widget: "string", default: "0505 015 1035" }
+          - { label: "WhatsApp Numarası", name: "whatsapp", widget: "string", hint: "Format: 905050151035 (başında 90)", default: "905050151035" }
+          - { label: "E-posta", name: "email", widget: "string", default: "info@globalkapakmobilya.com" }
           - { label: "Adres", name: "adres", widget: "text" }
-          - { label: "Çalışma Saatleri", name: "calisma_saatleri", widget: "string" }
       
-      - file: "ayarlar/firma.yml"
+      - file: "_data/ayarlar/firma.json"
         label: "🏢 Firma Bilgileri"
         name: "firma"
+        format: "json"
         fields:
-          - { label: "Firma Adı", name: "firma_adi", widget: "string" }
-          - { label: "Slogan", name: "slogan", widget: "string" }
-          - { label: "Hakkında Yazısı", name: "hakkinda", widget: "markdown" }
-          - { label: "Yıllık Deneyim", name: "deneyim", widget: "string" }
-          - { label: "Fabrika m²", name: "fabrika_m2", widget: "string" }
-          - { label: "Garanti Süresi", name: "garanti", widget: "string" }
+          - { label: "Firma Adı", name: "firma_adi", widget: "string", default: "Global Kapak Mobilya" }
+          - { label: "Slogan", name: "slogan", widget: "string", default: "Membran Kapak Üreticisi" }
+          - { label: "Hakkında Yazısı", name: "hakkinda", widget: "markdown", required: false }
