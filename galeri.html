@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="google-site-verification" content="Ogq44Xs7l3q1ZXKPHR2oxgjtYcVEjy1H7CQoUZiIvIA" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Fabrikamızdan, üretim sürecimizden ve tamamlanan projelerimizden fotoğraflar. Membran kapak üretiminde kalite ve estetiği görün.">
+<meta name="keywords" content="global kapak galeri, membran kapak fotoğraf, fabrika fotoğrafları, mobilya kapak modelleri">
+<meta name="author" content="Global Kapak Mobilya">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Galeri — Üretim ve Ürün Fotoğrafları | Global Kapak Mobilya">
+<meta property="og:description" content="Fabrikamızdan, üretim sürecimizden ve tamamlanan projelerimizden fotoğraflar. Membran kapak üretiminde kalite ve estetiği görün.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:site_name" content="Global Kapak Mobilya">
+<title>Galeri — Üretim ve Ürün Fotoğrafları | Global Kapak Mobilya</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--navy:#0B1F4B;--navy2:#1A3A7A;--navy3:#2453A8;--gold:#C8A96E;--white:#fff;--gray:#f7f7f7;--border:#e5e5e5;--text:#333;--muted:#777;}
+body{font-family:'Open Sans',sans-serif;color:var(--text);}
+a{text-decoration:none;color:inherit;}
+img{max-width:100%;height:auto;display:block;}
+.topbar{background:var(--navy);color:rgba(255,255,255,.75);font-size:12px;padding:7px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.topbar a{color:rgba(255,255,255,.75);margin-left:16px;font-size:12px;}
+.topbar a:hover{color:var(--gold);}
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:65px;position:sticky;top:0;z-index:999;box-shadow:0 2px 8px rgba(0,0,0,.06);gap:8px;}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0;}
+.logo-box{width:38px;height:38px;background:var(--navy);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-family:'Montserrat',sans-serif;font-weight:800;font-size:12px;flex-shrink:0;}
+.logo-text{font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:var(--navy);line-height:1.2;white-space:nowrap;}
+.logo-text small{display:block;font-size:8.5px;font-weight:500;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.nav-menu{display:flex;gap:0;align-items:center;flex:1;justify-content:center;}
+.nav-menu a{font-size:11.5px;font-weight:600;color:var(--navy);padding:6px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;}
+.nav-menu a:hover,.nav-menu a.active{background:var(--navy);color:var(--white);}
+.nav-cta{background:var(--gold);color:var(--navy);font-size:11.5px;font-weight:700;padding:8px 14px;border-radius:4px;font-family:'Montserrat',sans-serif;white-space:nowrap;flex-shrink:0;}
+.hamburger{display:none;background:none;border:none;font-size:24px;cursor:pointer;color:var(--navy);}
+.breadcrumb{background:var(--gray);border-bottom:1px solid var(--border);padding:12px 40px;font-size:12px;color:var(--muted);}
+.breadcrumb a{color:var(--navy3);font-weight:600;}
+.breadcrumb a:hover{color:var(--gold);}
+.breadcrumb span{margin:0 6px;color:var(--border);}
+.page-hero{background:linear-gradient(120deg,var(--navy) 0%,var(--navy2) 60%,var(--navy3) 100%);padding:50px 40px;text-align:center;}
+.page-hero h1{font-family:'Montserrat',sans-serif;color:var(--white);font-size:34px;font-weight:800;margin-bottom:10px;}
+.page-hero p{color:rgba(255,255,255,.7);font-size:14px;max-width:520px;margin:0 auto;}
+.filter-bar{background:var(--white);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;}
+.filter-btn{font-size:12px;font-weight:600;padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);color:var(--muted);cursor:pointer;font-family:'Open Sans',sans-serif;}
+.filter-btn:hover,.filter-btn.active{background:var(--navy);color:var(--white);border-color:var(--navy);}
+.gallery-wrapper{max-width:1200px;margin:0 auto;padding:50px 40px 70px;}
+.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.gal-item{position:relative;overflow:hidden;cursor:pointer;border-radius:4px;background:linear-gradient(145deg,#dce5f3,#b8c9e5);background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:rgba(11,31,75,.3);transition:transform .3s;}
+.gal-item:hover{transform:scale(1.02);}
+.gal-item:hover .gal-overlay{opacity:1;}
+.gal-item.h1{height:240px;}
+.gal-item.h2{height:340px;}
+.gal-item svg{width:34px;height:34px;stroke:currentColor;fill:none;stroke-width:1.2;}
+.gal-item span{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;}
+.gal-overlay{position:absolute;inset:0;background:rgba(11,31,75,.65);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;}
+.gal-overlay-icon{width:50px;height:50px;border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.gal-overlay-icon svg{width:22px;height:22px;stroke:var(--gold);}
+.cta-bar{background:var(--navy);padding:50px 40px;text-align:center;}
+.cta-bar h3{font-family:'Montserrat',sans-serif;color:var(--white);font-size:24px;font-weight:800;margin-bottom:10px;}
+.cta-bar p{color:rgba(255,255,255,.65);font-size:14px;margin-bottom:22px;}
+.cta-bar a{display:inline-block;background:var(--gold);color:var(--navy);padding:12px 30px;font-size:13px;font-weight:700;border-radius:4px;font-family:'Montserrat',sans-serif;letter-spacing:.5px;}
+footer{background:#060E22;padding:40px 40px 20px;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;max-width:1100px;margin:0 auto 32px;}
+.f-logo-box{width:40px;height:40px;background:var(--navy2);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-family:'Montserrat',sans-serif;font-weight:800;font-size:12px;margin-bottom:10px;}
+.f-brand-name{font-family:'Montserrat',sans-serif;color:var(--white);font-size:14px;font-weight:700;margin-bottom:8px;}
+.footer-brand p{font-size:13px;color:rgba(255,255,255,.4);line-height:1.8;}
+.footer-col h4{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.footer-col a{display:block;font-size:13px;color:rgba(255,255,255,.45);margin-bottom:8px;}
+.footer-col a:hover{color:var(--gold);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:18px;display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto;flex-wrap:wrap;gap:10px;}
+.footer-bottom p{font-size:12px;color:rgba(255,255,255,.25);}
+.socials{display:flex;gap:8px;}
+.soc{width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;}
+.soc svg{width:13px;height:13px;stroke:rgba(255,255,255,.4);fill:none;stroke-width:2;}
+
+/* ── TABLET (768px-1024px) ── */
+@media(max-width:1024px){
+  .topbar{padding:7px 24px;font-size:11px;}
+  .topbar a{margin-left:10px;font-size:11px;}
+  nav{padding:0 20px;}
+  .nav-menu a{padding:6px 8px;font-size:11px;letter-spacing:.2px;}
+  .breadcrumb{padding:11px 24px;}
+  .page-hero{padding:40px 24px;}
+  .page-hero h1{font-size:28px;}
+  .filter-bar{padding:14px 24px;}
+}
+@media(max-width:900px){.gallery-grid{grid-template-columns:repeat(3,1fr);}.footer-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){nav{padding:0 16px;}.nav-menu{display:none;position:absolute;top:65px;left:0;right:0;background:var(--white);flex-direction:column;padding:14px 16px;border-bottom:1px solid var(--border);}.nav-menu.open{display:flex;}.hamburger{display:block;}.nav-cta{display:none;}.breadcrumb,.page-hero,.filter-bar,.gallery-wrapper,.cta-bar{padding-left:20px;padding-right:20px;}.gallery-wrapper{padding-top:30px;padding-bottom:50px;}.gallery-grid{grid-template-columns:repeat(2,1fr);}footer{padding:30px 20px 16px;}.footer-grid{grid-template-columns:1fr;}}
+
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+.lightbox.open{display:flex;}
+.lightbox-img{max-width:90vw;max-height:88vh;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;color:rgba(11,31,75,.3);min-width:300px;min-height:300px;background-size:contain;background-repeat:no-repeat;background-position:center;width:800px;height:600px;}
+.lightbox-img svg{width:60px;height:60px;stroke:currentColor;fill:none;stroke-width:1;}
+.lightbox-close{position:absolute;top:20px;right:20px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.3);color:var(--white);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.lightbox-close:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+.lightbox-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.3);color:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.lightbox-arrow:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+.lightbox-arrow svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.5;}
+.lightbox-arrow.prev{left:20px;}
+.lightbox-arrow.next{right:20px;}
+.lightbox-counter{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.7);font-size:12px;letter-spacing:2px;font-family:'Montserrat',sans-serif;font-weight:600;}
+@media(max-width:600px){
+  .lightbox-arrow{width:38px;height:38px;}
+  .lightbox-arrow.prev{left:10px;}
+  .lightbox-arrow.next{right:10px;}
+  .lightbox-img{min-width:auto;min-height:auto;width:100%;height:60vh;}
+}
+.prod-img[style*="background-image"] .prod-img-ph{display:none !important;}.blog-img[style*="background-image"] svg,.blog-img[style*="background-image"] span{display:none !important;}.featured-img[style*="background-image"] svg,.featured-img[style*="background-image"] span{display:none !important;}.sup-logo[style*="background-image"] svg,.sup-logo[style*="background-image"] span{display:none !important;}.gallery-item[style*="background-image"] svg,.gallery-item[style*="background-image"] span{display:none !important;}.gal-item[style*="background-image"] svg,.gal-item[style*="background-image"] span{display:none !important;}.recent-img[style*="background-image"] svg{display:none !important;}.rel-img[style*="background-image"] svg,.rel-img[style*="background-image"] span{display:none !important;}.about-img[style*="background-image"] svg,.about-img[style*="background-image"] span{display:none !important;}.about-img-big[style*="background-image"] svg,.about-img-big[style*="background-image"] span{display:none !important;}.cat-ico[style*="background-image"] svg{display:none !important;}</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><img src="resim/logo.png" alt="Global Kapak Mobilya" style="height:48px;width:auto;"></a>
+  <div class="nav-menu" id="nm">
+    <a href="index.html">Anasayfa</a>
+    <a href="tedarikcilerimiz.html">Tedarikçilerimiz</a>
+    <a href="urunler.html">Ürünlerimiz</a>
+    <a href="hakkimizda.html">Hakkımızda</a>
+    <a href="galeri.html" class="active">Galeri</a>
+    <a href="blog.html">Blog</a>
+    <a href="iletisim.html">İletişim</a>
+  </div>
+  <a href="iletisim.html" class="nav-cta">Teklif Al</a>
+  <button class="hamburger" onclick="document.getElementById('nm').classList.toggle('open')">☰</button>
+</nav>
+
+<div class="breadcrumb">
+  <a href="index.html">Anasayfa</a><span>›</span><strong style="color:var(--navy);">Galeri</strong>
+</div>
+
+<div class="page-hero">
+  <h1>Fotoğraf Galerisi</h1>
+  <p>Üretim sürecimiz, ürünlerimiz ve tamamlanan projelerimizden kareler.</p>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active">Tümü</button>
+  <button class="filter-btn">Ürünler</button>
+  <button class="filter-btn">Fabrika</button>
+  <button class="filter-btn">Projeler</button>
+</div>
+
+<div class="gallery-wrapper">
+  <div class="gallery-grid">
+    <div onclick="openLightbox(this)" class="gal-item h2" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Galeri 1</span><div class="gal-overlay"><div class="gal-overlay-icon"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></div></div></div>
+    <div onclick="openLightbox(this)" class="gal-item h1" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Galeri 2</span><div class="gal-overlay"><div class="gal-overlay-icon"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></div></div></div>
+    <div onclick="openLightbox(this)" class="gal-item h1" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Galeri 3</span><div class="gal-overlay"><div class="gal-overlay-icon"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></div></div></div>
+    <div onclick="openLightbox(this)" class="gal-item h2" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Galeri 4</span><div class="gal-overlay"><div class="gal-overlay-icon"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></div></div></div>
+    <div onclick="openLightbox(this)" class="gal-item h1" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Galeri 5</span><div class="gal-overlay"><div class="gal-overlay-icon"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></div></div></div>
+    <div onclick="openLightbox(this)" class="gal-item h2" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Galeri 6</span><div class="gal-overlay"><div class="gal-overlay-icon"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></div></div></div>
+    <div onclick="openLightbox(this)" class="gal-item h2" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Galeri 7</span><div class="gal-overlay"><div class="gal-overlay-icon"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></div></div></div>
+    <div onclick="openLightbox(this)" class="gal-item h1" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Galeri 8</span><div class="gal-overlay"><div class="gal-overlay-icon"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></div></div></div>
+  </div>
+</div>
+
+<div class="cta-bar">
+  <h3>Beğendiğiniz Bir Model Var mı?</h3>
+  <p>Ürünlerimiz hakkında detaylı bilgi almak için bizimle iletişime geçin.</p>
+  <a href="iletisim.html">Bize Ulaşın</a>
+</div>
+
+
+<!-- LIGHTBOX (Görsel Büyütme) -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-arrow prev" onclick="event.stopPropagation();prevLightbox()">
+    <svg viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+  </button>
+  <button class="lightbox-arrow next" onclick="event.stopPropagation();nextLightbox()">
+    <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+  </button>
+  <div class="lightbox-img" id="lbImg" onclick="event.stopPropagation()">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+  </div>
+  <div class="lightbox-counter" id="lbCounter">1 / 8</div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="resim/logo.png" alt="Global Kapak Mobilya" style="height:100px;margin-bottom:12px;background:#fff;padding:5px;border-radius:4px;">
+      <div class="f-brand-name">Global Kapak Mobilya</div>
+      <p>Membran kapak üretiminde uzman kadromuzla kalite ve estetiği bir arada sunuyoruz.</p>
+    </div>
+    <div class="footer-col"><h4>Sayfalar</h4><a href="index.html">Anasayfa</a><a href="urunler.html">Ürünlerimiz</a><a href="hakkimizda.html">Hakkımızda</a><a href="galeri.html">Galeri</a><a href="blog.html">Blog</a><a href="iletisim.html">İletişim</a></div>
+    <div class="footer-col"><h4>Ürünler</h4><a href="urunler.html">Düz Membran Kapak</a><a href="urunler.html">Çerçeveli Membran Kapak</a><a href="urunler.html">Ölçüye Özel Kapak</a></div>
+    <div class="footer-col"><h4>İletişim</h4><a href="tel:05050151035">+90 (505) 015 1035</a><a href="mailto:info@globalkapakmobilya.com">info@globalkapakmobilya.com</a><a href="iletisim.html">Yalçın Koreş Cad. Bağlar Mah. No:6B Bağcılar / İstanbul, Türkiye</a></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Global Kapak Mobilya — Tüm hakları saklıdır.</p>
+    <div class="socials">
+      <a class="soc" href="#"><svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+      <a class="soc" href="#"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/></svg></a>
+    </div>
+  </div>
+</footer>
+<script>
+// FİLTRE
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// LIGHTBOX
+const galItems = document.querySelectorAll('.gal-item');
+let currentLightbox = 0;
+
+function openLightbox(el) {
+  currentLightbox = Array.from(galItems).indexOf(el);
+  showLightbox();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function showLightbox() {
+  const item = galItems[currentLightbox];
+  const lbImg = document.getElementById('lbImg');
+  const bgImg = window.getComputedStyle(item).backgroundImage;
+  if (bgImg && bgImg !== 'none' && !bgImg.includes('gradient')) {
+    lbImg.style.backgroundImage = bgImg;
+    lbImg.style.background = bgImg + ', #fff';
+    lbImg.style.backgroundSize = 'contain';
+    lbImg.style.backgroundRepeat = 'no-repeat';
+    lbImg.style.backgroundPosition = 'center';
+  } else {
+    lbImg.style.background = 'linear-gradient(145deg,#dce5f3,#b8c9e5)';
+  }
+  document.getElementById('lbCounter').textContent = (currentLightbox+1) + ' / ' + galItems.length;
+}
+function nextLightbox() {
+  currentLightbox = (currentLightbox + 1) % galItems.length;
+  showLightbox();
+}
+function prevLightbox() {
+  currentLightbox = (currentLightbox - 1 + galItems.length) % galItems.length;
+  showLightbox();
+}
+
+// Lightbox dışına tıklayınca kapat
+document.getElementById('lightbox').addEventListener('click', closeLightbox);
+
+// Klavye kontrolleri
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowRight') nextLightbox();
+  if (e.key === 'ArrowLeft') prevLightbox();
+});
+</script>
+</body>
+</html>

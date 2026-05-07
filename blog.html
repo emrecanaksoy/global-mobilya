@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="google-site-verification" content="Ogq44Xs7l3q1ZXKPHR2oxgjtYcVEjy1H7CQoUZiIvIA" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Blog — Membran kapak, mobilya bakımı, dekorasyon ipuçları ve sektör haberleri. Mobilya hakkında bilmeniz gereken her şey.">
+<meta name="keywords" content="membran kapak blog, mobilya bakımı, mutfak dekorasyon, dolap bakımı, membran kapak nedir">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Blog — Membran Kapak ve Mobilya Bakımı | Global Kapak Mobilya">
+<meta property="og:description" content="Membran kapak, mobilya bakımı ve dekorasyon hakkında faydalı içerikler.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="tr_TR">
+<title>Blog — Membran Kapak ve Mobilya Bakımı | Global Kapak Mobilya</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--navy:#0B1F4B;--navy2:#1A3A7A;--navy3:#2453A8;--gold:#C8A96E;--white:#fff;--gray:#f7f7f7;--border:#e5e5e5;--text:#333;--muted:#777;}
+body{font-family:'Open Sans',sans-serif;color:var(--text);}
+a{text-decoration:none;color:inherit;}
+img{max-width:100%;height:auto;display:block;}
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:65px;position:sticky;top:0;z-index:999;box-shadow:0 2px 8px rgba(0,0,0,.06);gap:8px;}
+.nav-logo{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.nav-menu{display:flex;gap:0;align-items:center;flex:1;justify-content:center;}
+.nav-menu a{font-size:11.5px;font-weight:600;color:var(--navy);padding:6px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;}
+.nav-menu a:hover,.nav-menu a.active{background:var(--navy);color:var(--white);}
+.nav-cta{background:var(--gold);color:var(--navy);font-size:11.5px;font-weight:700;padding:8px 14px;border-radius:4px;font-family:'Montserrat',sans-serif;white-space:nowrap;flex-shrink:0;}
+.hamburger{display:none;background:none;border:none;font-size:24px;cursor:pointer;color:var(--navy);}
+.breadcrumb{background:var(--gray);border-bottom:1px solid var(--border);padding:12px 40px;font-size:12px;color:var(--muted);}
+.breadcrumb a{color:var(--navy3);font-weight:600;}
+.breadcrumb span{margin:0 6px;color:var(--border);}
+.page-hero{background:linear-gradient(120deg,var(--navy) 0%,var(--navy2) 60%,var(--navy3) 100%);padding:50px 40px;text-align:center;}
+.page-hero h1{font-family:'Montserrat',sans-serif;color:var(--white);font-size:34px;font-weight:800;margin-bottom:10px;}
+.page-hero p{color:rgba(255,255,255,.7);font-size:14px;max-width:520px;margin:0 auto;}
+
+/* BLOG LAYOUT */
+.blog-wrapper{max-width:1200px;margin:0 auto;padding:50px 40px 70px;display:grid;grid-template-columns:1fr 280px;gap:40px;}
+.blog-main{display:flex;flex-direction:column;gap:24px;}
+
+/* ÖNE ÇIKAN YAZI */
+.featured{display:grid;grid-template-columns:1fr 1fr;background:var(--white);border:1px solid var(--border);border-radius:6px;overflow:hidden;cursor:pointer;text-decoration:none;color:inherit;}
+.featured:hover{box-shadow:0 8px 30px rgba(11,31,75,.1);}
+.featured-img{min-height:280px;background:linear-gradient(145deg,#dce5f3,#b8c9e5);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:rgba(11,31,75,.3);}
+.featured-img svg{width:36px;height:36px;stroke:currentColor;fill:none;stroke-width:1.2;}
+.featured-img span{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;}
+.featured-body{padding:30px 28px;display:flex;flex-direction:column;justify-content:center;}
+.feat-tag{display:inline-block;background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:4px 10px;border-radius:2px;font-family:'Montserrat',sans-serif;letter-spacing:1px;margin-bottom:12px;width:fit-content;}
+.featured-body h2{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:var(--navy);line-height:1.3;margin-bottom:12px;}
+.featured-body p{font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:14px;}
+.feat-meta{display:flex;align-items:center;gap:14px;font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;}
+.feat-meta svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:middle;margin-right:4px;}
+
+/* BLOG KART LİSTE */
+.blog-list{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.blog-card{background:var(--white);border:1px solid var(--border);border-radius:6px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;text-decoration:none;color:inherit;display:block;}
+.blog-card:hover{box-shadow:0 6px 24px rgba(11,31,75,.1);transform:translateY(-3px);}
+.blog-img{height:180px;background:linear-gradient(145deg,#e0e8f5,#c0ceeb);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:rgba(11,31,75,.3);}
+.blog-img svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.2;}
+.blog-img span{font-size:10px;letter-spacing:1px;text-transform:uppercase;}
+.blog-body{padding:18px;}
+.blog-cat{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-family:'Montserrat',sans-serif;}
+.blog-body h3{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--navy);line-height:1.4;margin-bottom:8px;}
+.blog-body p{font-size:12px;color:var(--muted);line-height:1.7;}
+.blog-meta{display:flex;align-items:center;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.4px;}
+.blog-meta svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:middle;margin-right:3px;}
+
+/* SAYFALAMA */
+.pagination{display:flex;justify-content:center;gap:6px;margin-top:32px;}
+.page-btn{width:36px;height:36px;border:1px solid var(--border);background:var(--white);color:var(--navy);font-size:13px;font-weight:600;border-radius:4px;cursor:pointer;font-family:'Montserrat',sans-serif;}
+.page-btn:hover,.page-btn.active{background:var(--navy);color:var(--white);border-color:var(--navy);}
+
+/* SIDEBAR */
+.sidebar{display:flex;flex-direction:column;gap:24px;}
+.side-box{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:22px;}
+.side-box h4{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--gold);letter-spacing:.5px;text-transform:uppercase;}
+.search-input{width:100%;border:1px solid var(--border);padding:10px 14px;border-radius:4px;font-size:12px;font-family:'Open Sans',sans-serif;outline:none;}
+.search-input:focus{border-color:var(--navy3);}
+.cat-list{display:flex;flex-direction:column;gap:10px;}
+.cat-item{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--text);padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.cat-item:last-child{border-bottom:none;}
+.cat-item:hover{color:var(--gold);}
+.cat-item .cnt{background:var(--gray);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700;}
+.recent{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;color:inherit;}
+.recent:last-child{border-bottom:none;}
+.recent-img{width:60px;height:60px;background:linear-gradient(145deg,#e0e8f5,#c0ceeb);border-radius:4px;flex-shrink:0;}
+.recent-text h5{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--navy);line-height:1.4;margin-bottom:4px;}
+.recent-text time{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.5px;}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:6px;}
+.tag{font-size:11px;font-weight:600;background:var(--gray);color:var(--navy);padding:5px 11px;border-radius:3px;cursor:pointer;}
+.tag:hover{background:var(--gold);color:var(--navy);}
+
+/* FOOTER */
+footer{background:#060E22;padding:40px 40px 20px;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;max-width:1100px;margin:0 auto 32px;}
+.f-brand-name{font-family:'Montserrat',sans-serif;color:var(--white);font-size:14px;font-weight:700;margin-bottom:8px;}
+.footer-brand p{font-size:13px;color:rgba(255,255,255,.4);line-height:1.8;}
+.footer-col h4{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.footer-col a{display:block;font-size:13px;color:rgba(255,255,255,.45);margin-bottom:8px;}
+.footer-col a:hover{color:var(--gold);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:18px;display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto;flex-wrap:wrap;gap:10px;}
+.footer-bottom p{font-size:12px;color:rgba(255,255,255,.25);}
+.socials{display:flex;gap:8px;}
+.soc{width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;}
+.soc svg{width:13px;height:13px;stroke:rgba(255,255,255,.4);fill:none;stroke-width:2;}
+
+@media(max-width:1024px){nav{padding:0 20px;}.nav-menu a{padding:6px 8px;font-size:11px;}.breadcrumb{padding:11px 24px;}.page-hero{padding:40px 24px;}.page-hero h1{font-size:28px;}.blog-wrapper{padding:40px 24px;}}
+@media(max-width:900px){.blog-wrapper{grid-template-columns:1fr;}.featured{grid-template-columns:1fr;}.footer-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){nav{padding:0 16px;}.nav-menu{display:none;position:absolute;top:65px;left:0;right:0;background:var(--white);flex-direction:column;padding:14px 16px;border-bottom:1px solid var(--border);}.nav-menu.open{display:flex;}.hamburger{display:block;}.nav-cta{display:none;}.breadcrumb,.page-hero{padding-left:20px;padding-right:20px;}.blog-wrapper{padding:30px 20px 50px;}.blog-list{grid-template-columns:1fr;}footer{padding:30px 20px 16px;}.footer-grid{grid-template-columns:1fr;}}
+.prod-img[style*="background-image"] .prod-img-ph{display:none !important;}.blog-img[style*="background-image"] svg,.blog-img[style*="background-image"] span{display:none !important;}.featured-img[style*="background-image"] svg,.featured-img[style*="background-image"] span{display:none !important;}.sup-logo[style*="background-image"] svg,.sup-logo[style*="background-image"] span{display:none !important;}.gallery-item[style*="background-image"] svg,.gallery-item[style*="background-image"] span{display:none !important;}.gal-item[style*="background-image"] svg,.gal-item[style*="background-image"] span{display:none !important;}.recent-img[style*="background-image"] svg{display:none !important;}.rel-img[style*="background-image"] svg,.rel-img[style*="background-image"] span{display:none !important;}.about-img[style*="background-image"] svg,.about-img[style*="background-image"] span{display:none !important;}.about-img-big[style*="background-image"] svg,.about-img-big[style*="background-image"] span{display:none !important;}.cat-ico[style*="background-image"] svg{display:none !important;}</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="resim/logo.png" alt="Global Kapak Mobilya" style="height:48px;width:auto;">
+  </a>
+  <div class="nav-menu" id="nm">
+    <a href="index.html">Anasayfa</a>
+    <a href="tedarikcilerimiz.html">Tedarikçilerimiz</a>
+    <a href="urunler.html">Ürünlerimiz</a>
+    <a href="hakkimizda.html">Hakkımızda</a>
+    <a href="galeri.html">Galeri</a>
+    <a href="blog.html" class="active">Blog</a>
+    <a href="iletisim.html">İletişim</a>
+  </div>
+  <a href="iletisim.html" class="nav-cta">Teklif Al</a>
+  <button class="hamburger" onclick="document.getElementById('nm').classList.toggle('open')">☰</button>
+</nav>
+
+<div class="breadcrumb">
+  <a href="index.html">Anasayfa</a><span>›</span><strong style="color:var(--navy);">Blog</strong>
+</div>
+
+<div class="page-hero">
+  <h1>Blog & Makaleler</h1>
+  <p>Membran kapak, mobilya bakımı ve dekorasyon hakkında faydalı içerikler.</p>
+</div>
+
+<div class="blog-wrapper">
+  <!-- ANA İÇERİK -->
+  <div class="blog-main">
+
+    <div id="filterStatus" style="display:none;background:var(--gold);color:var(--navy);padding:14px 20px;border-radius:6px;font-size:13px;font-weight:600;margin-bottom:8px;"></div>
+
+    <!-- ÖNE ÇIKAN YAZI -->
+    <a href="blog/blog-19.html" class="featured">
+      <div class="featured-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span>Öne Çıkan Görseli</span>
+      </div>
+      <div class="featured-body">
+        <span class="feat-tag">Öne Çıkan</span>
+        <h2>Kullanıcı Kaynaklı Hatalar — Membran Kapağınız Neden Erken Yıpranır?</h2>
+        <p>Kapaklarınızın ömrünü kısaltan yanlış kullanım alışkanlıkları ve doğru bakım için pratik öneriler.</p>
+        <div class="feat-meta">
+          <span><svg viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>5 Mayıs 2026</span>
+          <span><svg viewBox="0 0 24 24"><path d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Admin</span>
+          <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>5 dk okuma</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- SAYFA 1 -->
+    <div class="blog-list" id="blogList1">
+      <a href="blog/blog-19.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Bakım</div>
+          <h3>Kullanıcı Kaynaklı Hatalar — Yapılması ve Yapılmaması Gerekenler</h3>
+          <p>Membran kapağınızı uzun yıllar kullanmak için bilmeniz gereken kritik kullanım kuralları.</p>
+          <div class="blog-meta"><span>5 Mayıs 2026</span><span>8 dk okuma</span></div>
+        </div>
+      </a>
+<a href="blog/blog-1.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Membran Kapak</div>
+          <h3>Membran Kapak Nedir? Özellikleri Nelerdir?</h3>
+          <p>Membran kapak hakkında bilmeniz gereken temel bilgiler ve dikkat etmeniz gereken noktalar.</p>
+          <div class="blog-meta"><span>10 Mart 2025</span><span>5 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-2.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Bakım</div>
+          <h3>Membran Kapakların Doğru Bakımı Nasıl Yapılır?</h3>
+          <p>Mutfak ve dolap kapaklarınızın ömrünü uzatmak için pratik bakım önerileri.</p>
+          <div class="blog-meta"><span>5 Mart 2025</span><span>4 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-3.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Dekorasyon</div>
+          <h3>Mutfak Dolabı Renk Seçimi: Modern Trendler</h3>
+          <p>2025 yılında öne çıkan mutfak dolabı renkleri ve tasarım trendleri.</p>
+          <div class="blog-meta"><span>1 Mart 2025</span><span>6 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-4.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">İpuçları</div>
+          <h3>Ölçüye Göre Dolap Kapağı Siparişi</h3>
+          <p>Doğru ölçü almanın püf noktaları ve sipariş öncesi kontrol listesi.</p>
+          <div class="blog-meta"><span>25 Şubat 2025</span><span>3 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-5.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Membran Kapak</div>
+          <h3>Membran Kapak ile Lake Kapak Arasındaki Farklar</h3>
+          <p>İki popüler kapak türünü karşılaştırıyor, hangisinin size uygun olduğunu anlatıyoruz.</p>
+          <div class="blog-meta"><span>20 Şubat 2025</span><span>7 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-6.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Dekorasyon</div>
+          <h3>Yatak Odası Gardırop Kapağı Yenileme</h3>
+          <p>Eski gardırop kapaklarını yenilemek mi istiyorsunuz? Adım adım rehberimiz.</p>
+          <div class="blog-meta"><span>15 Şubat 2025</span><span>5 dk okuma</span></div>
+        </div>
+      </a>
+    </div>
+
+    <!-- SAYFA 2 -->
+    <div class="blog-list" id="blogList2" style="display:none;">
+      <a href="blog/blog-7.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Bakım</div>
+          <h3>Mutfak Kapaklarında Çizik ve Lekelerin Onarımı</h3>
+          <p>Mutfak kapaklarınızdaki ufak hasarları evde nasıl onarabileceğinizi anlatıyoruz.</p>
+          <div class="blog-meta"><span>10 Şubat 2025</span><span>5 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-8.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Sektör Haberleri</div>
+          <h3>2025 Mobilya Sektörü Trendleri</h3>
+          <p>Bu yıl mobilya sektöründe öne çıkan trendler ve müşteri tercihleri.</p>
+          <div class="blog-meta"><span>5 Şubat 2025</span><span>4 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-9.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">İpuçları</div>
+          <h3>Küçük Mutfaklar İçin Akıllı Çözümler</h3>
+          <p>Dar alanlarda maksimum verim alabileceğiniz dolap ve kapak önerileri.</p>
+          <div class="blog-meta"><span>1 Şubat 2025</span><span>6 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-10.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Dekorasyon</div>
+          <h3>Klasikten Moderne Dolap Tasarımları</h3>
+          <p>Farklı stillerde mutfak ve dolap tasarım örnekleri ile ilham alın.</p>
+          <div class="blog-meta"><span>28 Ocak 2025</span><span>5 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-11.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Membran Kapak</div>
+          <h3>Membran Kapağın Avantajları</h3>
+          <p>Neden membran kapak tercih etmelisiniz? 7 önemli neden.</p>
+          <div class="blog-meta"><span>25 Ocak 2025</span><span>4 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-12.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Bakım</div>
+          <h3>Mevsimlik Mutfak Bakımı</h3>
+          <p>Yaz ve kış aylarında mutfak dolaplarınızı nasıl korumalısınız?</p>
+          <div class="blog-meta"><span>20 Ocak 2025</span><span>3 dk okuma</span></div>
+        </div>
+      </a>
+    </div>
+
+    <!-- SAYFA 3 -->
+    <div class="blog-list" id="blogList3" style="display:none;">
+      <a href="blog/blog-13.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Sektör Haberleri</div>
+          <h3>Ekonomide Mobilya Sektörü</h3>
+          <p>Türkiye mobilya sektörünün son durumu ve geleceği.</p>
+          <div class="blog-meta"><span>15 Ocak 2025</span><span>6 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-14.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Dekorasyon</div>
+          <h3>Açık Mutfak Tasarım Önerileri</h3>
+          <p>Açık mutfak konseptlerinde dolap seçimi ve düzenleme ipuçları.</p>
+          <div class="blog-meta"><span>10 Ocak 2025</span><span>5 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-15.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">İpuçları</div>
+          <h3>Banyo Dolabı Seçerken Dikkat Edilecekler</h3>
+          <p>Banyo dolapları için özel öneriler ve nem dayanımı.</p>
+          <div class="blog-meta"><span>5 Ocak 2025</span><span>4 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-16.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Membran Kapak</div>
+          <h3>Renkli Membran Modelleri</h3>
+          <p>Mutfağınıza renk katmak için membran kapak seçenekleri.</p>
+          <div class="blog-meta"><span>1 Ocak 2025</span><span>5 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-17.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Bakım</div>
+          <h3>Profesyonel Temizlik Yöntemleri</h3>
+          <p>Mutfak dolaplarınızı profesyonel gibi temizleyin.</p>
+          <div class="blog-meta"><span>28 Aralık 2024</span><span>4 dk okuma</span></div>
+        </div>
+      </a>
+      <a href="blog/blog-18.html" class="blog-card">
+        <div class="blog-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Blog Görseli</span></div>
+        <div class="blog-body">
+          <div class="blog-cat">Dekorasyon</div>
+          <h3>Çocuk Odası Mobilya Önerileri</h3>
+          <p>Çocuk odası için dayanıklı ve estetik mobilya seçenekleri.</p>
+          <div class="blog-meta"><span>20 Aralık 2024</span><span>5 dk okuma</span></div>
+        </div>
+      </a>
+    </div>
+
+    <!-- SAYFALAMA -->
+    <div class="pagination">
+      <button class="page-btn" onclick="changePage(-1)">‹</button>
+      <button class="page-btn active" onclick="goToPage(1)" data-page="1">1</button>
+      <button class="page-btn" onclick="goToPage(2)" data-page="2">2</button>
+      <button class="page-btn" onclick="goToPage(3)" data-page="3">3</button>
+      <button class="page-btn" onclick="changePage(1)">›</button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="side-box">
+      <h4>Arama</h4>
+      <button id="resetBtn" onclick="resetFilter()" style="display:none;width:100%;background:var(--gold);color:var(--navy);border:none;padding:8px 12px;font-size:11px;font-weight:700;border-radius:4px;cursor:pointer;font-family:Montserrat,sans-serif;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">✕ Filtreyi Temizle</button>
+      <input type="text" id="searchInput" class="search-input" placeholder="Yazılarda ara..." oninput="searchBlogs()">
+    </div>
+
+    <div class="side-box">
+      <h4>Kategoriler</h4>
+      <div class="cat-list">
+        <div class="cat-item" onclick="filterByCategory('Membran Kapak')">Membran Kapak <span class="cnt">5</span></div>
+        <div class="cat-item" onclick="filterByCategory('Bakım')">Bakım <span class="cnt">4</span></div>
+        <div class="cat-item" onclick="filterByCategory('Dekorasyon')">Dekorasyon <span class="cnt">5</span></div>
+        <div class="cat-item" onclick="filterByCategory('İpuçları')">İpuçları <span class="cnt">3</span></div>
+        <div class="cat-item" onclick="filterByCategory('Sektör Haberleri')">Sektör Haberleri <span class="cnt">2</span></div>
+      </div>
+    </div>
+
+    <div class="side-box">
+      <h4>Son Yazılar</h4>
+      <a href="blog/blog-1.html" class="recent">
+        <div class="recent-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"></div>
+        <div class="recent-text"><h5>Membran Kapak Nedir?</h5><time>10 Mart 2025</time></div>
+      </a>
+      <a href="blog/blog-2.html" class="recent">
+        <div class="recent-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"></div>
+        <div class="recent-text"><h5>Doğru Bakım Nasıl Yapılır?</h5><time>5 Mart 2025</time></div>
+      </a>
+      <a href="blog/blog-3.html" class="recent">
+        <div class="recent-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"></div>
+        <div class="recent-text"><h5>Mutfak Renk Trendleri</h5><time>1 Mart 2025</time></div>
+      </a>
+    </div>
+
+    <div class="side-box">
+      <h4>Etiketler</h4>
+      <div class="tag-cloud">
+        <span class="tag" onclick="filterByTag('Membran')">Membran</span>
+        <span class="tag" onclick="filterByTag('Mutfak')">Mutfak</span>
+        <span class="tag" onclick="filterByTag('Dolap')">Dolap</span>
+        <span class="tag" onclick="filterByTag('Bakım')">Bakım</span>
+        <span class="tag" onclick="filterByTag('Renk')">Renk</span>
+        <span class="tag" onclick="filterByTag('Tasarım')">Tasarım</span>
+        <span class="tag" onclick="filterByTag('İpucu')">İpucu</span>
+        <span class="tag" onclick="filterByTag('Trend')">Trend</span>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="resim/logo.png" alt="Global Kapak Mobilya" style="height:100px;margin-bottom:12px;background:#fff;padding:5px;border-radius:4px;">
+      <div class="f-brand-name">Global Kapak Mobilya</div>
+      <p>Membran kapak üretiminde uzman kadromuzla kalite ve estetiği bir arada sunuyoruz.</p>
+    </div>
+    <div class="footer-col"><h4>Sayfalar</h4><a href="index.html">Anasayfa</a><a href="urunler.html">Ürünlerimiz</a><a href="hakkimizda.html">Hakkımızda</a><a href="galeri.html">Galeri</a><a href="blog.html">Blog</a><a href="iletisim.html">İletişim</a></div>
+    <div class="footer-col"><h4>Ürünler</h4><a href="urunler.html">Düz Membran Kapak</a><a href="urunler.html">Çerçeveli Membran Kapak</a><a href="urunler.html">Ölçüye Özel Kapak</a></div>
+    <div class="footer-col"><h4>İletişim</h4><a href="tel:05050151035">+90 (505) 015 1035</a><a href="mailto:info@globalkapakmobilya.com">info@globalkapakmobilya.com</a><a href="iletisim.html">Yalçın Koreş Cad. Bağlar Mah. No:6B Bağcılar / İstanbul, Türkiye</a></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Global Kapak Mobilya — Tüm hakları saklıdır.</p>
+    <div class="socials">
+      <a class="soc" href="#"><svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+      <a class="soc" href="#"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/></svg></a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// SAYFALAMA
+let currentPage = 1;
+const totalPages = 3;
+let filterActive = false;
+
+function goToPage(page) {
+  if (filterActive) return;
+  if (page < 1 || page > totalPages) return;
+  currentPage = page;
+  for (let i = 1; i <= totalPages; i++) {
+    document.getElementById('blogList' + i).style.display = 'none';
+  }
+  document.getElementById('blogList' + page).style.display = 'grid';
+  document.querySelectorAll('.page-btn[data-page]').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.page) === page);
+  });
+  document.querySelector('.blog-wrapper').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function changePage(direction) {
+  goToPage(currentPage + direction);
+}
+
+// ARAMA
+function searchBlogs() {
+  const query = document.getElementById('searchInput').value.toLowerCase().trim();
+  
+  if (query === '') {
+    resetFilter();
+    return;
+  }
+  
+  filterActive = true;
+  
+  // Tüm sayfaları göster (filtreleme için)
+  for (let i = 1; i <= totalPages; i++) {
+    document.getElementById('blogList' + i).style.display = 'grid';
+  }
+  
+  // Featured kartı gizle
+  document.querySelector('.featured').style.display = 'none';
+  
+  // Pagination'ı gizle
+  document.querySelector('.pagination').style.display = 'none';
+  
+  let foundCount = 0;
+  
+  document.querySelectorAll('.blog-card').forEach(card => {
+    const title = card.querySelector('h3').textContent.toLowerCase();
+    const desc = card.querySelector('p').textContent.toLowerCase();
+    const cat = card.querySelector('.blog-cat').textContent.toLowerCase();
+    
+    if (title.includes(query) || desc.includes(query) || cat.includes(query)) {
+      card.style.display = 'block';
+      foundCount++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  
+  // Boş listelerin görünmemesi için
+  for (let i = 1; i <= totalPages; i++) {
+    const list = document.getElementById('blogList' + i);
+    const visibleCards = list.querySelectorAll('.blog-card[style*="block"], .blog-card:not([style*="none"])');
+    let hasVisible = false;
+    list.querySelectorAll('.blog-card').forEach(c => {
+      if (c.style.display !== 'none') hasVisible = true;
+    });
+    list.style.display = hasVisible ? 'grid' : 'none';
+  }
+  
+  // Status mesajı
+  const status = document.getElementById('filterStatus');
+  status.style.display = 'block';
+  status.innerHTML = foundCount > 0 
+    ? `🔍 "<strong>${query}</strong>" araması için <strong>${foundCount}</strong> sonuç bulundu`
+    : `❌ "<strong>${query}</strong>" araması için sonuç bulunamadı`;
+  
+  // Reset butonu göster
+  document.getElementById('resetBtn').style.display = 'block';
+}
+
+// KATEGORİ FİLTRESİ
+function filterByCategory(category) {
+  filterActive = true;
+  
+  // Tüm sayfaları göster
+  for (let i = 1; i <= totalPages; i++) {
+    document.getElementById('blogList' + i).style.display = 'grid';
+  }
+  
+  document.querySelector('.featured').style.display = 'none';
+  document.querySelector('.pagination').style.display = 'none';
+  
+  let foundCount = 0;
+  
+  document.querySelectorAll('.blog-card').forEach(card => {
+    const cat = card.querySelector('.blog-cat').textContent;
+    if (cat === category) {
+      card.style.display = 'block';
+      foundCount++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  
+  // Boş listeleri gizle
+  for (let i = 1; i <= totalPages; i++) {
+    const list = document.getElementById('blogList' + i);
+    let hasVisible = false;
+    list.querySelectorAll('.blog-card').forEach(c => {
+      if (c.style.display !== 'none') hasVisible = true;
+    });
+    list.style.display = hasVisible ? 'grid' : 'none';
+  }
+  
+  const status = document.getElementById('filterStatus');
+  status.style.display = 'block';
+  status.innerHTML = `📁 "<strong>${category}</strong>" kategorisinde <strong>${foundCount}</strong> yazı bulundu`;
+  
+  document.getElementById('resetBtn').style.display = 'block';
+  
+  document.querySelector('.blog-wrapper').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ETİKET FİLTRESİ
+function filterByTag(tag) {
+  filterActive = true;
+  
+  for (let i = 1; i <= totalPages; i++) {
+    document.getElementById('blogList' + i).style.display = 'grid';
+  }
+  
+  document.querySelector('.featured').style.display = 'none';
+  document.querySelector('.pagination').style.display = 'none';
+  
+  let foundCount = 0;
+  const tagLower = tag.toLowerCase();
+  
+  document.querySelectorAll('.blog-card').forEach(card => {
+    const title = card.querySelector('h3').textContent.toLowerCase();
+    const desc = card.querySelector('p').textContent.toLowerCase();
+    const cat = card.querySelector('.blog-cat').textContent.toLowerCase();
+    
+    if (title.includes(tagLower) || desc.includes(tagLower) || cat.includes(tagLower)) {
+      card.style.display = 'block';
+      foundCount++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  
+  for (let i = 1; i <= totalPages; i++) {
+    const list = document.getElementById('blogList' + i);
+    let hasVisible = false;
+    list.querySelectorAll('.blog-card').forEach(c => {
+      if (c.style.display !== 'none') hasVisible = true;
+    });
+    list.style.display = hasVisible ? 'grid' : 'none';
+  }
+  
+  const status = document.getElementById('filterStatus');
+  status.style.display = 'block';
+  status.innerHTML = `🏷️ "<strong>${tag}</strong>" etiketi için <strong>${foundCount}</strong> yazı bulundu`;
+  
+  document.getElementById('resetBtn').style.display = 'block';
+  
+  document.querySelector('.blog-wrapper').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// FİLTREYİ SIFIRLA
+function resetFilter() {
+  filterActive = false;
+  
+  // Arama kutusunu temizle
+  document.getElementById('searchInput').value = '';
+  
+  // Tüm kartları göster
+  document.querySelectorAll('.blog-card').forEach(card => {
+    card.style.display = '';
+  });
+  
+  // Featured ve pagination geri getir
+  document.querySelector('.featured').style.display = '';
+  document.querySelector('.pagination').style.display = 'flex';
+  
+  // Status'u gizle
+  document.getElementById('filterStatus').style.display = 'none';
+  
+  // Reset butonu gizle
+  document.getElementById('resetBtn').style.display = 'none';
+  
+  // Sayfa 1'e dön
+  currentPage = 1;
+  for (let i = 1; i <= totalPages; i++) {
+    document.getElementById('blogList' + i).style.display = i === 1 ? 'grid' : 'none';
+  }
+  document.querySelectorAll('.page-btn[data-page]').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.page) === 1);
+  });
+}
+</script>
+</body>
+</html>

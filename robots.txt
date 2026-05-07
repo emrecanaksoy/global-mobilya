@@ -1,0 +1,7 @@
+# Global Kapak Mobilya - Arama Motoru Kuralları
+
+User-agent: *
+Allow: /
+
+# Sitemap konumu
+Sitemap: https://globalkapakmobilya.com/sitemap.xml
