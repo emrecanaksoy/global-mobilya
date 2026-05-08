@@ -156,8 +156,8 @@ footer{background:#060E22;padding:50px 40px 24px;}
 
 /* ── ÜRÜN SLIDER ── */
 .prod-slider{position:relative;max-width:1100px;margin:0 auto;padding:0 40px;overflow:hidden;}
-.prod-track{display:flex;transition:transform 0.5s ease-in-out;width:300%;}
-.prod-slide{width:33.333%;flex-shrink:0;padding:0 4px;}
+.prod-track{display:flex;transition:transform 0.5s ease-in-out;}
+.prod-slide{flex-shrink:0;padding:0 4px;}
 .prod-arrow{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;background:var(--white);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;transition:all .25s;box-shadow:0 4px 14px rgba(11,31,75,.12);}
 .prod-arrow:hover{background:var(--navy);border-color:var(--navy);}
 .prod-arrow svg{width:18px;height:18px;stroke:var(--navy);}
@@ -475,18 +475,46 @@ function resetTimer() {
 
 if (slides.length > 1) startTimer();
 
-// ═══ ÜRÜN SLIDER ═══
+// ═══ ÜRÜN SLIDER — DİNAMİK ═══
 let currentProdSlide = 0;
-const prodTrack = document.getElementById('prodTrack');
-const pdots = document.querySelectorAll('.pdot');
-const totalProdSlides = 3;
+let totalProdSlides = 3; // başlangıç, ürünler yüklenince güncellenir
+const VISIBLE_SLIDES = 3; // aynı anda kaç ürün görünür (masaüstü)
+
+function initProdSlider() {
+  const track = document.getElementById('prodTrack');
+  if (!track) return;
+  const slides = track.querySelectorAll('.prod-slide');
+  totalProdSlides = slides.length;
+
+  // Her slide'ın genişliği: container'ın 1/VISIBLE_SLIDES'ı
+  const slideW = 100 / VISIBLE_SLIDES;
+  track.style.width = (totalProdSlides * slideW) + '%';
+  slides.forEach(s => s.style.width = (100 / totalProdSlides) + '%');
+
+  // Dot'ları güncelle
+  const dotsWrap = document.querySelector('.prod-dots');
+  if (dotsWrap) {
+    const maxDot = Math.max(0, totalProdSlides - VISIBLE_SLIDES + 1);
+    dotsWrap.innerHTML = Array.from({length: maxDot}, (_, i) =>
+      `<button class="pdot${i===0?' active':''}" onclick="goToProdSlide(${i})"></button>`
+    ).join('');
+  }
+
+  showProdSlide(0);
+}
 
 function showProdSlide(index) {
-  if (index < 0) index = totalProdSlides - 1;
-  if (index >= totalProdSlides) index = 0;
+  const track = document.getElementById('prodTrack');
+  if (!track) return;
+  const maxIndex = Math.max(0, totalProdSlides - VISIBLE_SLIDES);
+  if (index < 0) index = maxIndex;
+  if (index > maxIndex) index = 0;
   currentProdSlide = index;
-  prodTrack.style.transform = `translateX(-${index * 33.333}%)`;
-  pdots.forEach((d, i) => d.classList.toggle('active', i === index));
+
+  const slideW = 100 / VISIBLE_SLIDES; // her slide'ın % genişliği (container'a göre)
+  track.style.transform = `translateX(-${index * slideW}%)`;
+
+  document.querySelectorAll('.pdot').forEach((d, i) => d.classList.toggle('active', i === index));
 }
 
 function changeProdSlide(direction) {
@@ -548,6 +576,8 @@ async function loadHomePage() {
     } else if (prodTrack) {
       prodTrack.innerHTML = '<div style="padding:40px;text-align:center;color:#777;width:100%;">Yakında ürünlerimiz burada görünecek.</div>';
     }
+    // Ürünler yüklendi, slider'ı yeniden başlat
+    initProdSlider();
   } catch(err) {
     console.log('Ürün yükleme hatası:', err);
   }
