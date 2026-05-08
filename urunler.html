@@ -116,15 +116,26 @@ async function loadProducts() {
   const container = document.getElementById('products-container');
   
   try {
-    // İndex dosyasını yükle (tüm ürün ID'leri)
-    const indexResponse = await fetch('_data/urunler-index.json');
+    // GitHub API'sinden _data/urunler/ klasöründeki tüm dosyaları getir
     let productIds = [];
+    try {
+      const ghRes = await fetch('https://api.github.com/repos/emrecanaksoyea34-a11y/global-kapak-mobilyaa/contents/_data/urunler');
+      if (ghRes.ok) {
+        const files = await ghRes.json();
+        productIds = files
+          .filter(f => f.name.endsWith('.json'))
+          .map(f => f.name.replace('.json', ''));
+      }
+    } catch(e) {
+      console.log('GitHub API hatası, fallback kullanılıyor:', e);
+    }
     
-    if (indexResponse.ok) {
-      productIds = await indexResponse.json();
-    } else {
-      // Index yoksa varsayılan listeyi dene
-      productIds = ['cerceveli-klasik', 'duz-modern', 'ozel-olcu-1'];
+    // Fallback: GitHub API çalışmazsa index dosyasını dene
+    if (productIds.length === 0) {
+      try {
+        const indexResponse = await fetch('_data/urunler-index.json');
+        if (indexResponse.ok) productIds = await indexResponse.json();
+      } catch(e) {}
     }
     
     // Her bir ürünün JSON'unu yükle

@@ -95,13 +95,23 @@ async function loadBlogs() {
   const container = document.getElementById('blog-container');
   
   try {
-    const indexResponse = await fetch('_data/blog-index.json');
+    // GitHub API ile blog dosyalarını otomatik getir
     let blogIds = [];
+    try {
+      const ghRes = await fetch('https://api.github.com/repos/emrecanaksoyea34-a11y/global-kapak-mobilyaa/contents/_data/blog');
+      if (ghRes.ok) {
+        const files = await ghRes.json();
+        blogIds = files
+          .filter(f => f.name.endsWith('.json'))
+          .map(f => f.name.replace('.json', ''));
+      }
+    } catch(e) {}
     
-    if (indexResponse.ok) {
-      blogIds = await indexResponse.json();
-    } else {
-      blogIds = ['membran-kapak-nedir', 'kullanici-hatalari'];
+    if (blogIds.length === 0) {
+      try {
+        const indexResponse = await fetch('_data/blog-index.json');
+        if (indexResponse.ok) blogIds = await indexResponse.json();
+      } catch(e) {}
     }
     
     const blogPromises = blogIds.map(async (id) => {

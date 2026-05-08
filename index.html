@@ -519,10 +519,23 @@ function goToProdSlide(index) {
 <script>
 // Anasayfa için ürün ve blog yükleyici
 async function loadHomePage() {
-  // ÜRÜNLERİ YÜKLE
+  // ÜRÜNLERİ YÜKLE - GitHub API
   try {
-    const idxRes = await fetch('_data/urunler-index.json');
-    const ids = idxRes.ok ? await idxRes.json() : [];
+    let ids = [];
+    try {
+      const ghRes = await fetch('https://api.github.com/repos/emrecanaksoyea34-a11y/global-kapak-mobilyaa/contents/_data/urunler');
+      if (ghRes.ok) {
+        const files = await ghRes.json();
+        ids = files.filter(f => f.name.endsWith('.json')).map(f => f.name.replace('.json', ''));
+      }
+    } catch(e) {}
+    
+    if (ids.length === 0) {
+      try {
+        const idxRes = await fetch('_data/urunler-index.json');
+        if (idxRes.ok) ids = await idxRes.json();
+      } catch(e) {}
+    }
     
     const products = [];
     for (const id of ids.slice(0, 12)) {
@@ -557,10 +570,23 @@ async function loadHomePage() {
     console.log('Ürün yükleme hatası:', err);
   }
   
-  // BLOG YÜKLE
+  // BLOG YÜKLE - GitHub API
   try {
-    const idxRes = await fetch('_data/blog-index.json');
-    const ids = idxRes.ok ? await idxRes.json() : [];
+    let ids = [];
+    try {
+      const ghRes = await fetch('https://api.github.com/repos/emrecanaksoyea34-a11y/global-kapak-mobilyaa/contents/_data/blog');
+      if (ghRes.ok) {
+        const files = await ghRes.json();
+        ids = files.filter(f => f.name.endsWith('.json')).map(f => f.name.replace('.json', ''));
+      }
+    } catch(e) {}
+    
+    if (ids.length === 0) {
+      try {
+        const idxRes = await fetch('_data/blog-index.json');
+        if (idxRes.ok) ids = await idxRes.json();
+      } catch(e) {}
+    }
     
     const posts = [];
     for (const id of ids.slice(0, 3)) {
