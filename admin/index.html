@@ -7,6 +7,380 @@
   <link rel="icon" href="/resim/logo.png">
 </head>
 <body>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+<script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// GLOBAL KAPAK MOBİLYA — CANLI ÖNİZLEME TEMPLATELERİ
+// Admin panelinde sağ tarafta anında önizleme gösterir
+// ═══════════════════════════════════════════════════════════
+
+const CSS = `
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--navy:#0B1F4B;--gold:#C8A96E;--white:#fff;--gray:#f7f7f7;--border:#e5e5e5;--text:#333;--muted:#777;}
+  body{font-family:'Open Sans',sans-serif;color:var(--text);background:#fff;}
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@300;400;600&display=swap');
+
+  /* ── ÜRÜN ── */
+  .prev-wrap{max-width:900px;margin:0 auto;padding:24px;}
+  .prev-gallery{width:100%;aspect-ratio:1;background:#f5f8fc;border-radius:8px;border:1px solid var(--border);overflow:hidden;margin-bottom:16px;display:flex;align-items:center;justify-content:center;}
+  .prev-gallery img{width:100%;height:100%;object-fit:contain;}
+  .prev-cat{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-family:'Montserrat',sans-serif;}
+  .prev-title{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:800;color:var(--navy);margin-bottom:8px;}
+  .prev-sku{font-size:12px;color:var(--muted);margin-bottom:12px;}
+  .prev-desc{font-size:14px;line-height:1.8;color:var(--text);margin-bottom:20px;}
+  .prev-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+  .prev-chip{padding:6px 14px;background:var(--gray);border:2px solid var(--border);border-radius:20px;font-size:12px;font-weight:600;}
+  .prev-chip.active{border-color:var(--gold);}
+  .prev-feats{background:var(--gray);border-radius:6px;padding:16px 20px;margin-bottom:16px;}
+  .prev-feats h4{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--navy);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;}
+  .prev-feats li{font-size:13px;padding:4px 0;list-style:none;}
+  .prev-feats li::before{content:"✓ ";color:var(--gold);font-weight:700;}
+  .prev-btn{display:block;background:var(--gold);color:var(--navy);text-align:center;padding:13px;border-radius:4px;font-weight:700;font-size:13px;font-family:'Montserrat',sans-serif;margin-bottom:8px;}
+  .prev-btn2{display:block;text-align:center;padding:13px;border-radius:4px;border:1.5px solid var(--navy);font-size:13px;font-weight:600;color:var(--navy);}
+  .prev-badges{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+  .badge{padding:4px 10px;border-radius:3px;font-size:11px;font-weight:700;font-family:'Montserrat',sans-serif;}
+  .badge-gold{background:var(--gold);color:var(--navy);}
+  .badge-green{background:#22c55e;color:#fff;}
+
+  /* ── BLOG ── */
+  .blog-prev{max-width:720px;margin:0 auto;padding:24px;}
+  .blog-cat-badge{display:inline-block;background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:4px 12px;border-radius:3px;letter-spacing:1.5px;text-transform:uppercase;font-family:'Montserrat',sans-serif;margin-bottom:12px;}
+  .blog-prev h1{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:800;color:var(--navy);margin-bottom:10px;line-height:1.3;}
+  .blog-meta{font-size:13px;color:var(--muted);margin-bottom:20px;}
+  .blog-cover{width:100%;aspect-ratio:16/9;background:#f5f8fc;border-radius:8px;overflow:hidden;margin-bottom:24px;}
+  .blog-cover img{width:100%;height:100%;object-fit:cover;}
+  .blog-summary{font-size:16px;color:var(--muted);font-style:italic;margin-bottom:20px;line-height:1.7;}
+  .blog-body{font-size:15px;line-height:1.9;color:var(--text);}
+  .blog-body h2{font-family:'Montserrat',sans-serif;color:var(--navy);font-size:20px;margin:20px 0 10px;}
+  .blog-body p{margin-bottom:14px;}
+
+  /* ── GALERİ ── */
+  .galeri-prev{max-width:600px;margin:0 auto;padding:24px;}
+  .galeri-img{width:100%;aspect-ratio:1;background:#f5f8fc;border-radius:8px;overflow:hidden;margin-bottom:16px;}
+  .galeri-img img{width:100%;height:100%;object-fit:cover;}
+  .galeri-info{font-family:'Montserrat',sans-serif;}
+  .galeri-baslik{font-size:22px;font-weight:800;color:var(--navy);margin-bottom:6px;}
+  .galeri-kat{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;}
+
+  /* ── GENEL AYARLAR ── */
+  .ayar-prev{padding:24px;font-family:'Montserrat',sans-serif;}
+  .ayar-hero{background:linear-gradient(120deg,#0B1F4B,#1A3A7A,#2453A8);padding:40px;border-radius:8px;color:#fff;margin-bottom:20px;}
+  .ayar-tag{background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:4px 12px;border-radius:2px;letter-spacing:2px;text-transform:uppercase;display:inline-block;margin-bottom:12px;}
+  .ayar-hero h1{font-size:28px;font-weight:800;margin-bottom:8px;line-height:1.3;}
+  .ayar-hero h1 span{color:var(--gold);}
+  .ayar-hero p{color:rgba(255,255,255,.75);font-size:13px;line-height:1.7;}
+  .ayar-card{background:var(--gray);border-radius:6px;padding:16px 20px;margin-bottom:12px;}
+  .ayar-card h4{font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+  .ayar-card p{font-size:13px;color:var(--muted);}
+
+  .no-img{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:13px;font-family:'Montserrat',sans-serif;}
+  .mode-badge{font-size:10px;color:var(--muted);font-family:'Montserrat',sans-serif;margin-top:6px;display:block;}
+`;
+
+// ── YARDIMCI: Markdown → HTML (basit) ─────────────────────────────────────
+function md2html(md) {
+  if (!md) return '';
+  let h = md;
+  h = h.replace(/^## (.*$)/gim,'<h2>$1</h2>');
+  h = h.replace(/^### (.*$)/gim,'<h3>$1</h3>');
+  h = h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  h = h.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  h = h.replace(/^\s*-\s+(.+)$/gim,'<li>$1</li>');
+  h = h.replace(/(<li>[\s\S]*?<\/li>)/g,m=>'<ul>'+m+'</ul>');
+  return h.split(/\n\n+/).map(b=>{b=b.trim();if(!b)return '';if(b.startsWith('<h')||b.startsWith('<ul'))return b;return '<p>'+b+'</p>';}).join('');
+}
+
+// ── GÖRSEL MOD ETİKETİ ─────────────────────────────────────────────────────
+function modLabel(mod) {
+  return {contain:'📐 Tam boyut (contain)', cover:'✂️ Kırpılmış (cover)', fill:'↔️ Uzatılmış (fill)'}[mod] || '';
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// 1) ÜRÜN ÖNİZLEME
+// ══════════════════════════════════════════════════════════════════════════
+var UrunPreview = createClass({
+  render: function() {
+    var entry = this.props.entry;
+    var title = entry.getIn(['data', 'title']) || 'Ürün Adı';
+    var kategori = entry.getIn(['data', 'kategori']) || '';
+    var sku = entry.getIn(['data', 'sku']) || '';
+    var kisa = entry.getIn(['data', 'kisa_aciklama']) || '';
+    var anaResim = entry.getIn(['data', 'ana_resim']) || '';
+    var gorseller = entry.getIn(['data', 'gorseller']);
+    var gorselMod = entry.getIn(['data', 'gorsel_mod']) || 'contain';
+    var renkler = entry.getIn(['data', 'renkler']);
+    var bedenler = entry.getIn(['data', 'bedenler']);
+    var ozellikler = entry.getIn(['data', 'ozellikler']);
+    var etiketler = entry.getIn(['data', 'etiketler']);
+    var populer = entry.getIn(['data', 'populer']);
+    var yeni = entry.getIn(['data', 'yeni']);
+    var body = entry.getIn(['data', 'body']) || '';
+
+    var imgSrc = anaResim ? this.props.getAsset(anaResim).toString() : null;
+    var gorselList = gorseller ? gorseller.toJS() : [];
+
+    var renkListHtml = renkler
+      ? renkler.toJS().map(function(r, i) {
+          return '<div class="prev-chip' + (i===0?' active':'') + '">' + r + '</div>';
+        }).join('') : '';
+
+    var bedenListHtml = bedenler
+      ? bedenler.toJS().map(function(b, i) {
+          var label = typeof b === 'object' ? b.label : b;
+          var disabled = (typeof b === 'object' && b.stok === false) ? ' style="opacity:.4;text-decoration:line-through"' : '';
+          return '<div class="prev-chip"' + disabled + '>' + label + '</div>';
+        }).join('') : '';
+
+    var ozellikHtml = ozellikler
+      ? ozellikler.toJS().map(function(o) { return '<li>' + o + '</li>'; }).join('')
+      : '<li>Yüksek kalite MDF + PVC membran</li><li>Su ve neme dayanıklı</li><li>5 yıl garanti</li>';
+
+    var etiketHtml = etiketler
+      ? etiketler.toJS().map(function(t) { return '<span class="prev-chip" style="border-radius:3px;padding:4px 10px;font-size:11px;">' + t + '</span>'; }).join('') : '';
+
+    var badgeHtml = '';
+    if (populer) badgeHtml += '<span class="badge badge-gold">⭐ Popüler</span>';
+    if (yeni) badgeHtml += '<span class="badge badge-green">🆕 Yeni</span>';
+
+    // Thumbnail önizleme
+    var thumbHtml = gorselList.length > 1
+      ? '<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">' +
+        gorselList.slice(0,5).map(function(src, i) {
+          return '<div style="width:60px;height:60px;border-radius:4px;border:2px solid '+(i===0?'#C8A96E':'#e5e5e5')+';overflow:hidden;background:#f5f8fc;">' +
+            '<img src="' + src + '" style="width:100%;height:100%;object-fit:cover;">' +
+            '</div>';
+        }).join('') + '</div>' : '';
+
+    return h('div', {},
+      h('style', {}, CSS),
+      h('div', {className: 'prev-wrap'},
+        badgeHtml ? h('div', {className: 'prev-badges', dangerouslySetInnerHTML: {__html: badgeHtml}}) : null,
+
+        // Ana görsel
+        h('div', {className: 'prev-gallery'},
+          imgSrc
+            ? h('img', {src: imgSrc, style: {objectFit: gorselMod}})
+            : h('div', {className: 'no-img'}, '📷 Resim seçilmedi')
+        ),
+        gorselMod ? h('span', {className: 'mode-badge'}, modLabel(gorselMod)) : null,
+
+        // Thumbnail şeridi
+        gorselList.length > 1 ? h('div', {dangerouslySetInnerHTML: {__html: thumbHtml}}) : null,
+
+        h('div', {className: 'prev-cat'}, kategori),
+        h('div', {className: 'prev-title'}, title),
+        sku ? h('div', {className: 'prev-sku'}, 'Ürün Kodu: ' + sku) : null,
+        h('div', {className: 'prev-desc'}, kisa),
+
+        // Özellikler
+        h('div', {className: 'prev-feats'},
+          h('h4', {}, 'Öne Çıkan Özellikler'),
+          h('ul', {dangerouslySetInnerHTML: {__html: ozellikHtml}})
+        ),
+
+        // Renkler
+        renkListHtml ? h('div', {},
+          h('div', {style: {fontSize:'11px',fontWeight:'700',color:'#0B1F4B',letterSpacing:'1.5px',textTransform:'uppercase',fontFamily:'Montserrat',marginBottom:'8px'}}, 'Renk Seçenekleri'),
+          h('div', {className: 'prev-chips', dangerouslySetInnerHTML: {__html: renkListHtml}})
+        ) : null,
+
+        // Bedenler
+        bedenListHtml ? h('div', {},
+          h('div', {style: {fontSize:'11px',fontWeight:'700',color:'#0B1F4B',letterSpacing:'1.5px',textTransform:'uppercase',fontFamily:'Montserrat',marginBottom:'8px',marginTop:'12px'}}, 'Boyut Seçenekleri'),
+          h('div', {className: 'prev-chips', dangerouslySetInnerHTML: {__html: bedenListHtml}})
+        ) : null,
+
+        // Etiketler
+        etiketHtml ? h('div', {className: 'prev-chips', style:{marginTop:'12px'}, dangerouslySetInnerHTML: {__html: etiketHtml}}) : null,
+
+        // Butonlar
+        h('div', {style:{marginTop:'20px'}},
+          h('div', {className: 'prev-btn'}, '📱 WhatsApp ile Sipariş'),
+          h('div', {className: 'prev-btn2'}, 'Teklif İste')
+        ),
+
+        // Body
+        body ? h('div', {
+          style:{borderTop:'1px solid #e5e5e5',marginTop:'24px',paddingTop:'24px',fontSize:'14px',lineHeight:'1.9'},
+          dangerouslySetInnerHTML: {__html: md2html(body)}
+        }) : null
+      )
+    );
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+// 2) BLOG ÖNİZLEME
+// ══════════════════════════════════════════════════════════════════════════
+var BlogPreview = createClass({
+  render: function() {
+    var entry = this.props.entry;
+    var title = entry.getIn(['data', 'title']) || 'Blog Başlığı';
+    var kategori = entry.getIn(['data', 'kategori']) || '';
+    var tarih = entry.getIn(['data', 'tarih']) || '';
+    var ozet = entry.getIn(['data', 'ozet']) || '';
+    var kapakResim = entry.getIn(['data', 'kapak_resim']) || '';
+    var body = entry.getIn(['data', 'body']) || '';
+    var etiketler = entry.getIn(['data', 'etiketler']);
+
+    var imgSrc = kapakResim ? this.props.getAsset(kapakResim).toString() : null;
+    var tarihStr = tarih ? new Date(tarih).toLocaleDateString('tr-TR', {year:'numeric',month:'long',day:'numeric'}) : '';
+
+    var etiketHtml = etiketler
+      ? etiketler.toJS().map(function(t) {
+          return '<span style="background:#f7f7f7;border:1px solid #e5e5e5;border-radius:3px;padding:4px 10px;font-size:11px;font-weight:600;margin-right:6px;">' + t + '</span>';
+        }).join('') : '';
+
+    return h('div', {},
+      h('style', {}, CSS),
+      h('div', {className: 'blog-prev'},
+        h('span', {className: 'blog-cat-badge'}, kategori),
+        h('h1', {}, title),
+        h('div', {className: 'blog-meta'}, '📅 ' + tarihStr + '  •  👤 Global Kapak Mobilya'),
+        h('div', {className: 'blog-cover'},
+          imgSrc
+            ? h('img', {src: imgSrc})
+            : h('div', {className: 'no-img', style:{height:'200px'}}, '📷 Kapak resmi seçilmedi')
+        ),
+        ozet ? h('div', {className: 'blog-summary'}, ozet) : null,
+        h('div', {
+          className: 'blog-body',
+          dangerouslySetInnerHTML: {__html: md2html(body)}
+        }),
+        etiketHtml ? h('div', {style:{marginTop:'24px',paddingTop:'16px',borderTop:'1px solid #e5e5e5'}, dangerouslySetInnerHTML: {__html: '<strong style="font-size:12px;color:#0B1F4B;">Etiketler: </strong>' + etiketHtml}}) : null
+      )
+    );
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+// 3) GALERİ ÖNİZLEME
+// ══════════════════════════════════════════════════════════════════════════
+var GaleriPreview = createClass({
+  render: function() {
+    var entry = this.props.entry;
+    var baslik = entry.getIn(['data', 'baslik']) || 'Galeri Başlığı';
+    var kategori = entry.getIn(['data', 'kategori']) || '';
+    var resim = entry.getIn(['data', 'resim']) || '';
+    var siralama = entry.getIn(['data', 'siralama']) || 1;
+
+    var imgSrc = resim ? this.props.getAsset(resim).toString() : null;
+
+    return h('div', {},
+      h('style', {}, CSS),
+      h('div', {className: 'galeri-prev'},
+        h('div', {className: 'galeri-img'},
+          imgSrc
+            ? h('img', {src: imgSrc})
+            : h('div', {className: 'no-img', style:{height:'300px'}}, '📷 Resim seçilmedi')
+        ),
+        h('div', {className: 'galeri-info'},
+          h('div', {className: 'galeri-kat'}, kategori),
+          h('div', {className: 'galeri-baslik'}, baslik),
+          h('div', {style:{fontSize:'12px',color:'#777',marginTop:'8px',fontFamily:'Montserrat'}}, 'Sıralama: ' + siralama)
+        )
+      )
+    );
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+// 4) GENEL AYARLAR ÖNİZLEME
+// ══════════════════════════════════════════════════════════════════════════
+var GenelPreview = createClass({
+  render: function() {
+    var entry = this.props.entry;
+    var firma = entry.getIn(['data', 'firma']) || {};
+    var iletisim = entry.getIn(['data', 'iletisim']) || {};
+    var sosyal = entry.getIn(['data', 'sosyal_medya']) || {};
+    var footer = entry.getIn(['data', 'footer']) || {};
+
+    var ad = (typeof firma.get === 'function' ? firma.get('ad') : '') || 'Firma Adı';
+    var slogan = (typeof firma.get === 'function' ? firma.get('slogan') : '') || '';
+    var tel = (typeof iletisim.get === 'function' ? iletisim.get('telefon') : '') || '';
+    var email = (typeof iletisim.get === 'function' ? iletisim.get('email') : '') || '';
+    var adres = (typeof iletisim.get === 'function' ? iletisim.get('adres') : '') || '';
+    var tanitim = (typeof footer.get === 'function' ? footer.get('tanitim_metni') : '') || '';
+
+    return h('div', {},
+      h('style', {}, CSS),
+      h('div', {className: 'ayar-prev'},
+        h('div', {className: 'ayar-card'},
+          h('h4', {}, '🏢 Firma Adı'),
+          h('p', {style:{fontSize:'18px',fontWeight:'700',color:'#0B1F4B'}}, ad),
+          slogan ? h('p', {style:{marginTop:'4px'}}, slogan) : null
+        ),
+        h('div', {className: 'ayar-card'},
+          h('h4', {}, '📞 İletişim'),
+          tel ? h('p', {}, '📱 ' + tel) : null,
+          email ? h('p', {}, '✉️ ' + email) : null,
+          adres ? h('p', {}, '📍 ' + adres) : null
+        ),
+        tanitim ? h('div', {className: 'ayar-card'},
+          h('h4', {}, '📄 Footer Tanıtım Metni'),
+          h('p', {}, tanitim)
+        ) : null
+      )
+    );
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+// 5) ANASAYFA AYARLARI ÖNİZLEME
+// ══════════════════════════════════════════════════════════════════════════
+var AnasayfaPreview = createClass({
+  render: function() {
+    var entry = this.props.entry;
+    var hero = entry.getIn(['data', 'hero']) || {};
+
+    var tag = (typeof hero.get === 'function' ? hero.get('tag') : '') || 'Premium Membran Kapak';
+    var baslik1 = (typeof hero.get === 'function' ? hero.get('baslik_1') : '') || 'Kaliteli';
+    var baslik2 = (typeof hero.get === 'function' ? hero.get('baslik_2') : '') || 'Membran Kapak';
+    var altYazi = (typeof hero.get === 'function' ? hero.get('alt_yazi') : '') || '';
+    var buton1 = (typeof hero.get === 'function' ? hero.get('buton_1_yazi') : '') || 'Ürünleri İncele';
+    var buton2 = (typeof hero.get === 'function' ? hero.get('buton_2_yazi') : '') || 'İletişime Geç';
+
+    return h('div', {},
+      h('style', {}, CSS),
+      h('div', {className: 'ayar-prev'},
+        h('div', {className: 'ayar-hero'},
+          h('span', {className: 'ayar-tag'}, tag),
+          h('h1', {},
+            baslik1 + ' ',
+            h('span', {}, baslik2)
+          ),
+          altYazi ? h('p', {}, altYazi) : null,
+          h('div', {style:{display:'flex',gap:'10px',marginTop:'16px',flexWrap:'wrap'}},
+            h('div', {style:{background:'#C8A96E',color:'#0B1F4B',padding:'10px 20px',borderRadius:'4px',fontSize:'13px',fontWeight:'700'}}, buton1),
+            h('div', {style:{border:'1.5px solid rgba(255,255,255,.5)',color:'#fff',padding:'10px 20px',borderRadius:'4px',fontSize:'13px'}}, buton2)
+          )
+        ),
+        h('div', {className: 'ayar-card'},
+          h('h4', {}, '💡 Bu ekran Hero bölümünü önizliyor'),
+          h('p', {}, 'Başlık, buton ve yazıları yukarıda gerçek zamanlı görebilirsin.')
+        )
+      )
+    );
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+// TEMPLATELERİ KAYDET
+// ══════════════════════════════════════════════════════════════════════════
+CMS.registerPreviewTemplate('urunler', UrunPreview);
+CMS.registerPreviewTemplate('blog', BlogPreview);
+CMS.registerPreviewTemplate('galeri', GaleriPreview);
+
+// Ayarlar dosyaları
+CMS.registerPreviewTemplate('anasayfa', AnasayfaPreview);
+CMS.registerPreviewTemplate('genel', GenelPreview);
+
+// ── CSS: Admin panelinin genel görünümü ────────────────────────────────
+CMS.registerPreviewStyle(`
+  body { font-family: 'Open Sans', sans-serif; }
+`);
+
+</script>
 </body>
 </html>

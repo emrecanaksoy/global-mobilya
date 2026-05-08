@@ -29,13 +29,57 @@ collections:
     extension: "json"
     format: "json"
     summary: "{{title}} - {{kategori}}"
+    preview_path: "urun.html?id={{slug}}"
     fields:
       - { label: "Ürün Adı", name: "title", widget: "string" }
       - { label: "Kategori", name: "kategori", widget: "select", options: ["Düz Membran Kapak", "Çerçeveli", "Özel Ölçü"] }
+      - { label: "Ürün Kodu (SKU)", name: "sku", widget: "string", required: false, hint: "Örn: MK-DUZ-001" }
       - { label: "Kısa Açıklama", name: "kisa_aciklama", widget: "string", required: false }
       - { label: "Ana Resim", name: "ana_resim", widget: "image", required: false }
+      - label: "📸 Çoklu Görsel Galerisi"
+        name: "gorseller"
+        widget: "list"
+        required: false
+        hint: "Birden fazla görsel ekleyebilirsiniz. İlk görsel ana görsel olarak gösterilir."
+        field: { label: "Görsel", name: "resim", widget: "image" }
+      - label: "🖼️ Görsel Yerleşim Modu"
+        name: "gorsel_mod"
+        widget: "select"
+        required: false
+        default: "contain"
+        hint: "Görselin kutuda nasıl gösterileceğini seçin"
+        options:
+          - { label: "📐 Tam Boyut — Resim tam görünür, boşluk kalabilir (önerilen)", value: "contain" }
+          - { label: "✂️ Kırpılmış — Kutuyu tam doldurur, kenarlar kesilebilir", value: "cover" }
+          - { label: "↔️ Uzatılmış — Kutuya tam oturur, oran bozulabilir", value: "fill" }
       - { label: "Detaylı Açıklama", name: "body", widget: "markdown", required: false }
-      - { label: "Renk Seçenekleri", name: "renkler", widget: "list", required: false, default: ["Beyaz", "Antrasit", "Ceviz", "Bej", "Lacivert"] }
+      - label: "🎨 Renk Seçenekleri"
+        name: "renkler"
+        widget: "list"
+        required: false
+        default: ["Mat Beyaz", "Antrasit", "Ceviz", "Bej", "Lacivert"]
+        hint: "Her satıra bir renk yazın"
+        field: { label: "Renk", name: "renk", widget: "string" }
+      - label: "📏 Boyut/Beden Seçenekleri"
+        name: "bedenler"
+        widget: "list"
+        required: false
+        hint: "Her boyut için etiket ve stok durumu ekleyin"
+        fields:
+          - { label: "Boyut Etiketi", name: "label", widget: "string", hint: "Örn: 40x60 cm veya Standart" }
+          - { label: "Stokta Var", name: "stok", widget: "boolean", default: true }
+      - label: "✓ Özellik Listesi"
+        name: "ozellikler"
+        widget: "list"
+        required: false
+        hint: "Ürünün öne çıkan özellikleri (her satır ayrı madde)"
+        field: { label: "Özellik", name: "ozellik", widget: "string" }
+      - label: "🏷️ Etiketler"
+        name: "etiketler"
+        widget: "list"
+        required: false
+        hint: "Ürün etiketleri (Örn: Mat Yüzey, Mutfak, 5 Yıl Garanti)"
+        field: { label: "Etiket", name: "etiket", widget: "string" }
       - { label: "⭐ Popüler Ürün", name: "populer", widget: "boolean", default: false, required: false }
       - { label: "🆕 Yeni Ürün", name: "yeni", widget: "boolean", default: false, required: false }
 
@@ -52,6 +96,7 @@ collections:
     extension: "json"
     format: "json"
     summary: "{{title}}"
+    preview_path: "blog-yazi.html?id={{slug}}"
     fields:
       - { label: "Başlık", name: "title", widget: "string" }
       - { label: "Kategori", name: "kategori", widget: "select", options: ["Membran Kapak", "Bakım", "Dekorasyon", "İpuçları", "Sektör Haberleri"] }
@@ -101,13 +146,12 @@ collections:
       - { label: "Sıralama (1-99)", name: "siralama", widget: "number", default: 1 }
 
   # ════════════════════════════════
-  # ⚙️ SİTE AYARLARI (TÜM SİTE)
+  # ⚙️ SİTE AYARLARI
   # ════════════════════════════════
   - name: "ayarlar"
     label: "⚙️ Site Ayarları"
     files:
       
-      # 🏠 ANASAYFA
       - file: "_data/ayarlar/anasayfa.json"
         label: "🏠 Anasayfa İçeriği"
         name: "anasayfa"
@@ -125,8 +169,7 @@ collections:
               - { label: "Buton 1 - Link", name: "buton_1_link", widget: "string", default: "urunler.html" }
               - { label: "Buton 2 - Yazı", name: "buton_2_yazi", widget: "string" }
               - { label: "Buton 2 - Link", name: "buton_2_link", widget: "string", default: "iletisim.html" }
-          
-          - label: "🎬 Slider Resimleri (3 adet)"
+          - label: "🎬 Slider Resimleri"
             name: "slider"
             widget: "list"
             min: 3
@@ -135,32 +178,28 @@ collections:
               - { label: "Resim", name: "resim", widget: "image" }
               - { label: "Başlık", name: "baslik", widget: "string", required: false }
               - { label: "Alt Yazı", name: "alt_yazi", widget: "string", required: false }
-          
           - label: "💎 Neden Biz Kartları"
             name: "neden_biz"
             widget: "object"
             fields:
-              - { label: "Bölüm Başlığı", name: "baslik", widget: "string", default: "Neden Bizi Seçmelisiniz?" }
-              - label: "Kartlar (4 adet)"
+              - { label: "Bölüm Başlığı", name: "baslik", widget: "string" }
+              - label: "Kartlar"
                 name: "kartlar"
                 widget: "list"
                 fields:
-                  - { label: "İkon (Emoji)", name: "ikon", widget: "string", default: "🏆", hint: "Örn: 🏆 🏭 🛡️ 🚚" }
+                  - { label: "İkon (Emoji)", name: "ikon", widget: "string", default: "🏆" }
                   - { label: "Başlık", name: "baslik", widget: "string" }
                   - { label: "Açıklama", name: "aciklama", widget: "string" }
-          
-          - label: "🌳 Yeşil Bant (Sosyal Sorumluluk)"
+          - label: "🌳 Yeşil Bant"
             name: "yesil_bant"
             widget: "object"
             fields:
               - { label: "Ana Başlık", name: "baslik", widget: "string" }
               - { label: "Alt Başlık", name: "alt_baslik", widget: "string" }
               - { label: "Metin", name: "metin", widget: "text" }
-          
           - { label: "🎨 Galeri Bölümü Başlığı", name: "galeri_baslik", widget: "string" }
           - { label: "🎨 Galeri Alt Başlığı", name: "galeri_alt_baslik", widget: "string" }
 
-      # 📞 GENEL AYARLAR (Logo, telefon, footer - tüm sayfalar)
       - file: "_data/ayarlar/genel.json"
         label: "📞 Genel Ayarlar (Logo, Telefon, Footer)"
         name: "genel"
@@ -173,8 +212,7 @@ collections:
               - { label: "Logo", name: "logo", widget: "image" }
               - { label: "Firma Adı", name: "ad", widget: "string" }
               - { label: "Slogan", name: "slogan", widget: "string" }
-              - { label: "Tagline (Alt Slogan)", name: "tagline", widget: "string", required: false }
-          
+              - { label: "Tagline", name: "tagline", widget: "string", required: false }
           - label: "📞 İletişim Bilgileri"
             name: "iletisim"
             widget: "object"
@@ -184,8 +222,7 @@ collections:
               - { label: "E-posta", name: "email", widget: "string" }
               - { label: "Adres", name: "adres", widget: "string" }
               - { label: "Çalışma Saatleri", name: "calisma_saatleri", widget: "string" }
-          
-          - label: "📱 Sosyal Medya Linkleri"
+          - label: "📱 Sosyal Medya"
             name: "sosyal_medya"
             widget: "object"
             fields:
@@ -194,14 +231,12 @@ collections:
               - { label: "Twitter / X", name: "twitter", widget: "string", required: false }
               - { label: "LinkedIn", name: "linkedin", widget: "string", required: false }
               - { label: "YouTube", name: "youtube", widget: "string", required: false }
-          
-          - label: "📄 Footer (Alt Bölüm)"
+          - label: "📄 Footer"
             name: "footer"
             widget: "object"
             fields:
               - { label: "Tanıtım Metni", name: "tanitim_metni", widget: "text" }
               - { label: "Telif Hakkı Yazısı", name: "alt_metin", widget: "string" }
-          
           - label: "📢 Üst Şerit (Topbar)"
             name: "topbar"
             widget: "object"
@@ -209,7 +244,6 @@ collections:
               - { label: "Metin", name: "metin", widget: "string" }
               - { label: "Aktif", name: "aktif", widget: "boolean", default: true }
 
-      # 👤 HAKKIMIZDA SAYFASI
       - file: "_data/ayarlar/hakkimizda.json"
         label: "👤 Hakkımızda Sayfası"
         name: "hakkimizda"
@@ -222,7 +256,6 @@ collections:
               - { label: "Üst Etiket", name: "tag", widget: "string" }
               - { label: "Başlık", name: "baslik", widget: "string" }
               - { label: "Alt Yazı", name: "alt_yazi", widget: "string" }
-          
           - label: "📖 Ana Metin"
             name: "ana_metin"
             widget: "object"
@@ -233,31 +266,27 @@ collections:
               - { label: "Paragraf 1", name: "paragraf_1", widget: "text" }
               - { label: "Paragraf 2", name: "paragraf_2", widget: "text" }
               - { label: "Paragraf 3", name: "paragraf_3", widget: "text", required: false }
-          
-          - label: "📊 Rakamlar (4 kutu)"
+          - label: "📊 Rakamlar"
             name: "rakamlar"
             widget: "list"
             fields:
               - { label: "Sayı", name: "sayi", widget: "string" }
               - { label: "Etiket", name: "etiket", widget: "string" }
-          
-          - label: "✓ Özellikler Listesi"
+          - label: "✓ Özellikler"
             name: "ozellikler"
             widget: "list"
             fields:
               - { label: "İkon", name: "ikon", widget: "string", default: "✓" }
               - { label: "Metin", name: "metin", widget: "string" }
-          
           - label: "🎯 Misyon & Vizyon"
             name: "misyon_vizyon"
             widget: "object"
             fields:
-              - { label: "Misyon Başlık", name: "misyon_baslik", widget: "string", default: "Misyonumuz" }
+              - { label: "Misyon Başlık", name: "misyon_baslik", widget: "string" }
               - { label: "Misyon Metin", name: "misyon_metin", widget: "text" }
-              - { label: "Vizyon Başlık", name: "vizyon_baslik", widget: "string", default: "Vizyonumuz" }
+              - { label: "Vizyon Başlık", name: "vizyon_baslik", widget: "string" }
               - { label: "Vizyon Metin", name: "vizyon_metin", widget: "text" }
-          
-          - label: "📞 CTA (Aşağıdaki Çağrı)"
+          - label: "📞 CTA"
             name: "cta"
             widget: "object"
             fields:
@@ -266,7 +295,6 @@ collections:
               - { label: "Buton Yazısı", name: "buton_yazi", widget: "string" }
               - { label: "Buton Link", name: "buton_link", widget: "string" }
 
-      # 📞 İLETİŞİM SAYFASI
       - file: "_data/ayarlar/iletisim.json"
         label: "📞 İletişim Sayfası"
         name: "iletisim_sayfa"
@@ -279,7 +307,6 @@ collections:
               - { label: "Üst Etiket", name: "tag", widget: "string" }
               - { label: "Başlık", name: "baslik", widget: "string" }
               - { label: "Alt Yazı", name: "alt_yazi", widget: "string" }
-          
           - label: "📝 Form Bölümü"
             name: "form"
             widget: "object"
@@ -287,15 +314,12 @@ collections:
               - { label: "Başlık", name: "baslik", widget: "string" }
               - { label: "Alt Yazı", name: "alt_yazi", widget: "text" }
               - { label: "Buton Yazısı", name: "buton_yazi", widget: "string" }
-              - { label: "KVKK Metni Linki", name: "kvkk_metni", widget: "string" }
-          
           - label: "🗺️ Harita"
             name: "harita"
             widget: "object"
             fields:
               - { label: "Embed URL (Google Maps)", name: "embed_url", widget: "string" }
               - { label: "Başlık", name: "baslik", widget: "string" }
-          
           - label: "❓ Sıkça Sorulan Sorular"
             name: "sss"
             widget: "list"
@@ -303,9 +327,8 @@ collections:
               - { label: "Soru", name: "soru", widget: "string" }
               - { label: "Cevap", name: "cevap", widget: "text" }
 
-      # 🔒 KVKK
       - file: "_data/ayarlar/kvkk.json"
-        label: "🔒 KVKK Aydınlatma Metni"
+        label: "🔒 KVKK Metni"
         name: "kvkk"
         format: "json"
         fields:
@@ -320,6 +343,6 @@ collections:
             name: "bolumler"
             widget: "list"
             fields:
-              - { label: "Bölüm ID (URL için)", name: "id", widget: "string", hint: "Örn: veri-sorumlusu" }
+              - { label: "Bölüm ID", name: "id", widget: "string" }
               - { label: "Bölüm Başlığı", name: "baslik", widget: "string" }
               - { label: "Bölüm Metni", name: "metin", widget: "markdown" }
