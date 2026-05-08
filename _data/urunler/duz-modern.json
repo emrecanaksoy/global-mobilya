@@ -1,10 +1,15 @@
 {
   "title": "Düz Modern Membran Kapak",
-  "kategori": "Düz Membran Kapak",
+  "kategori": "Özel Ölçü",
   "kisa_aciklama": "Sade ve modern tasarımıyla minimalist mutfaklar için ideal seçim.",
   "ana_resim": "/resim/yonetilen/ornek-urun-2.png",
   "body": "Modern tasarımlı düz membran kapaklarımız, sade ve şık görünümleriyle çağdaş mutfak dekorasyonlarına uyum sağlar.\n\n**Avantajları:**\n- Kolay temizlenebilir\n- Çizilmeye dayanıklı\n- Geniş renk yelpazesi",
   "populer": true,
   "yeni": true,
-  "renkler": ["Beyaz", "Siyah", "Gri", "Mavi"]
+  "renkler": [
+    "Beyaz",
+    "Siyah",
+    "Gri",
+    "Mavi"
+  ]
 }
