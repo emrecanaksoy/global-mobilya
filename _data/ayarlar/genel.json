@@ -1,0 +1,30 @@
+{
+  "firma": {
+    "logo": "/resim/logo.png",
+    "ad": "Global Kapak Mobilya",
+    "slogan": "Membran Kapak Üreticisi",
+    "tagline": "Kalite ve Güven"
+  },
+  "iletisim": {
+    "telefon": "0505 015 1035",
+    "whatsapp": "905050151035",
+    "email": "info@globalkapakmobilya.com",
+    "adres": "İstanbul, Türkiye",
+    "calisma_saatleri": "Pzt-Cmt: 09:00 - 18:00"
+  },
+  "sosyal_medya": {
+    "instagram": "https://instagram.com/globalkapakmobilya",
+    "facebook": "https://facebook.com/globalkapakmobilya",
+    "twitter": "",
+    "linkedin": "",
+    "youtube": ""
+  },
+  "footer": {
+    "tanitim_metni": "Membran kapak üretiminde uzman kadromuzla kalite ve estetiği bir arada sunuyoruz.",
+    "alt_metin": "© 2025 Global Kapak Mobilya — Tüm hakları saklıdır."
+  },
+  "topbar": {
+    "metin": "✨ 5 yıl garanti, 5 iş gününde teslimat — Ücretsiz keşif ve montaj!",
+    "aktif": true
+  }
+}
