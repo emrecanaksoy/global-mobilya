@@ -1,0 +1,50 @@
+{
+  "title": "Düz Membran Kapak - Mat Beyaz",
+  "kategori": "Düz Membran Kapak",
+  "sku": "MK-DUZ-001",
+  "kisa_aciklama": "Modern mutfak ve dolap kapıklarınız için yüksek kaliteli mat beyaz membran kapak. Pürüzsüz yüzeyi ve dayanıklı yapısıyla öne çıkar.",
+
+  "ana_resim": "resim/urun1.jpg",
+
+  "gorseller": [
+    "resim/urun1.jpg",
+    "resim/urun1-detay.jpg",
+    "resim/urun1-renk.jpg",
+    "resim/urun1-montaj.jpg"
+  ],
+
+  "gorsel_mod": "contain",
+
+  "renkler": [
+    "Mat Beyaz",
+    "Antrasit",
+    "Ceviz",
+    "Bej",
+    "Lacivert"
+  ],
+
+  "bedenler": [
+    { "label": "40x60 cm", "stok": true },
+    { "label": "50x70 cm", "stok": true },
+    { "label": "60x80 cm", "stok": true },
+    { "label": "70x90 cm", "stok": false },
+    { "label": "Özel Ölçü", "stok": true }
+  ],
+
+  "ozellikler": [
+    "Yüksek yoğunluklu MDF üzerine PVC membran",
+    "Su ve neme karşı dayanıklı",
+    "Isı ve çizilmeye dayanıklı",
+    "Kolay temizlenebilir yüzey",
+    "5 yıl üretici garantisi",
+    "5 iş günü içinde teslimat"
+  ],
+
+  "etiketler": ["Mutfak Kapağı", "Mat Yüzey", "Modern", "5 Yıl Garanti"],
+
+  "body": "## Ürün Hakkında\n\nGlobal Kapak Mobilya'nın **Düz Membran Kapak** serisi, modern iç mekan tasarımlarında sıklıkla tercih edilen pürüzsüz ve temiz görünümlü kapak çeşididir.\n\n### Teknik Özellikler\n\n- **Malzeme:** 18mm E1 sınıfı MDF\n- **Kaplama:** 0.4mm PVC membran\n- **Yüzey:** Mat\n- **Kenar:** 45° açılı CNC frezeli\n\n### Kullanım Alanları\n\nMutfak kapakları, banyo dolap kapakları, yatak odası kapıları ve ofis mobilyalarında kullanılabilir.",
+
+  "populer": true,
+  "yeni": false,
+  "tarih": "2026-01-15"
+}

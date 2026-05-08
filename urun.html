@@ -12,7 +12,6 @@
 body{font-family:'Open Sans',sans-serif;color:var(--text);}
 a{text-decoration:none;color:inherit;}
 img{max-width:100%;height:auto;display:block;}
-
 nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:65px;position:sticky;top:0;z-index:999;box-shadow:0 2px 8px rgba(0,0,0,.06);gap:8px;}
 .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0;}
 .nav-logo img{height:48px;width:auto;}
@@ -21,69 +20,75 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px
 .nav-menu a:hover,.nav-menu a.active{background:var(--navy);color:var(--white);}
 .nav-cta{background:var(--gold);color:var(--navy);font-size:11.5px;font-weight:700;padding:8px 14px;border-radius:4px;font-family:'Montserrat',sans-serif;white-space:nowrap;}
 .hamburger{display:none;background:none;border:none;font-size:24px;cursor:pointer;color:var(--navy);}
-
 .breadcrumb{background:var(--gray);border-bottom:1px solid var(--border);padding:12px 40px;font-size:12px;color:var(--muted);}
 .breadcrumb a{color:var(--navy3);font-weight:600;}
 .breadcrumb span{margin:0 6px;color:var(--border);}
-
-/* LOADING */
 .loading{text-align:center;padding:80px 40px;color:var(--muted);}
-.loading svg{width:50px;height:50px;animation:spin 1s linear infinite;}
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-
-/* ÜRÜN DETAY */
 .pd-wrapper{max-width:1100px;margin:0 auto;padding:40px;display:grid;grid-template-columns:1fr 1fr;gap:50px;}
 .pd-gallery{position:sticky;top:80px;align-self:start;}
-.pd-main-img{width:100%;aspect-ratio:1;background:#f5f8fc;background-size:contain;background-repeat:no-repeat;background-position:center;border-radius:6px;border:1px solid var(--border);position:relative;cursor:zoom-in;}
-.pd-zoom{position:absolute;top:14px;right:14px;width:38px;height:38px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--white);}
-
-.pd-info .pd-cat{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-family:'Montserrat',sans-serif;}
-.pd-info h1{font-family:'Montserrat',sans-serif;font-size:32px;font-weight:800;color:var(--navy);margin-bottom:14px;}
-.pd-info .pd-rating{display:flex;align-items:center;gap:10px;margin-bottom:20px;font-size:13px;color:var(--muted);}
-.pd-info .pd-rating .stars{color:var(--gold);font-size:14px;}
-.pd-desc{font-size:14px;line-height:1.9;color:var(--text);margin-bottom:26px;}
-.pd-features{background:var(--gray);padding:20px 24px;border-radius:6px;margin-bottom:26px;}
-.pd-features h4{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:12px;letter-spacing:1.5px;text-transform:uppercase;}
+.pd-main-img{width:100%;aspect-ratio:1;border-radius:8px;border:1px solid var(--border);overflow:hidden;cursor:zoom-in;position:relative;background:#f5f8fc;}
+.pd-main-img img{width:100%;height:100%;transition:transform .3s ease;}
+.pd-main-img:hover img{transform:scale(1.03);}
+.pd-zoom-badge{position:absolute;top:12px;right:12px;width:36px;height:36px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--white);font-size:16px;pointer-events:none;}
+.pd-thumbs{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
+.pd-thumb{width:72px;height:72px;border-radius:5px;border:2px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color .2s;background:#f5f8fc;flex-shrink:0;}
+.pd-thumb img{width:100%;height:100%;object-fit:cover;}
+.pd-thumb:hover,.pd-thumb.active{border-color:var(--gold);}
+.img-mode-badge{display:inline-block;margin-top:8px;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-family:'Montserrat',sans-serif;}
+.pd-cat{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-family:'Montserrat',sans-serif;}
+.pd-info h1{font-family:'Montserrat',sans-serif;font-size:30px;font-weight:800;color:var(--navy);margin-bottom:8px;line-height:1.25;}
+.pd-sku{font-size:12px;color:var(--muted);margin-bottom:16px;font-family:'Montserrat',sans-serif;}
+.pd-sku strong{color:var(--navy);}
+.pd-rating{display:flex;align-items:center;gap:10px;margin-bottom:18px;font-size:13px;color:var(--muted);}
+.pd-rating .stars{color:var(--gold);font-size:15px;}
+.pd-desc{font-size:14px;line-height:1.9;color:var(--text);margin-bottom:22px;}
+.pd-features{background:var(--gray);padding:18px 22px;border-radius:6px;margin-bottom:22px;}
+.pd-features h4{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--navy);margin-bottom:10px;letter-spacing:1.5px;text-transform:uppercase;}
 .pd-features ul{list-style:none;padding:0;}
-.pd-features li{font-size:13px;padding:6px 0;color:var(--text);}
-.pd-features li::before{content:"✓ ";color:var(--gold);font-weight:700;margin-right:6px;}
-
-.pd-colors{margin-bottom:26px;}
-.pd-colors h4{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:12px;letter-spacing:1.5px;text-transform:uppercase;}
-.color-list{display:flex;gap:10px;flex-wrap:wrap;}
-.color{padding:8px 14px;background:var(--gray);border:2px solid var(--border);border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;}
-.color:hover,.color.active{border-color:var(--gold);background:var(--white);}
-
-.pd-actions{display:flex;gap:12px;margin-bottom:30px;flex-wrap:wrap;}
-.btn-primary{background:var(--gold);color:var(--navy);padding:14px 30px;font-size:13px;font-weight:700;border-radius:4px;font-family:'Montserrat',sans-serif;border:none;cursor:pointer;flex:1;text-align:center;}
-.btn-secondary{background:transparent;color:var(--navy);padding:14px 30px;font-size:13px;font-weight:600;border-radius:4px;font-family:'Montserrat',sans-serif;border:1.5px solid var(--navy);cursor:pointer;text-align:center;}
-
-/* MARKDOWN BODY */
-.pd-body{padding:40px 0;border-top:1px solid var(--border);margin-top:40px;line-height:1.9;font-size:14px;color:var(--text);max-width:800px;margin-left:auto;margin-right:auto;}
+.pd-features li{font-size:13px;padding:5px 0;color:var(--text);}
+.pd-features li::before{content:"✓ ";color:var(--gold);font-weight:700;}
+.pd-section-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--navy);margin-bottom:10px;letter-spacing:1.5px;text-transform:uppercase;display:block;}
+.pd-colors,.pd-sizes{margin-bottom:22px;}
+.color-list,.size-list{display:flex;gap:8px;flex-wrap:wrap;}
+.color-chip{padding:7px 14px;background:var(--gray);border:2px solid var(--border);border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+.color-chip:hover,.color-chip.active{border-color:var(--gold);background:var(--white);}
+.size-chip{padding:7px 16px;background:var(--gray);border:2px solid var(--border);border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;}
+.size-chip:hover,.size-chip.active{border-color:var(--navy);background:var(--navy);color:var(--white);}
+.size-chip.disabled{opacity:.35;cursor:not-allowed;text-decoration:line-through;}
+.pd-meta-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.pd-meta-tag{background:var(--gray);border:1px solid var(--border);border-radius:3px;padding:5px 12px;font-size:11px;font-weight:600;color:var(--muted);font-family:'Montserrat',sans-serif;}
+.pd-actions{display:flex;gap:10px;margin-bottom:26px;flex-wrap:wrap;}
+.btn-primary{background:var(--gold);color:var(--navy);padding:14px 24px;font-size:13px;font-weight:700;border-radius:4px;font-family:'Montserrat',sans-serif;border:none;cursor:pointer;flex:1;text-align:center;display:block;}
+.btn-primary:hover{background:#b8943c;}
+.btn-secondary{background:transparent;color:var(--navy);padding:14px 24px;font-size:13px;font-weight:600;border-radius:4px;font-family:'Montserrat',sans-serif;border:1.5px solid var(--navy);cursor:pointer;text-align:center;display:block;}
+.btn-secondary:hover{background:var(--navy);color:var(--white);}
+.pd-body{border-top:1px solid var(--border);margin-top:40px;padding:40px;max-width:1100px;margin-left:auto;margin-right:auto;line-height:1.9;font-size:14px;color:var(--text);}
 .pd-body h2,.pd-body h3{font-family:'Montserrat',sans-serif;color:var(--navy);margin:24px 0 12px;}
 .pd-body p{margin-bottom:14px;}
 .pd-body ul,.pd-body ol{padding-left:24px;margin-bottom:14px;}
 .pd-body li{margin-bottom:6px;}
 .pd-body strong{color:var(--navy);}
-
-/* HATA */
+/* LIGHTBOX */
+.lb-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);align-items:center;justify-content:center;}
+.lb-overlay.open{display:flex;}
+.lb-img-wrap{position:relative;max-width:90vw;max-height:90vh;display:flex;align-items:center;justify-content:center;}
+.lb-img-wrap img{max-width:90vw;max-height:85vh;object-fit:contain;border-radius:4px;}
+.lb-close{position:fixed;top:20px;right:24px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.lb-close:hover{background:var(--gold);color:var(--navy);}
+.lb-prev,.lb-next{position:fixed;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.lb-prev{left:16px;}.lb-next{right:16px;}
+.lb-prev:hover,.lb-next:hover{background:var(--gold);color:var(--navy);}
+.lb-counter{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.6);font-size:13px;font-family:'Montserrat',sans-serif;}
 .error{text-align:center;padding:80px 40px;}
 .error h2{color:var(--navy);font-family:'Montserrat',sans-serif;margin-bottom:14px;}
-
-/* FOOTER */
-footer{background:#060E22;padding:40px;color:rgba(255,255,255,.5);text-align:center;font-size:13px;margin-top:60px;}
-footer a{color:var(--gold);}
-
-@media(max-width:1024px){nav{padding:0 20px;}.nav-menu a{padding:6px 8px;font-size:11px;}.pd-wrapper{grid-template-columns:1fr;padding:24px;gap:30px;}.pd-gallery{position:static;}}
-@media(max-width:768px){nav{padding:0 16px;}.nav-menu{display:none;position:absolute;top:65px;left:0;right:0;background:var(--white);flex-direction:column;padding:14px 16px;border-bottom:1px solid var(--border);}.nav-menu.open{display:flex;}.hamburger{display:block;}.nav-cta{display:none;}.pd-info h1{font-size:24px;}}
+@media(max-width:1024px){.pd-wrapper{grid-template-columns:1fr;padding:24px;gap:30px;}.pd-gallery{position:static;}.pd-body{padding:24px;}}
+@media(max-width:768px){nav{padding:0 16px;}.nav-menu{display:none;position:absolute;top:65px;left:0;right:0;background:var(--white);flex-direction:column;padding:14px 16px;border-bottom:1px solid var(--border);}.nav-menu.open{display:flex;}.hamburger{display:block;}.nav-cta{display:none;}.pd-info h1{font-size:24px;}.lb-prev{left:6px;}.lb-next{right:6px;}}
 </style>
 </head>
 <body>
 
 <nav>
-  <a class="nav-logo" href="index.html">
-    <img src="resim/logo.png" alt="Global Kapak Mobilya">
-  </a>
+  <a class="nav-logo" href="index.html"><img src="resim/logo.png" alt="Global Kapak Mobilya"></a>
   <div class="nav-menu" id="nm">
     <a href="index.html">Anasayfa</a>
     <a href="tedarikcilerimiz.html">Tedarikçilerimiz</a>
@@ -97,158 +102,179 @@ footer a{color:var(--gold);}
   <button class="hamburger" onclick="document.getElementById('nm').classList.toggle('open')">☰</button>
 </nav>
 
-<div class="breadcrumb" id="breadcrumb">
+<div class="breadcrumb">
   <a href="index.html">Anasayfa</a><span>›</span>
   <a href="urunler.html">Ürünler</a><span>›</span>
   <strong style="color:var(--navy);" id="bc-product">Yükleniyor...</strong>
 </div>
 
-<!-- ÜRÜN İÇERİĞİ - JavaScript dolduracak -->
 <div id="product-container">
-  <div class="loading">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="50 100"/></svg>
-    <p style="margin-top:20px;">Ürün yükleniyor...</p>
-  </div>
+  <div class="loading">⏳ Ürün yükleniyor...</div>
 </div>
 
-
+<!-- LIGHTBOX -->
+<div class="lb-overlay" id="lightbox">
+  <button class="lb-close" onclick="closeLightbox()">✕</button>
+  <button class="lb-prev" onclick="lbNav(-1)">&#8249;</button>
+  <div class="lb-img-wrap"><img id="lb-img" src="" alt=""></div>
+  <button class="lb-next" onclick="lbNav(1)">&#8250;</button>
+  <div class="lb-counter" id="lb-counter"></div>
+</div>
 
 <script>
-// URL'den ürün ID'sini al
 const params = new URLSearchParams(window.location.search);
 const productId = params.get('id');
+let galleryImages = [];
+let lbIndex = 0;
 
-async function loadProduct() {
-  const container = document.getElementById('product-container');
-  const bcProduct = document.getElementById('bc-product');
-  
-  if (!productId) {
-    container.innerHTML = `
-      <div class="error">
-        <h2>⚠️ Ürün Bulunamadı</h2>
-        <p>Lütfen geçerli bir ürün seçin.</p>
-        <p style="margin-top:20px;"><a href="urunler.html" class="btn-primary" style="display:inline-block;">← Ürünlere Dön</a></p>
-      </div>
-    `;
-    return;
-  }
-
-  try {
-    // JSON dosyasını yükle
-    const response = await fetch(`_data/urunler/${productId}.json`);
-    if (!response.ok) throw new Error('Ürün bulunamadı');
-    const product = await response.json();
-    
-    // Sayfa başlığını güncelle
-    document.title = `${product.title} | Global Kapak Mobilya`;
-    bcProduct.textContent = product.title;
-    
-    // Renkler
-    const renkler = product.renkler || ['Beyaz', 'Antrasit', 'Ceviz', 'Bej', 'Lacivert'];
-    const renkHtml = renkler.map((r, i) => 
-      `<div class="color${i === 0 ? ' active' : ''}" onclick="selectColor(this)">${r}</div>`
-    ).join('');
-    
-    // Markdown'ı basit HTML'e çevir
-    const bodyHtml = simpleMarkdown(product.body || '');
-    
-    container.innerHTML = `
-      <div class="pd-wrapper">
-        <div class="pd-gallery">
-          <div class="pd-main-img" style="background-image:url('${product.ana_resim || 'resim/logo.png'}');">
-            <div class="pd-zoom">🔍</div>
-          </div>
-        </div>
-        <div class="pd-info">
-          <div class="pd-cat">${product.kategori || ''}</div>
-          <h1>${product.title}</h1>
-          <div class="pd-rating">
-            <span class="stars">★★★★★</span>
-            <span>(Yeni Ürün)</span>
-          </div>
-          <p class="pd-desc">${product.kisa_aciklama || ''}</p>
-          
-          <div class="pd-features">
-            <h4>Öne Çıkan Özellikler</h4>
-            <ul>
-              <li>Yüksek kalite MDF + PVC membran</li>
-              <li>Su ve neme dayanıklı</li>
-              <li>Kolay temizlenebilir</li>
-              <li>5 yıl garanti</li>
-              <li>5 iş gününde teslimat</li>
-            </ul>
-          </div>
-          
-          <div class="pd-colors">
-            <h4>Renk Seçenekleri</h4>
-            <div class="color-list">${renkHtml}</div>
-          </div>
-          
-          <div class="pd-actions">
-            <a href="iletisim.html?urun=${encodeURIComponent(product.title)}" class="btn-primary">📱 WhatsApp ile Sipariş</a>
-            <a href="iletisim.html" class="btn-secondary">Teklif İste</a>
-          </div>
-        </div>
-      </div>
-      
-      ${bodyHtml ? `<div class="pd-body">${bodyHtml}</div>` : ''}
-    `;
-    
-  } catch (err) {
-    container.innerHTML = `
-      <div class="error">
-        <h2>⚠️ Ürün Bulunamadı</h2>
-        <p>"${productId}" adlı ürün mevcut değil veya kaldırılmış.</p>
-        <p style="margin-top:20px;"><a href="urunler.html" class="btn-primary" style="display:inline-block;">← Ürünlere Dön</a></p>
-      </div>
-    `;
+function applyImageMode(mode) {
+  const img = document.getElementById('main-product-img');
+  if (!img) return;
+  img.style.objectFit = ['contain','cover','fill'].includes(mode) ? mode : 'contain';
+  const badge = document.getElementById('img-mode-badge');
+  if (badge) {
+    const labels = {contain:'📐 Tam boyut', cover:'✂️ Kırpılmış', fill:'↔️ Uzatılmış'};
+    badge.textContent = labels[mode] || '';
   }
 }
 
-// Basit Markdown → HTML
-function simpleMarkdown(md) {
-  if (!md) return '';
-  let html = md;
-  
-  // Headers
-  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-  html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-  
-  // Bold
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  
-  // Italic
-  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  
-  // Lists (- )
-  html = html.replace(/^\s*-\s+(.+)$/gim, '<li>$1</li>');
-  html = html.replace(/(<li>[\s\S]*?<\/li>)/g, m => `<ul>${m}</ul>`);
-  
-  // Links
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-  
-  // Paragraphs
-  const blocks = html.split(/\n\n+/);
-  html = blocks.map(b => {
-    b = b.trim();
-    if (!b) return '';
-    if (b.startsWith('<h') || b.startsWith('<ul') || b.startsWith('<ol')) return b;
-    return `<p>${b.replace(/\n/g, '<br>')}</p>`;
-  }).join('\n');
-  
-  return html;
+function selectThumb(index) {
+  const mainImg = document.getElementById('main-product-img');
+  if (mainImg) mainImg.src = galleryImages[index];
+  document.querySelectorAll('.pd-thumb').forEach((t,i) => t.classList.toggle('active', i===index));
 }
 
-function selectColor(el) {
-  document.querySelectorAll('.color').forEach(c => c.classList.remove('active'));
+function openLightbox(index) {
+  lbIndex = index;
+  updateLb();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function lbNav(dir) {
+  lbIndex = (lbIndex + dir + galleryImages.length) % galleryImages.length;
+  updateLb();
+}
+function updateLb() {
+  document.getElementById('lb-img').src = galleryImages[lbIndex];
+  document.getElementById('lb-counter').textContent = (lbIndex+1) + ' / ' + galleryImages.length;
+}
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key==='ArrowRight') lbNav(1);
+  if (e.key==='ArrowLeft') lbNav(-1);
+  if (e.key==='Escape') closeLightbox();
+});
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target===document.getElementById('lightbox')) closeLightbox();
+});
+
+function selectChip(el, cls) {
+  if (el.classList.contains('disabled')) return;
+  el.closest('.color-list,.size-list').querySelectorAll('.'+cls).forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
 }
 
-// Sayfa yüklenince ürünü getir
+async function loadProduct() {
+  const container = document.getElementById('product-container');
+  if (!productId) {
+    container.innerHTML = '<div class="error"><h2>Ürün Bulunamadı</h2><p><a href="urunler.html">← Ürünlere Dön</a></p></div>';
+    return;
+  }
+  try {
+    const r = await fetch('_data/urunler/' + productId + '.json');
+    if (!r.ok) throw new Error();
+    const p = await r.json();
+    document.title = p.title + ' | Global Kapak Mobilya';
+    document.getElementById('bc-product').textContent = p.title;
+
+    // Galeri görselleri
+    // JSON'da "gorseller": ["resim/urun1.jpg","resim/urun2.jpg"] dizisi kullanın
+    // Görsel mod: "gorsel_mod": "contain" | "cover" | "fill"
+    galleryImages = (p.gorseller && p.gorseller.length) ? p.gorseller : [p.ana_resim || 'resim/logo.png'];
+
+    const thumbHtml = galleryImages.length > 1
+      ? '<div class="pd-thumbs">' + galleryImages.map((src,i) =>
+          '<div class="pd-thumb' + (i===0?' active':'') + '" onclick="selectThumb('+i+')">' +
+          '<img src="'+src+'" alt="Görsel '+(i+1)+'" loading="lazy"></div>'
+        ).join('') + '</div>'
+      : '';
+
+    const renkler = p.renkler || [];
+    const renkHtml = renkler.length
+      ? '<div class="pd-colors"><span class="pd-section-label">Renk Seçenekleri</span><div class="color-list">' +
+        renkler.map((r,i) => '<div class="color-chip'+(i===0?' active':'')+'" onclick="selectChip(this,\'color-chip\')">'+r+'</div>').join('') +
+        '</div></div>' : '';
+
+    const bedenler = p.bedenler || [];
+    const bedenHtml = bedenler.length
+      ? '<div class="pd-sizes"><span class="pd-section-label">Boyut Seçenekleri</span><div class="size-list">' +
+        bedenler.map((b,i) => {
+          const label = b.label || b;
+          const disabled = b.stok===false ? ' disabled':'';
+          return '<div class="size-chip'+(i===0?' active':'')+disabled+'" onclick="selectChip(this,\'size-chip\')">'+label+'</div>';
+        }).join('') +
+        '</div></div>' : '';
+
+    const ozellikler = p.ozellikler || ['Yüksek kalite MDF + PVC membran','Su ve neme dayanıklı','Kolay temizlenebilir','5 yıl garanti','5 iş gününde teslimat'];
+    const metaTags = p.etiketler || [];
+    const metaHtml = metaTags.length ? '<div class="pd-meta-row">'+metaTags.map(t=>'<span class="pd-meta-tag">'+t+'</span>').join('')+'</div>' : '';
+
+    const bodyHtml = p.body ? simpleMarkdown(p.body) : '';
+    const waMsg = encodeURIComponent('Merhaba, ' + p.title + ' ürünü hakkında bilgi almak istiyorum.');
+
+    container.innerHTML =
+      '<div class="pd-wrapper">' +
+        '<div class="pd-gallery">' +
+          '<div class="pd-main-img" onclick="openLightbox(0)">' +
+            '<img id="main-product-img" src="'+galleryImages[0]+'" alt="'+p.title+'">' +
+            '<div class="pd-zoom-badge">🔍</div>' +
+          '</div>' +
+          thumbHtml +
+          '<span class="img-mode-badge" id="img-mode-badge"></span>' +
+        '</div>' +
+        '<div class="pd-info">' +
+          '<div class="pd-cat">'+(p.kategori||'')+'</div>' +
+          '<h1>'+p.title+'</h1>' +
+          (p.sku ? '<div class="pd-sku">Ürün Kodu: <strong>'+p.sku+'</strong></div>' : '') +
+          '<div class="pd-rating"><span class="stars">★★★★★</span><span>Yeni Ürün</span></div>' +
+          '<p class="pd-desc">'+(p.kisa_aciklama||'')+'</p>' +
+          '<div class="pd-features"><h4>Öne Çıkan Özellikler</h4><ul>' +
+            ozellikler.map(o=>'<li>'+o+'</li>').join('') +
+          '</ul></div>' +
+          renkHtml + bedenHtml + metaHtml +
+          '<div class="pd-actions">' +
+            '<a href="https://wa.me/905050151035?text='+waMsg+'" target="_blank" class="btn-primary">📱 WhatsApp ile Sipariş</a>' +
+            '<a href="iletisim.html" class="btn-secondary">Teklif İste</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      (bodyHtml ? '<div class="pd-body">'+bodyHtml+'</div>' : '');
+
+    applyImageMode(p.gorsel_mod || 'contain');
+
+  } catch(e) {
+    container.innerHTML = '<div class="error"><h2>⚠️ Ürün Bulunamadı</h2><p><a href="urunler.html">← Ürünlere Dön</a></p></div>';
+  }
+}
+
+function simpleMarkdown(md) {
+  if (!md) return '';
+  let h = md;
+  h = h.replace(/^### (.*$)/gim,'<h3>$1</h3>');
+  h = h.replace(/^## (.*$)/gim,'<h2>$1</h2>');
+  h = h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  h = h.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  h = h.replace(/^\s*-\s+(.+)$/gim,'<li>$1</li>');
+  h = h.replace(/(<li>[\s\S]*?<\/li>)/g,m=>'<ul>'+m+'</ul>');
+  return h.split(/\n\n+/).map(b=>{b=b.trim();if(!b)return '';if(b.startsWith('<h')||b.startsWith('<ul'))return b;return '<p>'+b.replace(/\n/g,'<br>')+'</p>';}).join('\n');
+}
+
 loadProduct();
 </script>
-
 <script src="js/swipe.js"></script>
 <script src="js/footer.js"></script>
 </body>
