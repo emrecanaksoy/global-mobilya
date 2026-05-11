@@ -17,7 +17,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px
 .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0;}
 .nav-menu{display:flex;gap:0;align-items:center;flex:1;justify-content:center;}
 .nav-menu a{font-size:11.5px;font-weight:600;color:var(--navy);padding:6px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;}
-.nav-menu a:hover,.nav-menu a.active{background:var(--navy) !important;color:#ffffff !important;}
+.nav-menu a:hover,.nav-menu a.active{background:var(--navy) !important;color:#fff !important;}
 .nav-cta{background:var(--gold);color:var(--navy);font-size:11.5px;font-weight:700;padding:8px 14px;border-radius:4px;font-family:'Montserrat',sans-serif;white-space:nowrap;flex-shrink:0;}
 .hamburger{display:none;background:none;border:none;font-size:24px;cursor:pointer;color:var(--navy);}
 .breadcrumb{background:var(--gray);border-bottom:1px solid var(--border);padding:12px 40px;font-size:12px;color:var(--muted);}
@@ -84,7 +84,17 @@ footer{background:#060E22;padding:40px 40px 20px;}
 
 @media(max-width:1024px){nav{padding:0 20px;}.nav-menu a{padding:6px 8px;font-size:11px;}.page-hero h1{font-size:30px;}.about-main{gap:40px;padding:50px 24px;}.values{padding:50px 24px;}.values-grid{grid-template-columns:repeat(2,1fr);}.mv-section{padding:50px 24px;}.numbers{padding:50px 24px;}.numbers-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:768px){nav{padding:0 16px;}.nav-menu{display:none;position:absolute;top:75px;left:0;right:0;background:var(--white);flex-direction:column;padding:14px 16px;border-bottom:1px solid var(--border);}.nav-menu.open{display:flex;}.hamburger{display:block;}.nav-cta{display:none;}.about-main{grid-template-columns:1fr;padding:40px 16px;}.about-img-big{height:300px;}.about-text-main h2{font-size:24px;}.values{padding:40px 16px;}.values-grid{grid-template-columns:1fr;}.mv-section{grid-template-columns:1fr;padding:40px 16px;}.numbers-grid{grid-template-columns:1fr 1fr;}.cta-section{padding:40px 16px;}.footer-grid{grid-template-columns:1fr;}footer{padding:30px 16px 16px;}.breadcrumb,.page-hero{padding-left:16px;padding-right:16px;}}
-.prod-img[style*="background-image"] .prod-img-ph{display:none !important;}.blog-img[style*="background-image"] svg,.blog-img[style*="background-image"] span{display:none !important;}.featured-img[style*="background-image"] svg,.featured-img[style*="background-image"] span{display:none !important;}.sup-logo[style*="background-image"] svg,.sup-logo[style*="background-image"] span{display:none !important;}.gallery-item[style*="background-image"] svg,.gallery-item[style*="background-image"] span{display:none !important;}.gal-item[style*="background-image"] svg,.gal-item[style*="background-image"] span{display:none !important;}.recent-img[style*="background-image"] svg{display:none !important;}.rel-img[style*="background-image"] svg,.rel-img[style*="background-image"] span{display:none !important;}.about-img[style*="background-image"] svg,.about-img[style*="background-image"] span{display:none !important;}.about-img-big[style*="background-image"] svg,.about-img-big[style*="background-image"] span{display:none !important;}.cat-ico[style*="background-image"] svg{display:none !important;}</style>
+.prod-img[style*="background-image"] .prod-img-ph{display:none !important;}.blog-img[style*="background-image"] svg,.blog-img[style*="background-image"] span{display:none !important;}.featured-img[style*="background-image"] svg,.featured-img[style*="background-image"] span{display:none !important;}.sup-logo[style*="background-image"] svg,.sup-logo[style*="background-image"] span{display:none !important;}.gallery-item[style*="background-image"] svg,.gallery-item[style*="background-image"] span{display:none !important;}.gal-item[style*="background-image"] svg,.gal-item[style*="background-image"] span{display:none !important;}.recent-img[style*="background-image"] svg{display:none !important;}.rel-img[style*="background-image"] svg,.rel-img[style*="background-image"] span{display:none !important;}.about-img[style*="background-image"] svg,.about-img[style*="background-image"] span{display:none !important;}.about-img-big[style*="background-image"] svg,.about-img-big[style*="background-image"] span{display:none !important;}.cat-ico[style*="background-image"] svg{display:none !important;}
+/* NAVBAR AKTİF/HOVER KESİN DÜZELTMESİ */
+.nav-menu a:hover,
+.nav-menu a.active {
+  background: var(--navy) !important;
+  color: #ffffff !important;
+}
+.nav-menu a {
+  transition: background .2s, color .2s;
+}
+</style>
 </head>
 <body>
 

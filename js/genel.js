@@ -23,14 +23,24 @@
 
   // ── genel.json yükle ───────────────────────────────────────────────────
   let genel = {};
-  try {
-    const res = await fetch('/_data/ayarlar/genel.json');
-    if (res.ok) genel = await res.json();
-  } catch (e) {
+  // Netlify'da _data klasörü public değil, GitHub API ile okuyoruz
+  const REPO = 'emrecanaksoyea34-a11y/global-kapak-mobilyaa';
+  const paths = [
+    '_data/ayarlar/genel.json',
+    '/_data/ayarlar/genel.json'
+  ];
+  for (const p of paths) {
     try {
-      const res2 = await fetch('_data/ayarlar/genel.json');
-      if (res2.ok) genel = await res2.json();
-    } catch (e2) { /* genel.json yoksa varsayılanlar kullan */ }
+      const res = await fetch(p);
+      if (res.ok) { genel = await res.json(); break; }
+    } catch(e) {}
+  }
+  // Hiç çalışmazsa GitHub raw API ile dene
+  if (!genel.firma) {
+    try {
+      const raw = await fetch(`https://raw.githubusercontent.com/${REPO}/main/_data/ayarlar/genel.json`);
+      if (raw.ok) genel = await raw.json();
+    } catch(e) {}
   }
 
   const firma    = genel.firma    || {};
@@ -79,8 +89,8 @@
   });
 
   // ── ANASAYFADAKİ HAKKIMIZDA RESMİ ────────────────────────────────────
-  // index.html about-img bölümü
-  const aboutImg = document.querySelector('.about-img');
+  // index.html about-img bölümü - id ile bul, class ile fallback
+  const aboutImg = document.getElementById('about-main-img') || document.querySelector('.about-img');
   const aboutData = genel.anasayfa_hakkimizda || {};
   if (aboutImg && aboutData.resim) {
     aboutImg.style.backgroundImage = `url('${aboutData.resim}')`;

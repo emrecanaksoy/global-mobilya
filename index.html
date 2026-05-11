@@ -31,7 +31,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px
 .logo-text small{display:block;font-size:8.5px;font-weight:500;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
 .nav-menu{display:flex;gap:0;align-items:center;flex:1;justify-content:center;}
 .nav-menu a{font-size:11.5px;font-weight:600;color:var(--navy);padding:6px 10px;border-radius:4px;transition:background .2s,color .2s;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;}
-.nav-menu a:hover,.nav-menu a.active{background:var(--navy) !important;color:#ffffff !important;}
+.nav-menu a:hover,.nav-menu a.active{background:var(--navy) !important;color:#fff !important;}
 .nav-cta{background:var(--gold);color:var(--navy);font-size:11.5px;font-weight:700;padding:8px 14px;border-radius:4px;border:none;cursor:pointer;font-family:'Montserrat',sans-serif;white-space:nowrap;flex-shrink:0;}
 .hamburger{display:none;background:none;border:none;font-size:24px;cursor:pointer;color:var(--navy);}
 .hero{position:relative;min-height:520px;display:flex;align-items:center;overflow:hidden;}
@@ -202,7 +202,17 @@ footer{background:#060E22;padding:50px 40px 24px;}
 }
 @media(max-width:900px){.products-grid,.features-grid,.gallery-grid,.blog-grid,.footer-grid{grid-template-columns:repeat(2,1fr);}.about,.contact{grid-template-columns:1fr;}.csr-section{padding:60px 24px;}.csr-section h2{font-size:30px;}.csr-icons{gap:30px;}.prod-slider{padding:0 24px;}}
 @media(max-width:600px){nav{padding:0 20px;}.nav-menu{display:none;position:absolute;top:75px;left:0;right:0;background:var(--white);flex-direction:column;padding:16px 20px;border-bottom:1px solid var(--border);}.nav-menu.open{display:flex;}.hamburger{display:block;}.nav-cta{display:none;}.hero-content{padding:60px 20px;}.hero h1{font-size:28px;}.products-grid,.features-grid,.gallery-grid,.blog-grid{grid-template-columns:1fr;padding:0 20px;}.sec-head,.about,.contact{padding-left:20px;padding-right:20px;}.footer-grid{grid-template-columns:1fr;}footer{padding:40px 20px 20px;}.form-row{grid-template-columns:1fr;}.csr-section{padding:50px 20px;}.csr-section h2{font-size:24px;}.csr-text{font-size:14px;}.csr-icons{gap:20px;flex-direction:column;}.prod-slider{padding:0 20px;}.prod-arrow{width:36px;height:36px;}.prod-arrow.prev{left:-4px;}.prod-arrow.next{right:-4px;}}
-.blog-img[style*="background-image"] svg,.blog-img[style*="background-image"] span{display:none !important;}.featured-img[style*="background-image"] svg,.featured-img[style*="background-image"] span{display:none !important;}.sup-logo[style*="background-image"] svg,.sup-logo[style*="background-image"] span{display:none !important;}.gallery-item[style*="background-image"] svg,.gallery-item[style*="background-image"] span{display:none !important;}.gal-item[style*="background-image"] svg,.gal-item[style*="background-image"] span{display:none !important;}.recent-img[style*="background-image"] svg{display:none !important;}.rel-img[style*="background-image"] svg,.rel-img[style*="background-image"] span{display:none !important;}.about-img[style*="background-image"] svg,.about-img[style*="background-image"] span{display:none !important;}.about-img-big[style*="background-image"] svg,.about-img-big[style*="background-image"] span{display:none !important;}.cat-ico[style*="background-image"] svg{display:none !important;}</style>
+.blog-img[style*="background-image"] svg,.blog-img[style*="background-image"] span{display:none !important;}.featured-img[style*="background-image"] svg,.featured-img[style*="background-image"] span{display:none !important;}.sup-logo[style*="background-image"] svg,.sup-logo[style*="background-image"] span{display:none !important;}.gallery-item[style*="background-image"] svg,.gallery-item[style*="background-image"] span{display:none !important;}.gal-item[style*="background-image"] svg,.gal-item[style*="background-image"] span{display:none !important;}.recent-img[style*="background-image"] svg{display:none !important;}.rel-img[style*="background-image"] svg,.rel-img[style*="background-image"] span{display:none !important;}.about-img[style*="background-image"] svg,.about-img[style*="background-image"] span{display:none !important;}.about-img-big[style*="background-image"] svg,.about-img-big[style*="background-image"] span{display:none !important;}.cat-ico[style*="background-image"] svg{display:none !important;}
+/* NAVBAR AKTİF/HOVER KESİN DÜZELTMESİ */
+.nav-menu a:hover,
+.nav-menu a.active {
+  background: var(--navy) !important;
+  color: #ffffff !important;
+}
+.nav-menu a {
+  transition: background .2s, color .2s;
+}
+</style>
 </head>
 <body>
 
@@ -367,7 +377,7 @@ footer{background:#060E22;padding:50px 40px 24px;}
 <section class="about-section" id="hakkimizda">
   <div class="sec-head"><div class="sec-tag">Biz Kimiz</div><h2>Hakkımızda</h2><div class="sec-line"></div></div>
   <div class="about">
-    <div class="about-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#f5f8fc;"></div>
+    <div class="about-img" id="about-main-img" style="background-image:url('resim/logo.png');background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#f5f8fc;"></div>
     <div class="about-text">
       <div class="sec-tag">Firmamız Hakkında</div>
       <h2>Global Kapak Mobilya <span>Membran Kapak Uzmanı</span></h2>
