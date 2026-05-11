@@ -237,12 +237,54 @@ collections:
             fields:
               - { label: "Tanıtım Metni", name: "tanitim_metni", widget: "text" }
               - { label: "Telif Hakkı Yazısı", name: "alt_metin", widget: "string" }
+          - label: "🔗 Navbar CTA Butonu"
+            name: "nav_cta"
+            widget: "object"
+            fields:
+              - { label: "Buton Yazısı", name: "yazi", widget: "string", default: "Teklif Al" }
+              - { label: "Buton Linki", name: "link", widget: "string", default: "iletisim.html" }
+
           - label: "📢 Üst Şerit (Topbar)"
             name: "topbar"
             widget: "object"
             fields:
               - { label: "Metin", name: "metin", widget: "string" }
               - { label: "Aktif", name: "aktif", widget: "boolean", default: true }
+
+          - label: "📊 İstatistik Sayıları (Stats Bar)"
+            name: "stats"
+            widget: "list"
+            hint: "Anasayfadaki 4 istatistik kutusu"
+            fields:
+              - { label: "Sayı/Değer", name: "sayi", widget: "string", hint: "Örn: 15+ veya 2K+" }
+              - { label: "Etiket", name: "etiket", widget: "string", hint: "Örn: Yıl Sektör Deneyimi" }
+
+          - label: "🏠 Anasayfa Hakkımızda Bölümü"
+            name: "anasayfa_hakkimizda"
+            widget: "object"
+            fields:
+              - { label: "Resim", name: "resim", widget: "image", required: false }
+              - { label: "Başlık 1", name: "baslik_1", widget: "string" }
+              - { label: "Başlık 2 (sarı)", name: "baslik_2", widget: "string" }
+              - { label: "Paragraf 1", name: "paragraf_1", widget: "text" }
+              - { label: "Paragraf 2", name: "paragraf_2", widget: "text", required: false }
+              - { label: "Paragraf 3", name: "paragraf_3", widget: "text", required: false }
+              - { label: "Buton Yazısı", name: "buton_yazi", widget: "string" }
+              - { label: "Buton Linki", name: "buton_link", widget: "string" }
+
+          - label: "👤 Hakkımızda Sayfası Ana Resmi"
+            name: "hakkimizda_resim"
+            widget: "object"
+            fields:
+              - { label: "Resim", name: "resim", widget: "image", required: false }
+              - label: "Görsel Modu"
+                name: "mod"
+                widget: "select"
+                default: "contain"
+                options:
+                  - { label: "📐 Tam Boyut (contain)", value: "contain" }
+                  - { label: "✂️ Kırpılmış (cover)", value: "cover" }
+                  - { label: "↔️ Uzatılmış (fill)", value: "fill" }
 
       - file: "_data/ayarlar/hakkimizda.json"
         label: "👤 Hakkımızda Sayfası"

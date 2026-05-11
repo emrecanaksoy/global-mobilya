@@ -1,30 +1,54 @@
 {
   "firma": {
-    "logo": "/resim/logo.png",
+    "logo": "resim/logo.png",
     "ad": "Global Kapak Mobilya",
-    "slogan": "Membran Kapak Üreticisi",
-    "tagline": "Kalite ve Güven"
+    "slogan": "Membran Kapak Uzmanı",
+    "tagline": "Kalite ve güvenin adresi"
   },
   "iletisim": {
-    "telefon": "0505 015 1035",
+    "telefon": "0 (505) 015 1035",
     "whatsapp": "905050151035",
     "email": "info@globalkapakmobilya.com",
-    "adres": "İstanbul, Türkiye",
-    "calisma_saatleri": "Pzt-Cmt: 09:00 - 18:00"
+    "adres": "Yalçın Koreş Cad. Bağlar Mah. No:6B, Bağcılar / İstanbul",
+    "calisma_saatleri": "Hafta içi 08:00 - 18:00"
   },
   "sosyal_medya": {
-    "instagram": "https://instagram.com/globalkapakmobilya",
-    "facebook": "https://facebook.com/globalkapakmobilya",
+    "instagram": "https://instagram.com",
+    "facebook": "https://facebook.com",
     "twitter": "",
     "linkedin": "",
     "youtube": ""
   },
-  "footer": {
-    "tanitim_metni": "Membran kapak üretiminde uzman kadromuzla kalite ve estetiği bir arada sunuyoruz.",
-    "alt_metin": "© 2025 Global Kapak Mobilya — Tüm hakları saklıdır."
+  "nav_cta": {
+    "yazi": "Teklif Al",
+    "link": "iletisim.html"
   },
   "topbar": {
-    "metin": "✨ 5 yıl garanti, 5 iş gününde teslimat — Ücretsiz keşif ve montaj!",
+    "metin": "📦 5 İş Gününde Teslimat | 🛡️ 5 Yıl Garanti | Türkiye Geneli Kargo",
     "aktif": true
+  },
+  "stats": [
+    { "sayi": "15+", "etiket": "Yıl Sektör Deneyimi" },
+    { "sayi": "2K+", "etiket": "m² Fabrika Alanı" },
+    { "sayi": "5",   "etiket": "Yıl Garanti" },
+    { "sayi": "5",   "etiket": "İş Gününde Teslimat" }
+  ],
+  "anasayfa_hakkimizda": {
+    "resim": "resim/logo.png",
+    "baslik_1": "Global Kapak Mobilya",
+    "baslik_2": "Membran Kapak Uzmanı",
+    "paragraf_1": "Global Kapak Mobilya, sektörde 15 yılı aşkın deneyime sahip uzman kadrosuyla, mobilya kapak üretiminde fark yaratan bir markadır.",
+    "paragraf_2": "Müşteri memnuniyetini ön planda tutarak, her ürünümüzde kalite, dayanıklılık ve estetik bir arada sunuyoruz.",
+    "paragraf_3": "Üretim süreçlerimizde çevreye duyarlı yaklaşımı benimsiyor, sürdürülebilir üretim ilkelerini uyguluyoruz.",
+    "buton_yazi": "Daha Fazla Bilgi",
+    "buton_link": "hakkimizda.html"
+  },
+  "hakkimizda_resim": {
+    "resim": "resim/logo.png",
+    "mod": "contain"
+  },
+  "footer": {
+    "tanitim_metni": "Membran kapak üretiminde uzman kadromuzla kalite ve estetiği bir arada sunuyoruz.",
+    "alt_metin": "© 2026 Global Kapak Mobilya — Tüm hakları saklıdır."
   }
 }
