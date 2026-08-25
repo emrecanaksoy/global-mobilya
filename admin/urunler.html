@@ -795,9 +795,18 @@ textarea.form-control { min-height: 100px; resize: vertical; line-height: 1.6; }
       </div>
       <div class="form-group">
         <label>Depo (Repo) Adı</label>
-        <input type="text" class="form-control" id="repoNameInput" placeholder="global">
+        <input type="text" class="form-control" id="repoNameInput" placeholder="globalkapak">
       </div>
     </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <button type="button" class="btn-secondary" onclick="fetchUserRepos()" style="font-size:12px; padding:6px 12px;">🔍 Depolarımı Otomatik Listele</button>
+      <select id="repoSelectDropdown" class="form-control" style="width:auto; display:none; font-size:12px;" onchange="selectRepoFromDropdown(this.value)">
+        <option value="">Depo Seçiniz...</option>
+      </select>
+    </div>
+
+    <div id="connectionDebug" style="display:none; background:#FEF3C7; color:#92400E; padding:10px 14px; border-radius:6px; font-size:12px; margin-bottom:14px; line-height:1.5;"></div>
 
     <div style="background:#F1F5F9; padding:12px; border-radius:6px; font-size:12px; margin-bottom:18px; line-height:1.6;">
       <strong>Nasıl Token Alınır? (1 Dakika):</strong><br>
@@ -1447,6 +1456,41 @@ async function saveToken() {
   } catch(err) {
     showToast(err.message, 'error');
   }
+}
+
+async function fetchUserRepos() {
+  const token = document.getElementById('tokenInput').value.trim() || localStorage.getItem('gkm_gh_token');
+  if (!token) {
+    showToast('Önce yukarıya GitHub Token yapıştırın!', 'error');
+    return;
+  }
+  showToast('Depolarınız taranıyor...', 'info');
+  try {
+    const res = await fetch('https://api.github.com/user/repos?per_page=100&affiliation=owner,collaborator', {
+      headers: { 'Authorization': `token ${token}` }
+    });
+    if (!res.ok) throw new Error('Token ile depolar getirilemedi');
+    const repos = await res.json();
+    const dropdown = document.getElementById('repoSelectDropdown');
+    dropdown.innerHTML = '<option value="">Depo Seçiniz (' + repos.length + ' bulundu)...</option>';
+    repos.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r.full_name;
+      opt.textContent = r.full_name + (r.private ? ' 🔒' : ' 🌐');
+      dropdown.appendChild(opt);
+    });
+    dropdown.style.display = 'block';
+    showToast(`${repos.length} depo bulundu, listeden seçebilirsiniz!`, 'success');
+  } catch(e) {
+    showToast('Hata: ' + e.message, 'error');
+  }
+}
+
+function selectRepoFromDropdown(fullName) {
+  if (!fullName) return;
+  const parts = fullName.split('/');
+  document.getElementById('repoOwnerInput').value = parts[0];
+  document.getElementById('repoNameInput').value = parts[1];
 }
 </script>
 
