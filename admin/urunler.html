@@ -1216,7 +1216,9 @@ function startNewProduct() {
   document.getElementById('formCardTitle').textContent = '➕ Yeni Membran Kapak Ürünü Ekle';
   document.getElementById('btnProductSave').textContent = '💾 Kaydet ve Sitede Yayınla';
   document.getElementById('productForm').reset();
+  document.getElementById('f_slug').value = '';
   document.getElementById('f_slug').readOnly = false;
+  document.getElementById('f_image_url').value = '/resim/logo.png';
   colorsList = [];
   featsList = [];
   renderChips('colors');
@@ -1251,6 +1253,8 @@ function editProduct(slug) {
     document.getElementById('previewImg').src = p.ana_resim;
     document.getElementById('previewFileName').textContent = p.ana_resim.split('/').pop();
     document.getElementById('imagePreviewBox').style.display = 'flex';
+  } else {
+    removeSelectedImage();
   }
 
   colorsList = Array.isArray(p.renkler) ? [...p.renkler] : [];
@@ -1272,10 +1276,15 @@ async function saveProduct(e) {
   }
 
   const title = document.getElementById('f_title').value.trim();
-  const slug = document.getElementById('f_slug').value.trim() || slugify(title);
+  let slug = document.getElementById('f_slug').value.trim() || slugify(title);
   if (!title || !slug) {
     showToast('Lütfen ürün adını doldurun!', 'error');
     return;
+  }
+
+  // Yeni ürün eklerken slug çakışmasını önle
+  if (!editMode && allProducts.some(p => p.slug === slug)) {
+    slug = `${slug}-${Date.now().toString().slice(-4)}`;
   }
 
   const btn = document.getElementById('btnProductSave');
@@ -1313,9 +1322,9 @@ async function saveProduct(e) {
       ozellikler: featsList.length > 0 ? featsList : undefined
     };
 
-    // 3. Get SHA if editing
-    let currentSha = editingSha;
-    if (!currentSha) {
+    // 3. Get SHA only if in edit mode
+    let currentSha = editMode ? editingSha : '';
+    if (editMode && !currentSha) {
       try {
         const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler/${slug}.json`, {
           headers: { 'Authorization': `token ${token}` }
@@ -1350,17 +1359,22 @@ async function saveProduct(e) {
     // 5. Update index JSON
     await updateIndexFile(slug, token);
 
-    showToast('🎉 Ürün başarıyla kaydedildi! Vercel ~15 saniyede canlıya alıyor.', 'success');
+    // Reset edit state
+    editMode = false;
+    editingSlug = '';
+    editingSha = '';
+
+    showToast('🎉 Ürün başarıyla kaydedildi! Sitede yayına alındı.', 'success');
     setTimeout(() => {
       loadAllProducts();
       switchProductSubTab('list');
-    }, 1000);
+    }, 800);
 
   } catch(err) {
     showToast('Hata: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
-    btn.textContent = editMode ? '💾 Değişiklikleri Kaydet & Yayınla' : '💾 Kaydet ve Sitede Yayınla';
+    btn.textContent = '💾 Kaydet ve Sitede Yayınla';
   }
 }
 
