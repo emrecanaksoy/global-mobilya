@@ -788,6 +788,17 @@ textarea.form-control { min-height: 100px; resize: vertical; line-height: 1.6; }
       <input type="password" class="form-control" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
     </div>
 
+    <div class="form-row">
+      <div class="form-group">
+        <label>GitHub Kullanıcı Adı</label>
+        <input type="text" class="form-control" id="repoOwnerInput" placeholder="Emrecanaksoy">
+      </div>
+      <div class="form-group">
+        <label>Depo (Repo) Adı</label>
+        <input type="text" class="form-control" id="repoNameInput" placeholder="global">
+      </div>
+    </div>
+
     <div style="background:#F1F5F9; padding:12px; border-radius:6px; font-size:12px; margin-bottom:18px; line-height:1.6;">
       <strong>Nasıl Token Alınır? (1 Dakika):</strong><br>
       1. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Global+Kapak+Panel" target="_blank" style="color:var(--navy); font-weight:700; text-decoration:underline;">Buraya tıklayarak</a> GitHub token sayfasını açın.<br>
@@ -809,8 +820,8 @@ textarea.form-control { min-height: 100px; resize: vertical; line-height: 1.6; }
 </div>
 
 <script>
-const REPO_OWNER = 'emrecanaksoyea34-a11y';
-const REPO_NAME = 'global-kapak-mobilyaa';
+let REPO_OWNER = localStorage.getItem('gkm_gh_owner') || 'Emrecanaksoy';
+let REPO_NAME = localStorage.getItem('gkm_gh_repo') || 'global';
 const BRANCH = 'main';
 
 let allProducts = [];
@@ -1374,6 +1385,8 @@ async function deleteProduct(slug, sha) {
 // TOKEN MODAL
 function openTokenModal() {
   document.getElementById('tokenInput').value = localStorage.getItem('gkm_gh_token') || '';
+  document.getElementById('repoOwnerInput').value = localStorage.getItem('gkm_gh_owner') || REPO_OWNER;
+  document.getElementById('repoNameInput').value = localStorage.getItem('gkm_gh_repo') || REPO_NAME;
   document.getElementById('tokenModal').classList.add('open');
 }
 
@@ -1383,6 +1396,9 @@ function closeTokenModal() {
 
 async function saveToken() {
   const token = document.getElementById('tokenInput').value.trim();
+  const owner = document.getElementById('repoOwnerInput').value.trim() || 'Emrecanaksoy';
+  const repo = document.getElementById('repoNameInput').value.trim() || 'global';
+
   if (!token) {
     localStorage.removeItem('gkm_gh_token');
     checkTokenStatus();
@@ -1391,17 +1407,22 @@ async function saveToken() {
     return;
   }
 
-  showToast('Token test ediliyor...', 'info');
+  showToast('Bağlantı test ediliyor...', 'info');
   try {
-    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, {
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
       headers: { 'Authorization': `token ${token}` }
     });
-    if (!res.ok) throw new Error('Geçersiz token veya repo erişim yetkisi yok');
+    if (!res.ok) throw new Error(`"${owner}/${repo}" reposuna erişilemedi veya yetki yetersiz.`);
     
     localStorage.setItem('gkm_gh_token', token);
+    localStorage.setItem('gkm_gh_owner', owner);
+    localStorage.setItem('gkm_gh_repo', repo);
+    REPO_OWNER = owner;
+    REPO_NAME = repo;
+
     checkTokenStatus();
     closeTokenModal();
-    showToast('GitHub bağlantısı başarıyla kuruldu!', 'success');
+    showToast('🎉 GitHub bağlantısı başarıyla kuruldu!', 'success');
     loadAllProducts();
   } catch(err) {
     showToast(err.message, 'error');
