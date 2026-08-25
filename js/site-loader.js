@@ -8,7 +8,7 @@
 (function() {
   'use strict';
   
-  const REPO_API = 'https://api.github.com/repos/emrecanaksoyea34-a11y/global-kapak-mobilyaa/contents/_data';
+  const REPO_API = 'https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data';
   
   // Cache mekanizması (sayfa yenilemede daha hızlı)
   const cache = {};
