@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Global Kapak Mobilya — Yönetim Paneli</title>
+<title>Global Kapak Mobilya — Yönetim Merkezi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -59,7 +59,7 @@ header {
 }
 .header-left { display: flex; align-items: center; gap: 16px; }
 .header-logo { height: 40px; border-radius: 4px; background: #fff; padding: 3px; }
-.header-title h1 { font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 700; letter-spacing: 0.5px; }
+.header-title h1 { font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 700; letter-spacing: 0.5px; color:#fff; }
 .header-title span { font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
 
 .header-right { display: flex; align-items: center; gap: 12px; }
@@ -73,6 +73,7 @@ header {
   border-radius: 50px;
   font-size: 12px;
   font-weight: 500;
+  cursor: pointer;
 }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #F59E0B; }
 .status-dot.connected { background: var(--success); box-shadow: 0 0 10px rgba(16, 185, 129, 0.8); }
@@ -106,6 +107,21 @@ header {
   max-width: 1380px;
   margin: 0 auto;
   padding: 24px;
+}
+
+/* BANNER */
+.token-banner {
+  background: #EFF6FF;
+  border: 1.5px solid #BFDBFE;
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  color: #1E40AF;
+  font-size: 13.5px;
 }
 
 /* NAVIGATION TABS */
@@ -156,7 +172,7 @@ header {
 
 /* CONTENT SECTIONS */
 .tab-section { display: none; }
-.tab-section.active { display: block; animation: fadeIn 0.25s ease; }
+.tab-section.active { display: block; animation: fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
 /* CARDS & PANELS */
@@ -236,7 +252,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: 13px;
-  padding: 11px 22px;
+  padding: 10px 20px;
   border-radius: var(--radius-sm);
   border: none;
   cursor: pointer;
@@ -245,14 +261,14 @@ textarea.form-control { resize: vertical; min-height: 80px; }
   gap: 8px;
   transition: all 0.2s;
 }
-.btn-primary:hover { background: var(--navy-light); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-primary:hover { background: var(--navy-light); transform: translateY(-1px); }
 .btn-gold {
   background: var(--gold);
   color: var(--navy-dark);
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: 13px;
-  padding: 11px 22px;
+  padding: 10px 20px;
   border-radius: var(--radius-sm);
   border: none;
   cursor: pointer;
@@ -261,14 +277,14 @@ textarea.form-control { resize: vertical; min-height: 80px; }
   gap: 8px;
   transition: all 0.2s;
 }
-.btn-gold:hover { background: var(--gold-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-gold:hover { background: var(--gold-hover); transform: translateY(-1px); }
 .btn-secondary {
   background: #F1F5F9;
   color: var(--text-dark);
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   font-size: 13px;
-  padding: 11px 18px;
+  padding: 10px 18px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   cursor: pointer;
@@ -288,7 +304,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
   transition: all 0.2s;
 }
 .btn-danger:hover { background: #DC2626; }
-.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-sm { padding: 7px 14px; font-size: 12px; }
 
 /* DRAG & DROP UPLOAD */
 .upload-zone {
@@ -299,7 +315,6 @@ textarea.form-control { resize: vertical; min-height: 80px; }
   background: #F8FAFC;
   cursor: pointer;
   transition: all 0.2s;
-  position: relative;
 }
 .upload-zone:hover, .upload-zone.dragover {
   border-color: var(--gold);
@@ -325,7 +340,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
   border-radius: 4px;
 }
 
-/* PRODUCT GRID */
+/* CARDS GRID */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -499,7 +514,6 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* RESPONSIVE */
 @media(max-width:768px) {
   header { padding: 12px 16px; flex-direction: column; gap: 12px; align-items: flex-start; }
   .header-right { width: 100%; justify-content: space-between; }
@@ -520,7 +534,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
     </div>
   </div>
   <div class="header-right">
-    <div class="status-pill" id="statusPill" title="GitHub Bağlantı Durumu">
+    <div class="status-pill" id="statusPill" onclick="openTokenModal()" title="GitHub Bağlantı Durumu (Tıklayıp Düzenleyin)">
       <div class="status-dot" id="statusDot"></div>
       <span id="statusText">GitHub Bağlantısı Yok</span>
     </div>
@@ -535,7 +549,15 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 
 <div class="main-wrapper">
 
-  <!-- MAIN NAVIGATION TABS -->
+  <!-- TOKEN NOTIFICATION BANNER -->
+  <div class="token-banner" id="tokenBanner" style="display:none;">
+    <div>
+      <strong>ℹ️ GitHub Token Gerekli:</strong> Panelinizin ürün ve fotoğrafları doğrudan sitenize kaydedebilmesi için lütfen GitHub API Token'ınızı tanımlayın.
+    </div>
+    <button class="btn-gold btn-sm" onclick="openTokenModal()">🔑 Token'ı Şimdi Gir</button>
+  </div>
+
+  <!-- NAVIGATION TABS -->
   <div class="nav-tabs-bar">
     <button class="nav-tab-btn active" onclick="switchMainTab(event, 'tab-products')">
       🛒 Ürün Yönetimi <span class="badge" id="productCountBadge">0</span>
@@ -547,10 +569,10 @@ textarea.form-control { resize: vertical; min-height: 80px; }
       🏠 Ana Sayfa & Vitrin
     </button>
     <button class="nav-tab-btn" onclick="switchMainTab(event, 'tab-gallery')">
-      🖼️ Galeri Yönetimi
+      🖼️ Galeri Yönetimi <span class="badge" id="galCountBadge">0</span>
     </button>
     <button class="nav-tab-btn" onclick="switchMainTab(event, 'tab-blog')">
-      📝 Blog & Makaleler
+      📝 Blog & Makaleler <span class="badge" id="blogCountBadge">0</span>
     </button>
     <button class="nav-tab-btn" onclick="switchMainTab(event, 'tab-guide')">
       💡 Yardım & Kullanım
@@ -562,14 +584,13 @@ textarea.form-control { resize: vertical; min-height: 80px; }
   <!-- ══════════════════════════════════════════════════════════ -->
   <div class="tab-section active" id="tab-products">
     
-    <!-- SUB-TABS: Liste & Ekle -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
       <div style="display:flex; gap:8px;">
         <button class="btn-primary btn-sm" id="btnSubList" onclick="switchProductSubTab('list')">📋 Ürün Listesi</button>
         <button class="btn-gold btn-sm" id="btnSubAdd" onclick="startNewProduct()">➕ Yeni Ürün Ekle</button>
       </div>
       <div style="display:flex; gap:10px;">
-        <input type="text" class="form-control" id="productSearchBox" placeholder="🔍 Ürün ara..." style="width:220px; padding:6px 12px; font-size:13px;" oninput="filterProductList()">
+        <input type="text" class="form-control" id="productSearchBox" placeholder="🔍 Ürün ara..." style="width:200px; padding:6px 12px; font-size:13px;" oninput="filterProductList()">
         <select class="form-control" id="productCatFilter" style="width:160px; padding:6px 12px; font-size:13px;" onchange="filterProductList()">
           <option value="all">Tüm Kategoriler</option>
           <option value="Düz Membran Kapak">Düz Membran</option>
@@ -580,15 +601,13 @@ textarea.form-control { resize: vertical; min-height: 80px; }
       </div>
     </div>
 
-    <!-- ÜRÜN LİSTESİ VIEW -->
+    <!-- LIST VIEW -->
     <div id="subview-product-list">
-      <div id="productLoadingIndicator" style="text-align:center; padding:60px 20px; color:var(--text-muted);">
+      <div id="productLoadingIndicator" style="text-align:center; padding:60px 20px; color:var(--text-muted); display:none;">
         <div class="spinner" style="width:28px; height:28px; border-color:var(--navy); border-top-color:transparent; margin-bottom:12px;"></div>
-        <p style="font-weight:600;">Ürünler GitHub'dan yükleniyor...</p>
+        <p style="font-weight:600;">Ürünler yükleniyor...</p>
       </div>
-
       <div class="product-grid" id="productGrid" style="display:none;"></div>
-
       <div id="productEmptyState" style="display:none; text-align:center; padding:60px 20px; background:#fff; border-radius:var(--radius-md); border:1px dashed var(--border);">
         <div style="font-size:40px; margin-bottom:12px;">📦</div>
         <h3 style="font-family:'Montserrat',sans-serif; color:var(--navy); margin-bottom:6px;">Henüz Ürün Eklenmedi</h3>
@@ -597,13 +616,13 @@ textarea.form-control { resize: vertical; min-height: 80px; }
       </div>
     </div>
 
-    <!-- ÜRÜN EKLE/DÜZENLE FORM VIEW -->
+    <!-- FORM VIEW -->
     <div id="subview-product-form" style="display:none;">
       <div class="admin-card">
         <div class="admin-card-header">
           <div>
             <div class="admin-card-title" id="formCardTitle">➕ Yeni Membran Kapak Ürünü Ekle</div>
-            <div class="admin-card-desc">Girdiğiniz bilgiler anında JSON formatında GitHub'a kaydedilir ve sitenizde yayına girer.</div>
+            <div class="admin-card-desc">Girdiğiniz bilgiler anında buluta kaydedilir ve sitenizde yayına girer.</div>
           </div>
           <button class="btn-secondary btn-sm" onclick="switchProductSubTab('list')">← Listeye Dön</button>
         </div>
@@ -643,12 +662,12 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 
           <!-- GÖRSEL YÜKLEME -->
           <div class="form-group">
-            <label>Ana Ürün Fotoğrafı <span class="req">*</span></label>
+            <label>Ana Ürün Fotoğrafı</label>
             <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
               <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFileSelect(event)">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               <h4>Fotoğrafı Buraya Sürükleyin veya Tıklayın</h4>
-              <p>JPG, PNG, WebP desteklenir (Doğrudan GitHub'a yüklenir)</p>
+              <p>JPG, PNG, WebP desteklenir (Doğrudan sunucuya yüklenir)</p>
             </div>
             <div id="imagePreviewBox" class="upload-preview" style="display:none;">
               <img id="previewImg" src="/resim/logo.png" alt="Önizleme">
@@ -667,7 +686,6 @@ textarea.form-control { resize: vertical; min-height: 80px; }
             <div class="chip-container" id="colorsContainer">
               <input type="text" class="chip-input" id="colorInput" placeholder="Renk yazıp Enter'a basın (Örn: Mat Beyaz, Antrasit)..." onkeydown="handleChipKey(event, 'color')">
             </div>
-            <div class="form-hint">Yazıp Enter tuşuna basarak renk çipleri ekleyebilirsiniz.</div>
           </div>
 
           <!-- ÖZELLİKLER -->
@@ -685,7 +703,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
           </div>
 
           <!-- ROZETLER & ANA SAYFA GÖSTERİMİ -->
-          <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:24px;">
+          <div style="display:flex; flex-wrap:wrap; gap:14px; margin-bottom:24px;">
             <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; font-weight:700; color:var(--navy); background:#F0FDF4; padding:8px 14px; border-radius:6px; border:1px solid #BBF7D0;">
               <input type="checkbox" id="f_anasayfa" checked> 🏠 Ana Sayfa Vitrininde Göster
             </label>
@@ -737,7 +755,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
           <input type="text" class="form-control" id="c_telefon" placeholder="0 (505) 015 1035">
         </div>
         <div class="form-group">
-          <label>WhatsApp Numarası (Ülke Koduyla, Boşluksuz)</label>
+          <label>WhatsApp Numarası (Boşluksuz, Ülke Koduyla)</label>
           <input type="text" class="form-control" id="c_whatsapp" placeholder="905050151035">
         </div>
         <div class="form-group">
@@ -792,7 +810,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
       <div class="admin-card-header">
         <div>
           <div class="admin-card-title">🏠 Ana Sayfa Manşet & Bölüm Yönetimi</div>
-          <div class="admin-card-desc">Ana sayfanızdaki manşet başlıkları, sayılar ve "Biz Kimiz?" tanıtım metinleri.</div>
+          <div class="admin-card-desc">Ana sayfanızdaki manşet başlıkları, sayılar ve tanıtım metinleri.</div>
         </div>
         <button class="btn-gold btn-sm" onclick="saveHomeSettings()">💾 Ana Sayfayı Güncelle</button>
       </div>
@@ -810,7 +828,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
       </div>
       <div class="form-group">
         <label>Manşet Açıklama Metni (Spot)</label>
-        <textarea class="form-control" id="h_altyazi" rows="2" placeholder="Sektörde 15+ yıllık tecrübemiz ve uzman kadromuzla yüksek kalite membran kapak çözümleri..."></textarea>
+        <textarea class="form-control" id="h_altyazi" rows="2" placeholder="Sektörde 15+ yıllık tecrübemiz ve uzman kadromuzla..."></textarea>
       </div>
 
       <div class="admin-card-title" style="font-size:14px; margin:24px 0 12px 0;">📊 İstatistik Sayaçları (Hero Altı)</div>
@@ -866,7 +884,6 @@ textarea.form-control { resize: vertical; min-height: 80px; }
   <!-- ══════════════════════════════════════════════════════════ -->
   <div class="tab-section" id="tab-gallery">
     
-    <!-- SUB-TABS -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
       <div style="display:flex; gap:8px;">
         <button class="btn-primary btn-sm" id="btnGalSubList" onclick="switchGalSubTab('list')">📋 Fotoğraf Listesi</button>
@@ -886,7 +903,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 
     <!-- LIST VIEW -->
     <div id="subview-gal-list">
-      <div id="galLoadingIndicator" style="text-align:center; padding:60px 20px; color:var(--text-muted);">
+      <div id="galLoadingIndicator" style="text-align:center; padding:60px 20px; color:var(--text-muted); display:none;">
         <div class="spinner" style="width:28px; height:28px; border-color:var(--navy); border-top-color:transparent; margin-bottom:12px;"></div>
         <p style="font-weight:600;">Galeri fotoğrafları yükleniyor...</p>
       </div>
@@ -894,7 +911,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
       <div id="galEmptyState" style="display:none; text-align:center; padding:60px 20px; background:#fff; border-radius:var(--radius-md); border:1px dashed var(--border);">
         <div style="font-size:40px; margin-bottom:12px;">🖼️</div>
         <h3 style="font-family:'Montserrat',sans-serif; color:var(--navy); margin-bottom:6px;">Henüz Fotoğraf Eklenmedi</h3>
-        <p style="color:var(--text-muted); font-size:13px; margin-bottom:18px;">Tamamlanan projelerinizin ve imalat fotoğraflarınızın ilkini yükleyin.</p>
+        <p style="color:var(--text-muted); font-size:13px; margin-bottom:18px;">Tamamlanan imalat ve montaj fotoğraflarınızı buraya ekleyin.</p>
         <button class="btn-gold" onclick="startNewGallery()">➕ İlk Fotoğrafı Ekle</button>
       </div>
     </div>
@@ -928,7 +945,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
           </div>
 
           <div class="form-group">
-            <label>Fotoğraf Yükle <span class="req">*</span></label>
+            <label>Fotoğraf Yükle</label>
             <div class="upload-zone" id="galUploadZone" onclick="document.getElementById('galFileInput').click()">
               <input type="file" id="galFileInput" accept="image/*" style="display:none" onchange="handleGalFileSelect(event)">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -967,7 +984,6 @@ textarea.form-control { resize: vertical; min-height: 80px; }
   <!-- ══════════════════════════════════════════════════════════ -->
   <div class="tab-section" id="tab-blog">
     
-    <!-- SUB-TABS -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
       <div style="display:flex; gap:8px;">
         <button class="btn-primary btn-sm" id="btnBlogSubList" onclick="switchBlogSubTab('list')">📋 Makale Listesi</button>
@@ -978,7 +994,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 
     <!-- LIST VIEW -->
     <div id="subview-blog-list">
-      <div id="blogLoadingIndicator" style="text-align:center; padding:60px 20px; color:var(--text-muted);">
+      <div id="blogLoadingIndicator" style="text-align:center; padding:60px 20px; color:var(--text-muted); display:none;">
         <div class="spinner" style="width:28px; height:28px; border-color:var(--navy); border-top-color:transparent; margin-bottom:12px;"></div>
         <p style="font-weight:600;">Makaleler yükleniyor...</p>
       </div>
@@ -1026,7 +1042,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 
           <div class="form-group">
             <label>Kısa Özet (Katalogda ve Kartta Görünecek Metin) <span class="req">*</span></label>
-            <input type="text" class="form-control" id="b_ozet" placeholder="Membran kapakların uzun ömürlü kullanımı için pratik temizlik ve koruma ipuçları..." required>
+            <input type="text" class="form-control" id="b_ozet" placeholder="Membran kapakların uzun ömürlü kullanımı için pratik ipuçları..." required>
           </div>
 
           <!-- KAPAK GÖRSELİ -->
@@ -1051,7 +1067,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 
           <div class="form-group">
             <label>Detaylı Makale İçeriği <span class="req">*</span></label>
-            <textarea class="form-control" id="b_body" rows="8" placeholder="Makalenizin detaylı paragraflarını buraya yazın..." required></textarea>
+            <textarea class="form-control" id="b_body" rows="8" placeholder="Makalenizin detaylı metnini buraya yazın..." required></textarea>
           </div>
 
           <div style="margin-bottom:24px;">
@@ -1077,13 +1093,13 @@ textarea.form-control { resize: vertical; min-height: 80px; }
     <div class="admin-card">
       <div class="admin-card-title" style="font-size:18px; margin-bottom:12px;">💡 Global Kapak Yönetim Paneli Rehberi</div>
       <div style="font-size:14px; line-height:1.8; color:var(--text-dark);">
-        <p>Bu panel, sitenizdeki tüm içerikleri doğrudan **GitHub** ve **Vercel** bulut altyapısına bağlayarak yönetmenizi sağlar.</p>
+        <p>Bu panel, sitenizdeki tüm içerikleri doğrudan <strong>GitHub</strong> ve <strong>Vercel</strong> bulut altyapısına bağlayarak yönetmenizi sağlar.</p>
         <br>
         <h4 style="color:var(--navy);">🚀 Nasıl Çalışır?</h4>
         <ol style="margin-left:20px; margin-bottom:16px;">
-          <li>Panelden ürün, fotoğraf veya firma bilgisi ekleyip <strong>"Kaydet"</strong> dediğinizde, veriler anında GitHub deponuza güvenli şekilde işlenir.</li>
-          <li>Vercel bu güncellemeyi <strong>15-20 saniye içinde</strong> derleyip tüm dünyadaki ziyaretçilerinize canlı olarak sunar.</li>
-          <li>Fotoğraflarınız doğrudan sunucuya optimize edilerek yüklenir, siteniz hiçbir zaman yavaşlamaz.</li>
+          <li>Panelden ürün, fotoğraf, makale veya firma bilgisi ekleyip <strong>"Kaydet"</strong> dediğinizde, veriler anında bulut sunucunuza işlenir.</li>
+          <li>Vercel bu güncellemeyi <strong>15 saniye içinde</strong> tüm dünyadaki ziyaretçilerinize canlı olarak sunar.</li>
+          <li>Fotoğraflarınız sunucuya optimize edilerek yüklenir, siteniz hiçbir zaman yavaşlamaz.</li>
         </ol>
         <h4 style="color:var(--navy);">🔑 API Anahtarı Hakkında</h4>
         <p>Sağ üstteki <strong>"⚙️ API & Depo Ayarları"</strong> butonundan token ve depo ayarlarınızı istediğiniz zaman güncelleyebilirsiniz. Bu bilgiler sadece kendi tarayıcınızda güvenle saklanır.</p>
@@ -1160,29 +1176,21 @@ let uploadedFileName = '';
 let colorsList = [];
 let featsList = [];
 
-let galUploadedBase64 = null;
-let galUploadedName = '';
-
-// INIT
-document.addEventListener('DOMContentLoaded', () => {
-  checkTokenStatus();
-  loadAllProducts();
-  loadCompanySettings();
-  loadHomeSettings();
-  setupDragAndDrop();
-});
-
 // STATUS & TOAST
 function checkTokenStatus() {
   const token = localStorage.getItem('gkm_gh_token');
   const dot = document.getElementById('statusDot');
   const text = document.getElementById('statusText');
+  const banner = document.getElementById('tokenBanner');
+
   if (token) {
     dot.classList.add('connected');
     text.textContent = `GitHub Bağlantısı Aktif (${REPO_OWNER}/${REPO_NAME})`;
+    if (banner) banner.style.display = 'none';
   } else {
     dot.classList.remove('connected');
     text.textContent = 'GitHub Token Bekleniyor';
+    if (banner) banner.style.display = 'flex';
   }
 }
 
@@ -1296,6 +1304,7 @@ async function loadAllProducts() {
 
   } catch(err) {
     showToast('Ürünler yüklenirken hata oluştu', 'error');
+    renderProductGrid([]);
   } finally {
     loading.style.display = 'none';
   }
@@ -1321,6 +1330,9 @@ function renderProductGrid(products) {
         <div class="product-card-cat">${p.kategori || 'Membran Kapak'}</div>
         <div class="product-card-title">${p.title}</div>
         <div class="product-card-desc">${p.kisa_aciklama || 'Açıklama belirtilmemiş.'}</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">
+          ${p.anasayfada_goster !== false ? '🏠 Ana Sayfa Vitrininde Aktif' : '📁 Sadece Katalogda'}
+        </div>
         <div class="product-card-actions">
           <button class="btn-secondary btn-sm" style="flex:1;" onclick="editProduct('${p.slug}')">✏️ Düzenle</button>
           <button class="btn-danger btn-sm" onclick="deleteProduct('${p.slug}', '${p.sha || ''}')">🗑️ Sil</button>
@@ -1420,7 +1432,6 @@ async function saveProduct(e) {
     return;
   }
 
-  // Yeni ürün eklerken slug çakışmasını önle
   if (!editMode && allProducts.some(p => p.slug === slug)) {
     slug = `${slug}-${Date.now().toString().slice(-4)}`;
   }
@@ -1432,7 +1443,6 @@ async function saveProduct(e) {
   try {
     let finalImageUrl = document.getElementById('f_image_url').value.trim();
 
-    // 1. Upload image if selected
     if (uploadedFileBase64) {
       btn.innerHTML = '<div class="spinner"></div> Fotoğraf Yükleniyor...';
       const cleanExt = uploadedFileName.split('.').pop().toLowerCase() || 'jpg';
@@ -1446,7 +1456,6 @@ async function saveProduct(e) {
       if (imgRes.ok) finalImageUrl = '/' + imgPath;
     }
 
-    // 2. Prepare JSON
     const productData = {
       title,
       kategori: document.getElementById('f_kategori').value,
@@ -1461,7 +1470,6 @@ async function saveProduct(e) {
       ozellikler: featsList.length > 0 ? featsList : undefined
     };
 
-    // 3. Get SHA only if in edit mode
     let currentSha = editMode ? editingSha : '';
     if (editMode && !currentSha) {
       try {
@@ -1475,7 +1483,6 @@ async function saveProduct(e) {
       } catch(e) {}
     }
 
-    // 4. Commit to GitHub
     const jsonBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(productData, null, 2))));
     const commitBody = {
       message: editMode ? `Update product: ${title}` : `Add product: ${title}`,
@@ -1490,15 +1497,10 @@ async function saveProduct(e) {
       body: JSON.stringify(commitBody)
     });
 
-    if (!saveRes.ok) {
-      const errJson = await saveRes.json();
-      throw new Error(errJson.message || 'Ürün kaydedilemedi');
-    }
+    if (!saveRes.ok) throw new Error('Ürün kaydedilemedi');
 
-    // 5. Update index JSON
     await updateIndexFile(slug, token);
 
-    // Reset edit state
     editMode = false;
     editingSlug = '';
     editingSha = '';
@@ -1546,11 +1548,7 @@ async function deleteProduct(slug, sha) {
   if (!confirm(`"${slug}" ürününü silmek istediğinize emin misiniz?`)) return;
 
   const token = localStorage.getItem('gkm_gh_token');
-  if (!token) {
-    openTokenModal();
-    showToast('Lütfen önce GitHub API Token girin!', 'error');
-    return;
-  }
+  if (!token) { openTokenModal(); showToast('Lütfen önce GitHub API Token girin!', 'error'); return; }
 
   try {
     showToast('Ürün siliniyor...', 'info');
@@ -1565,15 +1563,12 @@ async function deleteProduct(slug, sha) {
       }
     }
 
-    const delRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler/${slug}.json`, {
+    await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler/${slug}.json`, {
       method: 'DELETE',
       headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: `Delete product: ${slug}`, sha: currentSha, branch: BRANCH })
     });
 
-    if (!delRes.ok) throw new Error('Ürün silinemedi');
-
-    // Remove from index
     try {
       const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler-index.json`, {
         headers: { 'Authorization': `token ${token}` }
@@ -1835,7 +1830,7 @@ async function saveHomeSettings() {
 }
 
 // ══════════════════════════════════════════════════════════
-// GALLERY MODULE (FULL CRUD)
+// GALLERY MODULE
 // ══════════════════════════════════════════════════════════
 let allGallery = [];
 let editGalMode = false;
@@ -1902,7 +1897,6 @@ async function loadAllGallery() {
       loaded = (await Promise.all(promises)).filter(g => g);
     }
 
-    // Fallback: Local
     if (loaded.length === 0) {
       const sampleIds = ['galeri-1', 'galeri-2', 'galeri-3'];
       const promises = sampleIds.map(async (id) => {
@@ -1920,10 +1914,12 @@ async function loadAllGallery() {
     }
 
     allGallery = loaded;
+    document.getElementById('galCountBadge').textContent = allGallery.length;
     renderAdminGalleryGrid(allGallery);
 
   } catch(err) {
     showToast('Galeri yüklenirken hata oluştu', 'error');
+    renderAdminGalleryGrid([]);
   } finally {
     loading.style.display = 'none';
   }
@@ -2030,7 +2026,6 @@ async function saveGalleryItem(e) {
   try {
     let finalImageUrl = document.getElementById('gal_image_url').value.trim();
 
-    // 1. Upload photo if selected
     if (galUploadedBase64) {
       btn.innerHTML = '<div class="spinner"></div> Fotoğraf Yükleniyor...';
       const cleanExt = galUploadedFileName.split('.').pop().toLowerCase() || 'jpg';
@@ -2044,7 +2039,6 @@ async function saveGalleryItem(e) {
       if (imgRes.ok) finalImageUrl = '/' + imgPath;
     }
 
-    // 2. Prepare JSON
     const galData = {
       baslik: title,
       kategori: document.getElementById('gal_cat').value,
@@ -2053,7 +2047,6 @@ async function saveGalleryItem(e) {
       siralama: Date.now()
     };
 
-    // 3. Get SHA if editing
     let currentSha = editGalMode ? editingGalSha : '';
     if (editGalMode && !currentSha) {
       try {
@@ -2067,7 +2060,6 @@ async function saveGalleryItem(e) {
       } catch(e) {}
     }
 
-    // 4. Commit to GitHub
     const jsonBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(galData, null, 2))));
     const commitBody = {
       message: editGalMode ? `Update gallery item: ${title}` : `Add gallery item: ${title}`,
@@ -2158,7 +2150,7 @@ function removeGalImage() {
 }
 
 // ══════════════════════════════════════════════════════════
-// BLOG MODULE (FULL CRUD)
+// BLOG MODULE
 // ══════════════════════════════════════════════════════════
 let allBlogs = [];
 let editBlogMode = false;
@@ -2225,7 +2217,6 @@ async function loadAllBlogs() {
       loaded = (await Promise.all(promises)).filter(b => b);
     }
 
-    // Fallback: Local
     if (loaded.length === 0) {
       let ids = [];
       try {
@@ -2248,10 +2239,12 @@ async function loadAllBlogs() {
     }
 
     allBlogs = loaded;
+    document.getElementById('blogCountBadge').textContent = allBlogs.length;
     renderAdminBlogGrid(allBlogs);
 
   } catch(err) {
     showToast('Makaleler yüklenirken hata oluştu', 'error');
+    renderAdminBlogGrid([]);
   } finally {
     loading.style.display = 'none';
   }
@@ -2365,7 +2358,6 @@ async function saveBlogItem(e) {
   try {
     let finalImageUrl = document.getElementById('b_image_url').value.trim();
 
-    // 1. Upload image if selected
     if (blogUploadedBase64) {
       btn.innerHTML = '<div class="spinner"></div> Fotoğraf Yükleniyor...';
       const cleanExt = blogUploadedFileName.split('.').pop().toLowerCase() || 'jpg';
@@ -2379,7 +2371,6 @@ async function saveBlogItem(e) {
       if (imgRes.ok) finalImageUrl = '/' + imgPath;
     }
 
-    // 2. Prepare JSON
     const blogData = {
       title,
       kategori: document.getElementById('b_kategori').value,
@@ -2390,7 +2381,6 @@ async function saveBlogItem(e) {
       anasayfada_goster: document.getElementById('b_anasayfa').checked
     };
 
-    // 3. Get SHA if editing
     let currentSha = editBlogMode ? editingBlogSha : '';
     if (editBlogMode && !currentSha) {
       try {
@@ -2404,7 +2394,6 @@ async function saveBlogItem(e) {
       } catch(e) {}
     }
 
-    // 4. Commit to GitHub
     const jsonBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(blogData, null, 2))));
     const commitBody = {
       message: editBlogMode ? `Update blog: ${title}` : `Add blog: ${title}`,
@@ -2421,7 +2410,6 @@ async function saveBlogItem(e) {
 
     if (!saveRes.ok) throw new Error('Makale kaydedilemedi');
 
-    // 5. Update blog index JSON
     try {
       let indexList = [];
       let indexSha = '';
@@ -2488,7 +2476,6 @@ async function deleteBlogItem(slug, sha) {
       body: JSON.stringify({ message: `Delete blog: ${slug}`, sha: currentSha, branch: BRANCH })
     });
 
-    // Remove from blog index
     try {
       const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/blog-index.json`, {
         headers: { 'Authorization': `token ${token}` }
@@ -2608,7 +2595,7 @@ function removeSelectedImage() {
 }
 
 // ══════════════════════════════════════════════════════════
-// INIT WITH ALL MODULES
+// INIT
 // ══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   checkTokenStatus();
