@@ -539,28 +539,29 @@ function goToProdSlide(index) {
 <script>
 // Anasayfa için ürün ve blog yükleyici
 async function loadHomePage() {
-  // ÜRÜNLERİ YÜKLE - GitHub API
+  const cacheBuster = '?t=' + Date.now();
+  // ÜRÜNLERİ YÜKLE
   try {
     let ids = [];
     try {
-      const ghRes = await fetch('https://api.github.com/repos/emrecanaksoyea34-a11y/global-kapak-mobilyaa/contents/_data/urunler');
-      if (ghRes.ok) {
-        const files = await ghRes.json();
-        ids = files.filter(f => f.name.endsWith('.json')).map(f => f.name.replace('.json', ''));
-      }
+      const idxRes = await fetch('_data/urunler-index.json' + cacheBuster);
+      if (idxRes.ok) ids = await idxRes.json();
     } catch(e) {}
     
-    if (ids.length === 0) {
+    if (!ids || ids.length === 0) {
       try {
-        const idxRes = await fetch('_data/urunler-index.json');
-        if (idxRes.ok) ids = await idxRes.json();
+        const ghRes = await fetch('https://api.github.com/repos/emrecanaksoyea34-a11y/global-kapak-mobilyaa/contents/_data/urunler');
+        if (ghRes.ok) {
+          const files = await ghRes.json();
+          ids = files.filter(f => f.name.endsWith('.json')).map(f => f.name.replace('.json', ''));
+        }
       } catch(e) {}
     }
     
     const products = [];
-    for (const id of ids.slice(0, 12)) {
+    for (const id of (ids || []).slice(0, 12)) {
       try {
-        const r = await fetch('_data/urunler/' + id + '.json');
+        const r = await fetch('_data/urunler/' + id + '.json' + cacheBuster);
         if (r.ok) { 
           const d = await r.json(); 
           d.id = id;
