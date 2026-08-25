@@ -883,40 +883,60 @@ async function loadAllProducts() {
   grid.style.display = 'none';
 
   try {
-    let productIds = [];
+    let productFiles = [];
     const token = localStorage.getItem('gkm_gh_token');
     const headers = token ? { 'Authorization': `token ${token}` } : {};
 
+    // 1. GitHub API'sinden klasör listesini çek
     try {
-      const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler`, { headers });
+      const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler?t=${Date.now()}`, { headers });
       if (r.ok) {
         const files = await r.json();
-        productIds = files.filter(f => f.name.endsWith('.json')).map(f => ({ slug: f.name.replace('.json', ''), sha: f.sha }));
+        productFiles = files.filter(f => f.name.endsWith('.json'));
       }
     } catch(e) {}
 
-    if (productIds.length === 0) {
-      const idxRes = await fetch('/_data/urunler-index.json');
-      if (idxRes.ok) {
-        const ids = await idxRes.json();
-        productIds = ids.map(id => ({ slug: id, sha: '' }));
-      }
+    let loaded = [];
+    if (productFiles.length > 0) {
+      const promises = productFiles.map(async (file) => {
+        try {
+          const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler/${file.name}?t=${Date.now()}`, { headers });
+          if (res.ok) {
+            const data = await res.json();
+            const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+            content.slug = file.name.replace('.json', '');
+            content.sha = data.sha;
+            return content;
+          }
+        } catch(e) {}
+        return null;
+      });
+      loaded = (await Promise.all(promises)).filter(p => p);
     }
 
-    const promises = productIds.map(async (item) => {
+    // 2. Fallback: Sitenin yerel dosyalarından oku
+    if (loaded.length === 0) {
       try {
-        const res = await fetch(`/_data/urunler/${item.slug}.json?t=${Date.now()}`);
-        if (res.ok) {
-          const data = await res.json();
-          data.slug = item.slug;
-          data.sha = item.sha;
-          return data;
+        const idxRes = await fetch('/_data/urunler-index.json?t=' + Date.now());
+        if (idxRes.ok) {
+          const ids = await idxRes.json();
+          const promises = ids.map(async (id) => {
+            try {
+              const res = await fetch(`/_data/urunler/${id}.json?t=${Date.now()}`);
+              if (res.ok) {
+                const data = await res.json();
+                data.slug = id;
+                return data;
+              }
+            } catch(e) {}
+            return null;
+          });
+          loaded = (await Promise.all(promises)).filter(p => p);
         }
       } catch(e) {}
-      return null;
-    });
+    }
 
-    allProducts = (await Promise.all(promises)).filter(p => p);
+    allProducts = loaded;
     document.getElementById('tabCount').textContent = allProducts.length;
     renderProductGrid(allProducts);
 
