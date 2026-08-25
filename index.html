@@ -542,42 +542,64 @@ async function loadHomePage() {
   const cacheBuster = '?t=' + Date.now();
   // ÜRÜNLERİ YÜKLE
   try {
-    let ids = [];
+    let loadedProducts = [];
+
+    // 1. GitHub API'den anlık oku
     try {
-      const idxRes = await fetch('_data/urunler-index.json' + cacheBuster);
-      if (idxRes.ok) ids = await idxRes.json();
+      const ghRes = await fetch('https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/urunler' + cacheBuster);
+      if (ghRes.ok) {
+        const files = await ghRes.json();
+        const jsonFiles = files.filter(f => f.name.endsWith('.json'));
+        const promises = jsonFiles.map(async (file) => {
+          try {
+            const res = await fetch(`https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/urunler/${file.name}${cacheBuster}`);
+            if (res.ok) {
+              const d = await res.json();
+              const p = JSON.parse(decodeURIComponent(escape(atob(d.content))));
+              p.id = file.name.replace('.json', '');
+              return p;
+            }
+          } catch(e) {}
+          return null;
+        });
+        loadedProducts = (await Promise.all(promises)).filter(p => p);
+      }
     } catch(e) {}
-    
-    if (!ids || ids.length === 0) {
+
+    // 2. Fallback: Yerel JSON
+    if (loadedProducts.length === 0) {
+      let ids = [];
       try {
-        const ghRes = await fetch('https://api.github.com/repos/emrecanaksoyea34-a11y/global-kapak-mobilyaa/contents/_data/urunler');
-        if (ghRes.ok) {
-          const files = await ghRes.json();
-          ids = files.filter(f => f.name.endsWith('.json')).map(f => f.name.replace('.json', ''));
-        }
+        const idxRes = await fetch('_data/urunler-index.json' + cacheBuster);
+        if (idxRes.ok) ids = await idxRes.json();
       } catch(e) {}
+      
+      for (const id of (ids || []).slice(0, 12)) {
+        try {
+          const r = await fetch('_data/urunler/' + id + '.json' + cacheBuster);
+          if (r.ok) { 
+            const d = await r.json(); 
+            d.id = id;
+            loadedProducts.push(d); 
+          }
+        } catch(e) {}
+      }
     }
-    
-    const products = [];
-    for (const id of (ids || []).slice(0, 12)) {
-      try {
-        const r = await fetch('_data/urunler/' + id + '.json' + cacheBuster);
-        if (r.ok) { 
-          const d = await r.json(); 
-          d.id = id;
-          products.push(d); 
-        }
-      } catch(e) {}
+
+    // Ana sayfada gösterilecekleri filtrele (Öncelik: anasayfada_goster === true veya populer === true)
+    let showcase = loadedProducts.filter(p => p.anasayfada_goster === true || p.populer === true);
+    if (showcase.length === 0) {
+      showcase = loadedProducts.filter(p => p.anasayfada_goster !== false);
     }
     
     const prodTrack = document.getElementById('prodTrack');
-    if (prodTrack && products.length > 0) {
-      prodTrack.innerHTML = products.map(p => `
+    if (prodTrack && showcase.length > 0) {
+      prodTrack.innerHTML = showcase.map(p => `
         <div class="prod-slide">
-          <a href="urun.html?id=${p.id}" class="prod-card">
-            <div class="prod-img" style="background-image:url('${p.ana_resim || 'resim/logo.png'}');background-size:contain;background-repeat:no-repeat;background-color:#fff;background-position:center;"></div>
+          <a href="urun.html?id=${p.id || p.slug}" class="prod-card">
+            <div class="prod-img" style="background-image:url('${p.ana_resim || 'resim/logo.png'}');background-size:cover;background-repeat:no-repeat;background-color:#F8FAFC;background-position:center;"></div>
             <div class="prod-body">
-              <div class="prod-cat">${p.kategori || ''}</div>
+              <div class="prod-cat">${p.kategori || 'Membran Kapak'}</div>
               <h3>${p.title}</h3>
               <p>${p.kisa_aciklama || ''}</p>
             </div>
@@ -585,7 +607,7 @@ async function loadHomePage() {
         </div>
       `).join('');
     } else if (prodTrack) {
-      prodTrack.innerHTML = '<div style="padding:40px;text-align:center;color:#777;width:100%;">Yakında ürünlerimiz burada görünecek.</div>';
+      prodTrack.innerHTML = '<div style="padding:40px;text-align:center;color:#777;width:100%;">Henüz vitrin ürünü seçilmedi.</div>';
     }
     // Ürünler yüklendi, slider'ı yeniden başlat
     initProdSlider();

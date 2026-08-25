@@ -684,13 +684,16 @@ textarea.form-control { resize: vertical; min-height: 80px; }
             <textarea class="form-control" id="f_body" rows="4" placeholder="Ürünün üretim detayları, kullanım alanları, temizlik ve bakım önerileri..."></textarea>
           </div>
 
-          <!-- ROZETLER -->
-          <div style="display:flex; gap:20px; margin-bottom:24px;">
-            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; font-weight:600;">
-              <input type="checkbox" id="f_populer"> ⭐ Popüler Ürün Olarak İşaretle
+          <!-- ROZETLER & ANA SAYFA GÖSTERİMİ -->
+          <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:24px;">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; font-weight:700; color:var(--navy); background:#F0FDF4; padding:8px 14px; border-radius:6px; border:1px solid #BBF7D0;">
+              <input type="checkbox" id="f_anasayfa" checked> 🏠 Ana Sayfa Vitrininde Göster
             </label>
-            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; font-weight:600;">
-              <input type="checkbox" id="f_yeni"> ✨ Yeni Ürün Olarak İşaretle
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; font-weight:600; padding:8px 12px; background:#F8FAFC; border-radius:6px; border:1px solid var(--border);">
+              <input type="checkbox" id="f_populer"> ⭐ Popüler Ürün
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; font-weight:600; padding:8px 12px; background:#F8FAFC; border-radius:6px; border:1px solid var(--border);">
+              <input type="checkbox" id="f_yeni"> ✨ Yeni Ürün
             </label>
           </div>
 
@@ -1219,6 +1222,9 @@ function startNewProduct() {
   document.getElementById('f_slug').value = '';
   document.getElementById('f_slug').readOnly = false;
   document.getElementById('f_image_url').value = '/resim/logo.png';
+  document.getElementById('f_anasayfa').checked = true;
+  document.getElementById('f_populer').checked = false;
+  document.getElementById('f_yeni').checked = false;
   colorsList = [];
   featsList = [];
   renderChips('colors');
@@ -1245,6 +1251,7 @@ function editProduct(slug) {
   document.getElementById('f_slug').readOnly = true;
   document.getElementById('f_kisa').value = p.kisa_aciklama || '';
   document.getElementById('f_body').value = p.body || '';
+  document.getElementById('f_anasayfa').checked = p.anasayfada_goster !== false;
   document.getElementById('f_populer').checked = !!p.populer;
   document.getElementById('f_yeni').checked = !!p.yeni;
   document.getElementById('f_image_url').value = p.ana_resim || '/resim/logo.png';
@@ -1316,6 +1323,7 @@ async function saveProduct(e) {
       kisa_aciklama: document.getElementById('f_kisa').value.trim(),
       ana_resim: finalImageUrl || '/resim/logo.png',
       body: document.getElementById('f_body').value.trim(),
+      anasayfada_goster: document.getElementById('f_anasayfa').checked,
       populer: document.getElementById('f_populer').checked,
       yeni: document.getElementById('f_yeni').checked,
       renkler: colorsList.length > 0 ? colorsList : undefined,
