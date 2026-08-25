@@ -542,41 +542,30 @@ async function loadHomePage() {
   const cacheBuster = '?t=' + Date.now();
   // ÜRÜNLERİ YÜKLE
   try {
-    let loadedProducts = [];
-
-    // 1. GitHub API'den anlık oku
+    let ids = [];
+    
+    // 1. Yerel index
     try {
-      const ghRes = await fetch('https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/urunler' + cacheBuster);
-      if (ghRes.ok) {
-        const files = await ghRes.json();
-        const jsonFiles = files.filter(f => f.name.endsWith('.json'));
-        const promises = jsonFiles.map(async (file) => {
-          try {
-            const res = await fetch(`https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/urunler/${file.name}${cacheBuster}`);
-            if (res.ok) {
-              const d = await res.json();
-              const p = JSON.parse(decodeURIComponent(escape(atob(d.content))));
-              p.id = file.name.replace('.json', '');
-              return p;
-            }
-          } catch(e) {}
-          return null;
-        });
-        loadedProducts = (await Promise.all(promises)).filter(p => p);
-      }
+      const idxRes = await fetch('_data/urunler-index.json' + cacheBuster);
+      if (idxRes.ok) ids = await idxRes.json();
     } catch(e) {}
 
-    // 2. Fallback: Yerel JSON
-    if (loadedProducts.length === 0) {
-      let ids = [];
+    // 2. Raw GitHub index fallback
+    if (!ids || ids.length === 0) {
       try {
-        const idxRes = await fetch('_data/urunler-index.json' + cacheBuster);
-        if (idxRes.ok) ids = await idxRes.json();
+        const rawRes = await fetch('https://raw.githubusercontent.com/emrecanaksoy/global-mobilya/main/_data/urunler-index.json' + cacheBuster);
+        if (rawRes.ok) ids = await rawRes.json();
       } catch(e) {}
-      
-      for (const id of (ids || []).slice(0, 12)) {
+    }
+
+    let loadedProducts = [];
+    if (ids && ids.length > 0) {
+      for (const id of ids.slice(0, 12)) {
         try {
-          const r = await fetch('_data/urunler/' + id + '.json' + cacheBuster);
+          let r = await fetch('_data/urunler/' + id + '.json' + cacheBuster);
+          if (!r.ok) {
+            r = await fetch(`https://raw.githubusercontent.com/emrecanaksoy/global-mobilya/main/_data/urunler/${id}.json${cacheBuster}`);
+          }
           if (r.ok) { 
             const d = await r.json(); 
             d.id = id;

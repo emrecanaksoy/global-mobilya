@@ -125,55 +125,50 @@ async function loadProducts() {
   const cacheBuster = '?t=' + Date.now();
   
   try {
-    let productFiles = [];
+    let productIds = [];
     
-    // 1. Önce GitHub API'den anlık canlı ürün listesini al
+    // 1. Yerel index dosyasını oku (Hızlı & Limitsiz)
     try {
-      const ghRes = await fetch('https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/urunler' + cacheBuster);
-      if (ghRes.ok) {
-        const files = await ghRes.json();
-        productFiles = files.filter(f => f.name.endsWith('.json'));
-      }
+      const idxRes = await fetch('_data/urunler-index.json' + cacheBuster);
+      if (idxRes.ok) productIds = await idxRes.json();
     } catch(e) {}
 
-    let loaded = [];
-    if (productFiles.length > 0) {
-      const promises = productFiles.map(async (file) => {
-        try {
-          const res = await fetch(`https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/urunler/${file.name}${cacheBuster}`);
-          if (res.ok) {
-            const data = await res.json();
-            const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-            content.id = file.name.replace('.json', '');
-            return content;
-          }
-        } catch(e) {}
-        return null;
-      });
-      loaded = (await Promise.all(promises)).filter(p => p);
+    // 2. Raw GitHub fallback (Limitsiz CDN)
+    if (!productIds || productIds.length === 0) {
+      try {
+        const rawRes = await fetch('https://raw.githubusercontent.com/emrecanaksoy/global-mobilya/main/_data/urunler-index.json' + cacheBuster);
+        if (rawRes.ok) productIds = await rawRes.json();
+      } catch(e) {}
     }
 
-    // 2. Fallback: Yerel JSON dosyalarından oku
-    if (loaded.length === 0) {
-      let productIds = [];
+    // 3. Fallback: GitHub API
+    if (!productIds || productIds.length === 0) {
       try {
-        const indexResponse = await fetch('_data/urunler-index.json' + cacheBuster);
-        if (indexResponse.ok) productIds = await indexResponse.json();
+        const ghRes = await fetch('https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/urunler' + cacheBuster);
+        if (ghRes.ok) {
+          const files = await ghRes.json();
+          productIds = files.filter(f => f.name.endsWith('.json')).map(f => f.name.replace('.json', ''));
+        }
       } catch(e) {}
+    }
 
-      if (productIds && productIds.length > 0) {
-        const promises = productIds.map(async (id) => {
-          try {
-            const r = await fetch(`_data/urunler/${id}.json${cacheBuster}`);
-            if (r.ok) {
-              const data = await r.json();
-              data.id = id;
-              return data;
-            }
-          } catch(e) { return null; }
-        });
-        loaded = (await Promise.all(promises)).filter(p => p);
-      }
+    let loaded = [];
+    if (productIds && productIds.length > 0) {
+      const promises = productIds.map(async (id) => {
+        try {
+          // Önce yerel, sonra Raw GitHub
+          let res = await fetch(`_data/urunler/${id}.json${cacheBuster}`);
+          if (!res.ok) {
+            res = await fetch(`https://raw.githubusercontent.com/emrecanaksoy/global-mobilya/main/_data/urunler/${id}.json${cacheBuster}`);
+          }
+          if (res.ok) {
+            const data = await res.json();
+            data.id = id;
+            return data;
+          }
+        } catch(e) { return null; }
+      });
+      loaded = (await Promise.all(promises)).filter(p => p);
     }
     
     allProducts = loaded;
