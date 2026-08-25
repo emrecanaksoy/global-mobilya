@@ -194,12 +194,33 @@ async function loadProduct() {
     container.innerHTML = '<div class="error"><h2>Ürün Bulunamadı</h2><p><a href="urunler.html">← Ürünlere Dön</a></p></div>';
     return;
   }
+  const cacheBuster = '?t=' + Date.now();
+  let p = null;
+
+  // 1. GitHub API
   try {
-    const r = await fetch('_data/urunler/' + productId + '.json');
-    if (!r.ok) throw new Error();
-    const p = await r.json();
-    document.title = p.title + ' | Global Kapak Mobilya';
-    document.getElementById('bc-product').textContent = p.title;
+    const ghRes = await fetch(`https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/urunler/${productId}.json${cacheBuster}`);
+    if (ghRes.ok) {
+      const d = await ghRes.json();
+      p = JSON.parse(decodeURIComponent(escape(atob(d.content))));
+    }
+  } catch(e) {}
+
+  // 2. Fallback: Yerel dosya
+  if (!p) {
+    try {
+      const r = await fetch(`_data/urunler/${productId}.json${cacheBuster}`);
+      if (r.ok) p = await r.json();
+    } catch(e) {}
+  }
+
+  if (!p) {
+    container.innerHTML = '<div class="error"><h2>Ürün Bulunamadı</h2><p><a href="urunler.html">← Ürünlere Dön</a></p></div>';
+    return;
+  }
+
+  document.title = p.title + ' | Global Kapak Mobilya';
+  document.getElementById('bc-product').textContent = p.title;
 
     // Galeri görselleri
     // JSON'da "gorseller": ["resim/urun1.jpg","resim/urun2.jpg"] dizisi kullanın

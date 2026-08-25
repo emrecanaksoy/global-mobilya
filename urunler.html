@@ -125,40 +125,58 @@ async function loadProducts() {
   const cacheBuster = '?t=' + Date.now();
   
   try {
-    let productIds = [];
+    let productFiles = [];
     
-    // 1. Önce doğrudan hızlı index dosyasını oku
+    // 1. Önce GitHub API'den anlık canlı ürün listesini al
     try {
-      const indexResponse = await fetch('_data/urunler-index.json' + cacheBuster);
-      if (indexResponse.ok) productIds = await indexResponse.json();
+      const ghRes = await fetch('https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/urunler' + cacheBuster);
+      if (ghRes.ok) {
+        const files = await ghRes.json();
+        productFiles = files.filter(f => f.name.endsWith('.json'));
+      }
     } catch(e) {}
 
-    // 2. Fallback: GitHub API
-    if (!productIds || productIds.length === 0) {
+    let loaded = [];
+    if (productFiles.length > 0) {
+      const promises = productFiles.map(async (file) => {
+        try {
+          const res = await fetch(`https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/urunler/${file.name}${cacheBuster}`);
+          if (res.ok) {
+            const data = await res.json();
+            const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+            content.id = file.name.replace('.json', '');
+            return content;
+          }
+        } catch(e) {}
+        return null;
+      });
+      loaded = (await Promise.all(promises)).filter(p => p);
+    }
+
+    // 2. Fallback: Yerel JSON dosyalarından oku
+    if (loaded.length === 0) {
+      let productIds = [];
       try {
-        const ghRes = await fetch('https://api.github.com/repos/emrecanaksoyea34-a11y/global-kapak-mobilyaa/contents/_data/urunler');
-        if (ghRes.ok) {
-          const files = await ghRes.json();
-          productIds = files
-            .filter(f => f.name.endsWith('.json'))
-            .map(f => f.name.replace('.json', ''));
-        }
+        const indexResponse = await fetch('_data/urunler-index.json' + cacheBuster);
+        if (indexResponse.ok) productIds = await indexResponse.json();
       } catch(e) {}
+
+      if (productIds && productIds.length > 0) {
+        const promises = productIds.map(async (id) => {
+          try {
+            const r = await fetch(`_data/urunler/${id}.json${cacheBuster}`);
+            if (r.ok) {
+              const data = await r.json();
+              data.id = id;
+              return data;
+            }
+          } catch(e) { return null; }
+        });
+        loaded = (await Promise.all(promises)).filter(p => p);
+      }
     }
     
-    // Her bir ürünün JSON'unu yükle
-    const productPromises = productIds.map(async (id) => {
-      try {
-        const r = await fetch(`_data/urunler/${id}.json${cacheBuster}`);
-        if (r.ok) {
-          const data = await r.json();
-          data.id = id;
-          return data;
-        }
-      } catch(e) { return null; }
-    });
-    
-    allProducts = (await Promise.all(productPromises)).filter(p => p);
+    allProducts = loaded;
     
     if (allProducts.length === 0) {
       container.innerHTML = `<div class="empty"><h3>Henüz ürün eklenmedi</h3><p>Yakında ürünlerimiz burada listelenecek.</p></div>`;
