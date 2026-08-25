@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ürün Yönetim Paneli | Global Kapak Mobilya</title>
+<link rel="icon" href="/resim/logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0B1F4B;
+  --navy-light: #1A3A7A;
+  --gold: #C8A96E;
+  --gold-hover: #b59557;
+  --bg: #F8FAFC;
+  --card-bg: #FFFFFF;
+  --border: #E2E8F0;
+  --text: #1E293B;
+  --text-muted: #64748B;
+  --success: #10B981;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --shadow: 0 4px 12px rgba(11, 31, 75, 0.06);
+  --shadow-lg: 0 10px 25px rgba(11, 31, 75, 0.12);
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Open Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; }
+
+/* HEADER */
+header {
+  background: var(--navy);
+  color: #fff;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.header-logo { height: 42px; width: auto; background: #fff; padding: 4px 8px; border-radius: 6px; }
+.header-title h1 { font-size: 18px; font-weight: 700; color: #fff; }
+.header-title span { font-size: 12px; color: var(--gold); font-weight: 600; letter-spacing: 0.5px; }
+
+.header-right { display: flex; align-items: center; gap: 12px; }
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.1);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); }
+.status-dot.connected { background: var(--success); box-shadow: 0 0 8px var(--success); }
+
+.btn-header {
+  background: var(--gold);
+  color: var(--navy);
+  font-weight: 700;
+  font-size: 12px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.btn-header:hover { background: #fff; color: var(--navy); }
+.btn-header-outline {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.btn-header-outline:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+/* CONTAINER & TABS */
+.main-wrapper { max-width: 1400px; margin: 0 auto; padding: 24px; width: 100%; flex: 1; }
+
+.nav-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 24px;
+  background: #fff;
+  padding: 8px 16px 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.tab-btn {
+  background: transparent;
+  border: none;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.tab-btn:hover { color: var(--navy); }
+.tab-btn.active { color: var(--navy); font-weight: 700; }
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gold);
+  border-radius: 3px 3px 0 0;
+}
+
+/* CONTENT SECTIONS */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* LIST VIEW */
+.list-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.search-filter-box { display: flex; gap: 12px; flex: 1; max-width: 600px; }
+.search-input {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+}
+.filter-select {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+  color: var(--text);
+}
+.product-count-badge { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+.product-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+.product-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+.card-img-wrap {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #f1f5f9;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-img-wrap img { width: 100%; height: 100%; object-fit: contain; }
+.card-badges { position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; }
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-gold { background: var(--gold); color: var(--navy); }
+.badge-green { background: var(--success); color: #fff; }
+
+.card-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+.card-cat { font-size: 11px; font-weight: 700; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; }
+.card-title { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 6px; line-height: 1.3; }
+.card-sku { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+.card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; flex: 1; }
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.btn-action {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+.btn-edit { background: #EEF2FF; color: #4338CA; border-color: #C7D2FE; }
+.btn-edit:hover { background: #4338CA; color: #fff; }
+.btn-delete { background: #FEF2F2; color: var(--danger); border-color: #FECACA; }
+.btn-delete:hover { background: var(--danger); color: #fff; }
+.btn-preview { background: var(--bg); color: var(--text); border-color: var(--border); }
+.btn-preview:hover { background: #E2E8F0; }
+
+/* FORM & PREVIEW LAYOUT */
+.form-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .form-layout { grid-template-columns: 1fr; }
+}
+
+.panel-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+.panel-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-group { margin-bottom: 18px; }
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.form-group label span.req { color: var(--danger); }
+.form-control {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+}
+.form-control:focus {
+  outline: none;
+  border-color: var(--navy-light);
+  box-shadow: 0 0 0 3px rgba(26, 58, 122, 0.1);
+}
+textarea.form-control { min-height: 100px; resize: vertical; line-height: 1.6; }
+.form-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+
+/* IMAGE UPLOADER */
+.upload-dropzone {
+  border: 2px dashed #CBD5E1;
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  background: #F8FAFC;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.upload-dropzone:hover, .upload-dropzone.dragover {
+  border-color: var(--gold);
+  background: #FEFCE8;
+}
+.upload-icon { font-size: 32px; color: var(--gold); margin-bottom: 8px; }
+.upload-text { font-size: 13px; font-weight: 600; color: var(--navy); }
+.upload-subtext { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+.image-preview-box {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #f1f5f9;
+  aspect-ratio: 4/3;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.image-preview-box img { width: 100%; height: 100%; object-fit: contain; }
+.btn-remove-img {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(239, 68, 68, 0.9);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+/* CHIPS & TAGS */
+.chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  min-height: 44px;
+}
+.chip {
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.chip button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.chip button:hover { color: var(--danger); }
+.chip-input {
+  border: none;
+  outline: none;
+  flex: 1;
+  min-width: 120px;
+  font-size: 13px;
+  padding: 4px;
+}
+
+/* TOGGLES */
+.toggle-group {
+  display: flex;
+  gap: 20px;
+  background: #F8FAFC;
+  padding: 12px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  cursor: pointer;
+}
+.toggle-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--gold);
+}
+
+/* BUTTONS */
+.btn-primary {
+  background: var(--navy);
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  width: 100%;
+}
+.btn-primary:hover { background: var(--navy-light); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-secondary {
+  background: #fff;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { background: var(--bg); }
+
+/* LIVE PREVIEW BOX */
+.preview-sticky {
+  position: sticky;
+  top: 90px;
+}
+.preview-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.preview-header {
+  background: var(--navy);
+  color: #fff;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* MODAL */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 31, 75, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-backdrop.open { display: flex; }
+.modal-box {
+  background: #fff;
+  border-radius: 10px;
+  max-width: 550px;
+  width: 100%;
+  padding: 28px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  position: relative;
+  animation: modalPop 0.2s ease-out;
+}
+@keyframes modalPop {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.modal-title { font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 12px; }
+.modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+/* TOAST NOTIFICATION */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--navy);
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 2000;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { background: #065F46; border-left: 4px solid var(--success); }
+.toast.error { background: #991B1B; border-left: 4px solid var(--danger); }
+.toast.info { background: var(--navy); border-left: 4px solid var(--gold); }
+
+/* SPINNER */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <a href="/index.html"><img src="/resim/logo.png" alt="Logo" class="header-logo"></a>
+    <div class="header-title">
+      <h1>Ürün Yönetim Paneli</h1>
+      <span>GLOBAL KAPAK MOBİLYA</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="status-pill" id="statusPill" title="GitHub Bağlantı Durumu">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">GitHub Bağlantısı Yok</span>
+    </div>
+    <button class="btn-header btn-header-outline" onclick="openTokenModal()">
+      ⚙️ API Ayarları
+    </button>
+    <a href="/urunler.html" target="_blank" class="btn-header">
+      🌐 Siteyi Görüntüle ↗
+    </a>
+  </div>
+</header>
+
+<div class="main-wrapper">
+
+  <!-- TABS -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('list')">
+      📋 Ürün Listesi (<span id="tabCount">0</span>)
+    </button>
+    <button class="tab-btn" onclick="switchTab('add')">
+      ➕ <span id="addTabLabel">Yeni Ürün Ekle</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('guide')">
+      💡 Nasıl Kullanılır?
+    </button>
+  </div>
+
+  <!-- 1. TAB: ÜRÜN LİSTESİ -->
+  <div class="tab-content active" id="tab-list">
+    <div class="list-header-bar">
+      <div class="search-filter-box">
+        <input type="text" class="search-input" id="searchBox" placeholder="🔍 Ürün adı veya kodunda ara..." oninput="filterList()">
+        <select class="filter-select" id="categoryFilter" onchange="filterList()">
+          <option value="all">Tüm Kategoriler</option>
+          <option value="Düz Membran Kapak">Düz Membran Kapak</option>
+          <option value="Çerçeveli">Çerçeveli</option>
+          <option value="Özel Ölçü">Özel Ölçü</option>
+        </select>
+      </div>
+      <button class="btn-header" onclick="startNewProduct()">
+        ➕ Yeni Ürün Ekle
+      </button>
+    </div>
+
+    <div id="loadingIndicator" style="text-align:center; padding:60px 20px; color:var(--text-muted);">
+      <div class="spinner" style="width:30px; height:30px; border-color:var(--navy); border-top-color:transparent; margin-bottom:12px;"></div>
+      <p style="font-weight:600;">Ürünler GitHub'dan yükleniyor...</p>
+    </div>
+
+    <div class="product-grid" id="productGrid" style="display:none;"></div>
+  </div>
+
+  <!-- 2. TAB: ÜRÜN EKLE / DÜZENLE -->
+  <div class="tab-content" id="tab-add">
+    <form id="productForm" onsubmit="saveProduct(event)">
+      <div class="form-layout">
+        
+        <!-- FORM SOL KOLON -->
+        <div>
+          <div class="panel-card">
+            <div class="panel-card-title">
+              <span>🏷️ Temel Ürün Bilgileri</span>
+            </div>
+
+            <div class="form-group">
+              <label>Ürün Adı <span class="req">*</span></label>
+              <input type="text" class="form-control" id="f_title" required placeholder="Örn: Akasya Meşe Çerçeveli Kapak" oninput="updateSlugAndPreview()">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Kategori <span class="req">*</span></label>
+                <select class="form-control" id="f_kategori" required onchange="updatePreview()">
+                  <option value="Düz Membran Kapak">Düz Membran Kapak</option>
+                  <option value="Çerçeveli">Çerçeveli</option>
+                  <option value="Özel Ölçü">Özel Ölçü</option>
+                  <option value="Akrilik Kapak">Akrilik Kapak</option>
+                  <option value="Lake Kapak">Lake Kapak</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Ürün Kodu (SKU)</label>
+                <input type="text" class="form-control" id="f_sku" placeholder="Örn: MK-CER-042" oninput="updatePreview()">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>URL / Sayfa Kodu (Slug) <span class="req">*</span></label>
+              <input type="text" class="form-control" id="f_slug" required placeholder="akasya-mese-cerceveli-kapak" oninput="updatePreview()">
+              <div class="form-hint">Sitedeki linki belirler: <code>urun.html?id=<b id="slugHint">urun-kodu</b></code></div>
+            </div>
+
+            <div class="form-group">
+              <label>Kısa Açıklama (Spot Metin)</label>
+              <textarea class="form-control" id="f_kisa" rows="2" placeholder="Katalog listesinde görünecek 1-2 cümlelik özet açıklama..." oninput="updatePreview()"></textarea>
+            </div>
+          </div>
+
+          <!-- GÖRSEL YÜKLEME -->
+          <div class="panel-card">
+            <div class="panel-card-title">
+              <span>📸 Ürün Ana Görseli</span>
+            </div>
+
+            <div class="upload-dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+              <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFileSelect(event)">
+              <div class="upload-icon">📁</div>
+              <div class="upload-text">Bilgisayarınızdan Görsel Seçin veya Sürükleyin</div>
+              <div class="upload-subtext">JPG, PNG, WebP formatları (Maks 5MB)</div>
+            </div>
+
+            <div class="form-group" style="margin-top:14px;">
+              <label>Veya Mevcut Görsel Yolu / URL:</label>
+              <input type="text" class="form-control" id="f_image_url" placeholder="/resim/yonetilen/ornek.jpg" oninput="handleUrlInput()">
+            </div>
+
+            <div class="image-preview-box" id="imagePreviewBox" style="display:none;">
+              <img id="previewImg" src="" alt="Görsel Önizleme">
+              <button type="button" class="btn-remove-img" onclick="removeImage()" title="Görseli Kaldır">✕</button>
+            </div>
+          </div>
+
+          <!-- EK DETAYLAR & RENKLER -->
+          <div class="panel-card">
+            <div class="panel-card-title">
+              <span>🎨 Renkler & Özellikler</span>
+            </div>
+
+            <div class="form-group">
+              <label>Mevcut Renk Seçenekleri</label>
+              <div class="chip-container" id="colorsContainer">
+                <input type="text" class="chip-input" id="colorInput" placeholder="Renk yazıp Enter'a basın..." onkeydown="handleChipKey(event, 'color')">
+              </div>
+              <div class="form-hint">Örn: Mat Beyaz, Antrasit, Vizon, Altın Meşe (Yazıp Enter'a basın)</div>
+            </div>
+
+            <div class="form-group">
+              <label>Öne Çıkan Özellikler (Madde Madde)</label>
+              <div class="chip-container" id="featsContainer">
+                <input type="text" class="chip-input" id="featInput" placeholder="Özellik yazıp Enter'a basın..." onkeydown="handleChipKey(event, 'feat')">
+              </div>
+              <div class="form-hint">Örn: Çizilmeye Dayanıklı, Kolay Temizlenir, E1 Standart (Yazıp Enter'a basın)</div>
+            </div>
+
+            <div class="form-group">
+              <label>Detaylı Açıklama (Ürün Sayfasında Gösterilecek İçerik)</label>
+              <textarea class="form-control" id="f_body" rows="5" placeholder="Ürün hakkında detaylı bilgi, kullanım alanları, malzeme özellikleri..." oninput="updatePreview()"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Rozetler & Durum</label>
+              <div class="toggle-group">
+                <label class="toggle-label">
+                  <input type="checkbox" id="f_populer" onchange="updatePreview()">
+                  <span>⭐ Popüler Ürün Olarak İşaretle</span>
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox" id="f_yeni" onchange="updatePreview()">
+                  <span>✨ Yeni Ürün Olarak İşaretle</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUBMIT BUTTONS -->
+          <div style="display:flex; gap:12px; margin-bottom:40px;">
+            <button type="submit" class="btn-primary" id="btnSubmit">
+              <span id="btnSubmitIcon">💾</span>
+              <span id="btnSubmitText">Kaydet ve Sitede Yayınla</span>
+            </button>
+            <button type="button" class="btn-secondary" onclick="switchTab('list')">İptal</button>
+          </div>
+
+        </div>
+
+        <!-- SAĞ KOLON: CANLI ÖNİZLEME -->
+        <div class="preview-sticky">
+          <div class="preview-card">
+            <div class="preview-header">
+              <span>👁️ Canlı Katalog Önizlemesi</span>
+              <span style="font-size:10px; opacity:0.8;">urunler.html</span>
+            </div>
+            <div style="padding:16px;">
+              <div style="background:#fff; border:1px solid var(--border); border-radius:6px; overflow:hidden;">
+                <div style="aspect-ratio:1; background:#f8fafc; position:relative; display:flex; align-items:center; justify-content:center;">
+                  <img id="prevCardImg" src="/resim/logo.png" style="width:100%; height:100%; object-fit:contain;">
+                  <div style="position:absolute; top:10px; left:10px; display:flex; gap:4px;" id="prevBadges"></div>
+                </div>
+                <div style="padding:14px;">
+                  <div style="font-size:10px; font-weight:700; color:var(--gold); text-transform:uppercase; margin-bottom:6px;" id="prevCardCat">DÜZ MEMBRAN KAPAK</div>
+                  <h4 style="font-size:15px; font-weight:700; color:var(--navy); margin-bottom:6px;" id="prevCardTitle">Ürün Başlığı</h4>
+                  <p style="font-size:12px; color:var(--text-muted); line-height:1.5; margin-bottom:12px;" id="prevCardDesc">Kısa açıklama burada görünecek...</p>
+                  <div style="font-size:11px; font-weight:700; color:var(--navy);">İNCELE →</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+  <!-- 3. TAB: YARDIM & REHBER -->
+  <div class="tab-content" id="tab-guide">
+    <div class="panel-card" style="max-width:800px; margin:0 auto;">
+      <div class="panel-card-title">
+        <span>📖 Ürün Paneli Nasıl Çalışır?</span>
+      </div>
+      <div style="font-size:14px; line-height:1.8; color:var(--text);">
+        <p style="margin-bottom:14px;">Bu panel doğrudan <strong>GitHub deponuz</strong> ile haberleşir. Eklediğiniz veya güncellediğiniz tüm ürünler anında <code>_data/urunler/</code> klasörüne kaydedilir.</p>
+        
+        <h4 style="color:var(--navy); margin:18px 0 8px;">🚀 Otomatik Vercel Güncellemesi</h4>
+        <p style="margin-bottom:14px;">Bir ürünü kaydedip yayınladığınızda <strong>Vercel 15-20 saniye içinde</strong> sitenizi otomatik olarak günceller ve yeni ürün tüm ziyaretçiler için yayına girer.</p>
+
+        <h4 style="color:var(--navy); margin:18px 0 8px;">🔑 GitHub API Anahtarı (Token) Nedir?</h4>
+        <p style="margin-bottom:14px;">Tarayıcınızın GitHub'a ürün kaydedebilmesi için ücretsiz bir GitHub Token'ına ihtiyacı vardır. Sağ üstteki <strong>"⚙️ API Ayarları"</strong> butonuna tıklayarak tokeninizi bir kere girmeniz yeterlidir.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- API TOKEN MODAL -->
+<div class="modal-backdrop" id="tokenModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeTokenModal()">✕</button>
+    <div class="modal-title">⚙️ GitHub API & Token Ayarı</div>
+    <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
+      Panelin doğrudan sitenize ürün ekleyebilmesi için GitHub Personal Access Token gereklidir.
+    </p>
+
+    <div class="form-group">
+      <label>GitHub Personal Access Token (PAT)</label>
+      <input type="password" class="form-control" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+    </div>
+
+    <div style="background:#F1F5F9; padding:12px; border-radius:6px; font-size:12px; margin-bottom:18px; line-height:1.6;">
+      <strong>Nasıl Token Alınır? (1 Dakika):</strong><br>
+      1. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Global+Kapak+Panel" target="_blank" style="color:var(--navy); font-weight:700; text-decoration:underline;">Buraya tıklayarak</a> GitHub token sayfasını açın.<br>
+      2. <strong>"repo"</strong> kutucuğunu işaretleyin ve en alttaki yeşil <strong>"Generate token"</strong> butonuna basın.<br>
+      3. Size verilen <code>ghp_...</code> ile başlayan kodu kopyalayıp yukarıdaki kutuya yapıştırın.
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <button class="btn-primary" onclick="saveToken()" style="flex:1;">Kaydet & Bağlantıyı Test Et</button>
+      <button class="btn-secondary" onclick="closeTokenModal()">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toastMsg">
+  <span id="toastIcon">✅</span>
+  <span id="toastText">İşlem başarılı</span>
+</div>
+
+<script>
+const REPO_OWNER = 'emrecanaksoyea34-a11y';
+const REPO_NAME = 'global-kapak-mobilyaa';
+const BRANCH = 'main';
+
+let allProducts = [];
+let editMode = false;
+let editingSlug = '';
+let editingSha = '';
+let uploadedFileBase64 = null;
+let uploadedFileName = '';
+let colorsList = [];
+let featsList = [];
+
+// INIT
+document.addEventListener('DOMContentLoaded', () => {
+  checkTokenStatus();
+  loadAllProducts();
+  setupDragAndDrop();
+});
+
+function checkTokenStatus() {
+  const token = localStorage.getItem('gkm_gh_token');
+  const dot = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  if (token) {
+    dot.classList.add('connected');
+    text.textContent = 'GitHub Bağlantısı Aktif';
+  } else {
+    dot.classList.remove('connected');
+    text.textContent = 'GitHub Token Bekleniyor';
+  }
+}
+
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toastMsg');
+  const txt = document.getElementById('toastText');
+  const icon = document.getElementById('toastIcon');
+  toast.className = 'toast show ' + type;
+  txt.textContent = msg;
+  icon.textContent = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+  setTimeout(() => { toast.classList.remove('show'); }, 4000);
+}
+
+// TABS
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach((b, idx) => {
+    b.classList.remove('active');
+    if ((tabId === 'list' && idx === 0) || (tabId === 'add' && idx === 1) || (tabId === 'guide' && idx === 2)) {
+      b.classList.add('active');
+    }
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+}
+
+// LOAD PRODUCTS
+async function loadAllProducts() {
+  const loading = document.getElementById('loadingIndicator');
+  const grid = document.getElementById('productGrid');
+  loading.style.display = 'block';
+  grid.style.display = 'none';
+
+  try {
+    let productIds = [];
+    const token = localStorage.getItem('gkm_gh_token');
+    const headers = token ? { 'Authorization': `token ${token}` } : {};
+
+    try {
+      const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler`, { headers });
+      if (r.ok) {
+        const files = await r.json();
+        productIds = files.filter(f => f.name.endsWith('.json')).map(f => ({ slug: f.name.replace('.json', ''), sha: f.sha }));
+      }
+    } catch(e) {}
+
+    if (productIds.length === 0) {
+      const idxRes = await fetch('/_data/urunler-index.json');
+      if (idxRes.ok) {
+        const ids = await idxRes.json();
+        productIds = ids.map(id => ({ slug: id, sha: '' }));
+      }
+    }
+
+    const promises = productIds.map(async (item) => {
+      try {
+        const res = await fetch(`/_data/urunler/${item.slug}.json?t=${Date.now()}`);
+        if (res.ok) {
+          const data = await res.json();
+          data.slug = item.slug;
+          data.sha = item.sha;
+          return data;
+        }
+      } catch(e) {}
+      return null;
+    });
+
+    allProducts = (await Promise.all(promises)).filter(p => p);
+    document.getElementById('tabCount').textContent = allProducts.length;
+    renderProductGrid(allProducts);
+
+  } catch(err) {
+    showToast('Ürünler yüklenirken hata oluştu', 'error');
+  } finally {
+    loading.style.display = 'none';
+    grid.style.display = 'grid';
+  }
+}
+
+function renderProductGrid(products) {
+  const grid = document.getElementById('productGrid');
+  if (products.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--text-muted);">
+      <h3>Henüz kayıtlı ürün yok</h3>
+      <p style="margin-top:8px;">Yukarıdaki "Yeni Ürün Ekle" butonuna tıklayarak ilk ürününüzü ekleyebilirsiniz.</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = products.map(p => `
+    <div class="product-card">
+      <div class="card-img-wrap">
+        <img src="${p.ana_resim || '/resim/logo.png'}" alt="${p.title}" onerror="this.src='/resim/logo.png'">
+        <div class="card-badges">
+          ${p.populer ? '<span class="badge badge-gold">Popüler</span>' : ''}
+          ${p.yeni ? '<span class="badge badge-green">Yeni</span>' : ''}
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-cat">${p.kategori || 'Kategori Yok'}</div>
+        <h3 class="card-title">${p.title}</h3>
+        <div class="card-sku">${p.sku ? 'Kod: ' + p.sku : 'Slug: ' + p.slug}</div>
+        <p class="card-desc">${p.kisa_aciklama || 'Kısa açıklama girilmemiş.'}</p>
+        <div class="card-actions">
+          <button class="btn-action btn-edit" onclick="editProduct('${p.slug}')">✏️ Düzenle</button>
+          <a href="/urun.html?id=${p.slug}" target="_blank" class="btn-action btn-preview">👁️ Önizle</a>
+          <button class="btn-action btn-delete" onclick="deleteProduct('${p.slug}', '${p.sha || ''}')">🗑️ Sil</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterList() {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  const cat = document.getElementById('categoryFilter').value;
+  const filtered = allProducts.filter(p => {
+    const matchQ = (p.title && p.title.toLowerCase().includes(q)) || (p.sku && p.sku.toLowerCase().includes(q)) || (p.slug && p.slug.toLowerCase().includes(q));
+    const matchCat = cat === 'all' || p.kategori === cat;
+    return matchQ && matchCat;
+  });
+  renderProductGrid(filtered);
+}
+
+// SLUG HELPER
+function slugify(text) {
+  const trMap = { 'ç':'c', 'ğ':'g', 'ı':'i', 'ö':'o', 'ş':'s', 'ü':'u', 'Ç':'c', 'Ğ':'g', 'İ':'i', 'Ö':'o', 'Ş':'s', 'Ü':'u' };
+  return text
+    .replace(/[çğışüöÇĞİŞÜÖ]/g, m => trMap[m])
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/[\s-]+/g, '-');
+}
+
+function updateSlugAndPreview() {
+  if (!editMode) {
+    const title = document.getElementById('f_title').value;
+    const slug = slugify(title);
+    document.getElementById('f_slug').value = slug;
+    document.getElementById('slugHint').textContent = slug || 'urun-kodu';
+  }
+  updatePreview();
+}
+
+function updatePreview() {
+  const title = document.getElementById('f_title').value || 'Ürün Başlığı';
+  const cat = document.getElementById('f_kategori').value || 'Kategori';
+  const desc = document.getElementById('f_kisa').value || 'Kısa açıklama burada görünecek...';
+  const isPop = document.getElementById('f_populer').checked;
+  const isNew = document.getElementById('f_yeni').checked;
+
+  document.getElementById('prevCardTitle').textContent = title;
+  document.getElementById('prevCardCat').textContent = cat.toUpperCase();
+  document.getElementById('prevCardDesc').textContent = desc;
+
+  let badgeHtml = '';
+  if (isPop) badgeHtml += '<span class="badge badge-gold">Popüler</span>';
+  if (isNew) badgeHtml += '<span class="badge badge-green">Yeni</span>';
+  document.getElementById('prevBadges').innerHTML = badgeHtml;
+}
+
+// FILE UPLOAD & DRAG DROP
+function setupDragAndDrop() {
+  const dropzone = document.getElementById('dropzone');
+  if (!dropzone) return;
+  ['dragenter', 'dragover'].forEach(name => {
+    dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  });
+  ['dragleave', 'drop'].forEach(name => {
+    dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); });
+  });
+  dropzone.addEventListener('drop', (e) => {
+    const files = e.dataTransfer.files;
+    if (files.length > 0) processFile(files[0]);
+  });
+}
+
+function handleFileSelect(e) {
+  if (e.target.files.length > 0) processFile(e.target.files[0]);
+}
+
+function processFile(file) {
+  if (!file.type.startsWith('image/')) {
+    showToast('Lütfen geçerli bir resim dosyası seçin', 'error');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    uploadedFileBase64 = e.target.result.split(',')[1];
+    uploadedFileName = file.name;
+    
+    document.getElementById('previewImg').src = e.target.result;
+    document.getElementById('prevCardImg').src = e.target.result;
+    document.getElementById('imagePreviewBox').style.display = 'flex';
+    document.getElementById('f_image_url').value = '';
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleUrlInput() {
+  const url = document.getElementById('f_image_url').value;
+  if (url) {
+    uploadedFileBase64 = null;
+    document.getElementById('previewImg').src = url;
+    document.getElementById('prevCardImg').src = url;
+    document.getElementById('imagePreviewBox').style.display = 'flex';
+  }
+}
+
+function removeImage() {
+  uploadedFileBase64 = null;
+  uploadedFileName = '';
+  document.getElementById('previewImg').src = '';
+  document.getElementById('prevCardImg').src = '/resim/logo.png';
+  document.getElementById('imagePreviewBox').style.display = 'none';
+  document.getElementById('f_image_url').value = '';
+  document.getElementById('fileInput').value = '';
+}
+
+// CHIPS (COLORS & FEATURES)
+function handleChipKey(e, type) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const input = document.getElementById(type === 'color' ? 'colorInput' : 'featInput');
+    const val = input.value.trim();
+    if (val) {
+      if (type === 'color') {
+        if (!colorsList.includes(val)) colorsList.push(val);
+        renderChips('colorsContainer', colorsList, 'color');
+      } else {
+        if (!featsList.includes(val)) featsList.push(val);
+        renderChips('featsContainer', featsList, 'feat');
+      }
+      input.value = '';
+    }
+  }
+}
+
+function renderChips(containerId, list, type) {
+  const container = document.getElementById(containerId);
+  const input = container.querySelector('.chip-input');
+  container.querySelectorAll('.chip').forEach(c => c.remove());
+  list.forEach((item, idx) => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.innerHTML = `${item} <button type="button" onclick="removeChip('${type}', ${idx})">✕</button>`;
+    container.insertBefore(chip, input);
+  });
+}
+
+function removeChip(type, idx) {
+  if (type === 'color') {
+    colorsList.splice(idx, 1);
+    renderChips('colorsContainer', colorsList, 'color');
+  } else {
+    featsList.splice(idx, 1);
+    renderChips('featsContainer', featsList, 'feat');
+  }
+}
+
+// FORM ACTIONS
+function startNewProduct() {
+  editMode = false;
+  editingSlug = '';
+  editingSha = '';
+  document.getElementById('productForm').reset();
+  document.getElementById('addTabLabel').textContent = 'Yeni Ürün Ekle';
+  document.getElementById('btnSubmitText').textContent = 'Kaydet ve Sitede Yayınla';
+  colorsList = [];
+  featsList = [];
+  renderChips('colorsContainer', colorsList, 'color');
+  renderChips('featsContainer', featsList, 'feat');
+  removeImage();
+  updateSlugAndPreview();
+  switchTab('add');
+}
+
+function editProduct(slug) {
+  const p = allProducts.find(x => x.slug === slug);
+  if (!p) return;
+
+  editMode = true;
+  editingSlug = slug;
+  editingSha = p.sha || '';
+
+  document.getElementById('addTabLabel').textContent = 'Ürün Düzenle: ' + p.title;
+  document.getElementById('btnSubmitText').textContent = 'Değişiklikleri Kaydet & Yayınla';
+
+  document.getElementById('f_title').value = p.title || '';
+  document.getElementById('f_kategori').value = p.kategori || 'Düz Membran Kapak';
+  document.getElementById('f_sku').value = p.sku || '';
+  document.getElementById('f_slug').value = slug;
+  document.getElementById('slugHint').textContent = slug;
+  document.getElementById('f_kisa').value = p.kisa_aciklama || '';
+  document.getElementById('f_body').value = p.body || '';
+  document.getElementById('f_populer').checked = !!p.populer;
+  document.getElementById('f_yeni').checked = !!p.yeni;
+
+  colorsList = Array.isArray(p.renkler) ? [...p.renkler] : [];
+  featsList = Array.isArray(p.ozellikler) ? [...p.ozellikler] : [];
+  renderChips('colorsContainer', colorsList, 'color');
+  renderChips('featsContainer', featsList, 'feat');
+
+  if (p.ana_resim) {
+    document.getElementById('f_image_url').value = p.ana_resim;
+    document.getElementById('previewImg').src = p.ana_resim;
+    document.getElementById('prevCardImg').src = p.ana_resim;
+    document.getElementById('imagePreviewBox').style.display = 'flex';
+  } else {
+    removeImage();
+  }
+
+  updatePreview();
+  switchTab('add');
+}
+
+// SAVE PRODUCT (GITHUB API)
+async function saveProduct(e) {
+  e.preventDefault();
+  const token = localStorage.getItem('gkm_gh_token');
+  if (!token) {
+    openTokenModal();
+    showToast('Lütfen önce GitHub API Token girin!', 'error');
+    return;
+  }
+
+  const slug = document.getElementById('f_slug').value.trim();
+  if (!slug) {
+    showToast('Geçerli bir URL / Slug girin!', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btnSubmit');
+  const btnTxt = document.getElementById('btnSubmitText');
+  btn.disabled = true;
+  btnTxt.innerHTML = '<div class="spinner"></div> GitHub & Vercel\'e Kaydediliyor...';
+
+  try {
+    let finalImageUrl = document.getElementById('f_image_url').value.trim();
+
+    // 1. Upload image if selected from local disk
+    if (uploadedFileBase64) {
+      btnTxt.innerHTML = '<div class="spinner"></div> Görsel Yükleniyor...';
+      const cleanExt = uploadedFileName.split('.').pop().toLowerCase() || 'jpg';
+      const imgPath = `resim/yonetilen/${slug}-${Date.now()}.${cleanExt}`;
+      
+      const imgRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${imgPath}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: `Upload product image for ${slug}`,
+          content: uploadedFileBase64,
+          branch: BRANCH
+        })
+      });
+      if (!imgRes.ok) throw new Error('Görsel GitHub\'a yüklenemedi');
+      finalImageUrl = '/' + imgPath;
+    }
+
+    // 2. Prepare Product JSON
+    const productData = {
+      title: document.getElementById('f_title').value.trim(),
+      kategori: document.getElementById('f_kategori').value,
+      sku: document.getElementById('f_sku').value.trim() || undefined,
+      kisa_aciklama: document.getElementById('f_kisa').value.trim(),
+      ana_resim: finalImageUrl || '/resim/logo.png',
+      body: document.getElementById('f_body').value.trim(),
+      populer: document.getElementById('f_populer').checked,
+      yeni: document.getElementById('f_yeni').checked,
+      renkler: colorsList.length > 0 ? colorsList : undefined,
+      ozellikler: featsList.length > 0 ? featsList : undefined
+    };
+
+    btnTxt.innerHTML = '<div class="spinner"></div> Ürün JSON Kaydediliyor...';
+
+    // 3. Get existing file SHA if editing
+    let currentSha = editingSha;
+    if (!currentSha) {
+      try {
+        const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler/${slug}.json`, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+        if (getRes.ok) {
+          const fileData = await getRes.json();
+          currentSha = fileData.sha;
+        }
+      } catch(e) {}
+    }
+
+    // 4. Commit Product JSON to GitHub
+    const jsonBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(productData, null, 2))));
+    const commitBody = {
+      message: editMode ? `Update product: ${productData.title}` : `Add product: ${productData.title}`,
+      content: jsonBase64,
+      branch: BRANCH
+    };
+    if (currentSha) commitBody.sha = currentSha;
+
+    const saveRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler/${slug}.json`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(commitBody)
+    });
+
+    if (!saveRes.ok) {
+      const errJson = await saveRes.json();
+      throw new Error(errJson.message || 'Ürün kaydedilemedi');
+    }
+
+    // 5. Update index JSON
+    await updateIndexFile(slug, token);
+
+    showToast('🎉 Ürün başarıyla kaydedildi! Vercel ~15 saniye içinde canlıya alıyor.', 'success');
+    setTimeout(() => {
+      loadAllProducts();
+      switchTab('list');
+    }, 1200);
+
+  } catch(err) {
+    showToast('Hata: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btnTxt.textContent = editMode ? 'Değişiklikleri Kaydet & Yayınla' : 'Kaydet ve Sitede Yayınla';
+  }
+}
+
+// UPDATE INDEX FILE
+async function updateIndexFile(slug, token) {
+  try {
+    let indexList = [];
+    let indexSha = '';
+    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler-index.json`, {
+      headers: { 'Authorization': `token ${token}` }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      indexSha = data.sha;
+      indexList = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+    }
+
+    if (!indexList.includes(slug)) {
+      indexList.push(slug);
+      const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(indexList, null, 2))));
+      await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler-index.json`, {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Update urunler-index for ${slug}`,
+          content: newContent,
+          sha: indexSha || undefined,
+          branch: BRANCH
+        })
+      });
+    }
+  } catch(e) {
+    console.log('Index update error:', e);
+  }
+}
+
+// DELETE PRODUCT
+async function deleteProduct(slug, sha) {
+  if (!confirm(`"${slug}" ürününü silmek istediğinize emin misiniz?`)) return;
+
+  const token = localStorage.getItem('gkm_gh_token');
+  if (!token) {
+    openTokenModal();
+    showToast('Lütfen önce GitHub API Token girin!', 'error');
+    return;
+  }
+
+  try {
+    showToast('Ürün siliniyor...', 'info');
+    
+    let currentSha = sha;
+    if (!currentSha) {
+      const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler/${slug}.json`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      if (getRes.ok) {
+        const fileData = await getRes.json();
+        currentSha = fileData.sha;
+      }
+    }
+
+    const delRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler/${slug}.json`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: `Delete product: ${slug}`,
+        sha: currentSha,
+        branch: BRANCH
+      })
+    });
+
+    if (!delRes.ok) throw new Error('Silme işlemi başarısız');
+
+    try {
+      const idxRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler-index.json`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      if (idxRes.ok) {
+        const data = await idxRes.json();
+        let indexList = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+        indexList = indexList.filter(id => id !== slug);
+        const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(indexList, null, 2))));
+        await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/urunler-index.json`, {
+          method: 'PUT',
+          headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: `Remove ${slug} from urunler-index`,
+            content: newContent,
+            sha: data.sha,
+            branch: BRANCH
+          })
+        });
+      }
+    } catch(e) {}
+
+    showToast('Ürün başarıyla silindi!', 'success');
+    loadAllProducts();
+
+  } catch(err) {
+    showToast('Hata: ' + err.message, 'error');
+  }
+}
+
+// TOKEN MODAL
+function openTokenModal() {
+  document.getElementById('tokenInput').value = localStorage.getItem('gkm_gh_token') || '';
+  document.getElementById('tokenModal').classList.add('open');
+}
+
+function closeTokenModal() {
+  document.getElementById('tokenModal').classList.remove('open');
+}
+
+async function saveToken() {
+  const token = document.getElementById('tokenInput').value.trim();
+  if (!token) {
+    localStorage.removeItem('gkm_gh_token');
+    checkTokenStatus();
+    closeTokenModal();
+    showToast('Token kaldırıldı', 'info');
+    return;
+  }
+
+  showToast('Token test ediliyor...', 'info');
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, {
+      headers: { 'Authorization': `token ${token}` }
+    });
+    if (!res.ok) throw new Error('Geçersiz token veya repo erişim yetkisi yok');
+    
+    localStorage.setItem('gkm_gh_token', token);
+    checkTokenStatus();
+    closeTokenModal();
+    showToast('GitHub bağlantısı başarıyla kuruldu!', 'success');
+    loadAllProducts();
+  } catch(err) {
+    showToast(err.message, 'error');
+  }
+}
+</script>
+
+</body>
+</html>
