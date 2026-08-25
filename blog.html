@@ -101,42 +101,59 @@ footer a{color:var(--gold);}
 <script>
 async function loadBlogs() {
   const container = document.getElementById('blog-container');
+  const cacheBuster = '?t=' + Date.now();
   
   try {
-    // GitHub API ile blog dosyalarını otomatik getir
-    let blogIds = [];
+    // 1. GitHub API ile blog dosyalarını otomatik getir
+    let blogFiles = [];
     try {
-      const ghRes = await fetch('https://api.github.com/repos/emrecanaksoyea34-a11y/global-kapak-mobilyaa/contents/_data/blog');
+      const ghRes = await fetch('https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/blog' + cacheBuster);
       if (ghRes.ok) {
         const files = await ghRes.json();
-        blogIds = files
-          .filter(f => f.name.endsWith('.json'))
-          .map(f => f.name.replace('.json', ''));
+        blogFiles = files.filter(f => f.name.endsWith('.json'));
       }
     } catch(e) {}
-    
-    if (blogIds.length === 0) {
-      try {
-        const indexResponse = await fetch('_data/blog-index.json');
-        if (indexResponse.ok) blogIds = await indexResponse.json();
-      } catch(e) {}
+
+    let posts = [];
+    if (blogFiles.length > 0) {
+      const promises = blogFiles.map(async (file) => {
+        try {
+          const res = await fetch(`https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/blog/${file.name}${cacheBuster}`);
+          if (res.ok) {
+            const data = await res.json();
+            const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+            content.id = file.name.replace('.json', '');
+            return content;
+          }
+        } catch(e) {}
+        return null;
+      });
+      posts = (await Promise.all(promises)).filter(p => p);
     }
     
-    const blogPromises = blogIds.map(async (id) => {
+    // 2. Fallback: Yerel blog dosyaları
+    if (posts.length === 0) {
+      let blogIds = [];
       try {
-        const r = await fetch(`_data/blog/${id}.json`);
-        if (r.ok) {
-          const data = await r.json();
-          data.id = id;
-          return data;
-        }
-      } catch(e) { return null; }
-    });
+        const indexResponse = await fetch('_data/blog-index.json' + cacheBuster);
+        if (indexResponse.ok) blogIds = await indexResponse.json();
+      } catch(e) {}
+      
+      const blogPromises = blogIds.map(async (id) => {
+        try {
+          const r = await fetch(`_data/blog/${id}.json${cacheBuster}`);
+          if (r.ok) {
+            const data = await r.json();
+            data.id = id;
+            return data;
+          }
+        } catch(e) { return null; }
+      });
+      posts = (await Promise.all(blogPromises)).filter(p => p);
+    }
     
-    let posts = (await Promise.all(blogPromises)).filter(p => p);
-    
-    // Tarihe göre sırala (yeniden eskiye)
-    posts.sort((a, b) => new Date(b.tarih) - new Date(a.tarih));
+    // Tarihe göre sırala
+    posts.sort((a, b) => new Date(b.tarih || 0) - new Date(a.tarih || 0));
     
     if (posts.length === 0) {
       container.innerHTML = `<div class="empty"><h3>Henüz yazı yok</h3><p>Yakında blog yazılarımız burada listelenecek.</p></div>`;

@@ -865,78 +865,209 @@ textarea.form-control { resize: vertical; min-height: 80px; }
   <!-- TAB 4: GALERİ YÖNETİMİ -->
   <!-- ══════════════════════════════════════════════════════════ -->
   <div class="tab-section" id="tab-gallery">
-    <div class="admin-card">
-      <div class="admin-card-header">
-        <div>
-          <div class="admin-card-title">🖼️ Fotoğraf Galerisi Yönetimi</div>
-          <div class="admin-card-desc">Sitenizdeki galeri sayfasına yeni imalat ve montaj fotoğrafları ekleyin.</div>
-        </div>
+    
+    <!-- SUB-TABS -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
+      <div style="display:flex; gap:8px;">
+        <button class="btn-primary btn-sm" id="btnGalSubList" onclick="switchGalSubTab('list')">📋 Fotoğraf Listesi</button>
+        <button class="btn-gold btn-sm" id="btnGalSubAdd" onclick="startNewGallery()">➕ Yeni Fotoğraf Ekle</button>
       </div>
-
-      <div class="form-grid" style="margin-bottom:24px;">
-        <div class="form-group">
-          <label>Galeri Başlığı</label>
-          <input type="text" class="form-control" id="gal_title" placeholder="Örn: Villa Mutfak Membran Kapak Montajı">
-        </div>
-        <div class="form-group">
-          <label>Kategori</label>
-          <select class="form-control" id="gal_cat">
-            <option value="Mutfak">Mutfak Projeleri</option>
-            <option value="Banyo">Banyo Dolapları</option>
-            <option value="Vestiyer">Vestiyer & Portmanto</option>
-            <option value="Özel Tasarım">Özel Tasarımlar</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Galeri Görseli Yükle</label>
-        <div class="upload-zone" onclick="document.getElementById('galFileInput').click()">
-          <input type="file" id="galFileInput" accept="image/*" style="display:none" onchange="handleGalleryFileSelect(event)">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <h4>Galeri Fotoğrafı Seçin veya Sürükleyin</h4>
-          <p>Yüksek çözünürlüklü fotoğraflar doğrudan yayına alınır</p>
-        </div>
-        <div id="galPreviewBox" class="upload-preview" style="display:none;">
-          <img id="galPreviewImg" src="/resim/logo.png" alt="Önizleme">
-          <div style="flex:1;">
-            <div id="galFileName" style="font-weight:600; font-size:13px;">galeri.jpg</div>
-          </div>
-          <button type="button" class="btn-gold btn-sm" id="btnUploadGal" onclick="uploadGalleryItem()">🚀 Galeriye Ekle</button>
-        </div>
+      <div style="display:flex; gap:10px;">
+        <input type="text" class="form-control" id="galSearchBox" placeholder="🔍 Fotoğraf ara..." style="width:200px; padding:6px 12px; font-size:13px;" oninput="filterAdminGallery()">
+        <select class="form-control" id="galFilterCat" style="width:160px; padding:6px 12px; font-size:13px;" onchange="filterAdminGallery()">
+          <option value="all">Tüm Kategoriler</option>
+          <option value="Mutfak">Mutfak Projeleri</option>
+          <option value="Banyo">Banyo Dolapları</option>
+          <option value="Vestiyer">Vestiyer & Portmanto</option>
+          <option value="Özel Tasarım">Özel Tasarım</option>
+        </select>
       </div>
     </div>
+
+    <!-- LIST VIEW -->
+    <div id="subview-gal-list">
+      <div id="galLoadingIndicator" style="text-align:center; padding:60px 20px; color:var(--text-muted);">
+        <div class="spinner" style="width:28px; height:28px; border-color:var(--navy); border-top-color:transparent; margin-bottom:12px;"></div>
+        <p style="font-weight:600;">Galeri fotoğrafları yükleniyor...</p>
+      </div>
+      <div class="product-grid" id="galGrid" style="display:none;"></div>
+      <div id="galEmptyState" style="display:none; text-align:center; padding:60px 20px; background:#fff; border-radius:var(--radius-md); border:1px dashed var(--border);">
+        <div style="font-size:40px; margin-bottom:12px;">🖼️</div>
+        <h3 style="font-family:'Montserrat',sans-serif; color:var(--navy); margin-bottom:6px;">Henüz Fotoğraf Eklenmedi</h3>
+        <p style="color:var(--text-muted); font-size:13px; margin-bottom:18px;">Tamamlanan projelerinizin ve imalat fotoğraflarınızın ilkini yükleyin.</p>
+        <button class="btn-gold" onclick="startNewGallery()">➕ İlk Fotoğrafı Ekle</button>
+      </div>
+    </div>
+
+    <!-- FORM VIEW -->
+    <div id="subview-gal-form" style="display:none;">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div>
+            <div class="admin-card-title" id="galFormTitle">➕ Yeni Galeri Fotoğrafı Ekle</div>
+            <div class="admin-card-desc">Yüklediğiniz fotoğraf anında galeri sayfasında yayına girer.</div>
+          </div>
+          <button class="btn-secondary btn-sm" onclick="switchGalSubTab('list')">← Listeye Dön</button>
+        </div>
+
+        <form id="galForm" onsubmit="saveGalleryItem(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Fotoğraf / Proje Başlığı <span class="req">*</span></label>
+              <input type="text" class="form-control" id="gal_title" placeholder="Örn: Villa Mutfak Membran Kapak Montajı" required>
+            </div>
+            <div class="form-group">
+              <label>Kategori <span class="req">*</span></label>
+              <select class="form-control" id="gal_cat" required>
+                <option value="Mutfak">Mutfak Projeleri</option>
+                <option value="Banyo">Banyo Dolapları</option>
+                <option value="Vestiyer">Vestiyer & Portmanto</option>
+                <option value="Özel Tasarım">Özel Tasarım</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Fotoğraf Yükle <span class="req">*</span></label>
+            <div class="upload-zone" id="galUploadZone" onclick="document.getElementById('galFileInput').click()">
+              <input type="file" id="galFileInput" accept="image/*" style="display:none" onchange="handleGalFileSelect(event)">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <h4>Fotoğrafı Buraya Sürükleyin veya Tıklayın</h4>
+              <p>Yüksek çözünürlüklü JPG, PNG, WebP desteklenir</p>
+            </div>
+            <div id="galPreviewBox" class="upload-preview" style="display:none;">
+              <img id="galPreviewImg" src="/resim/logo.png" alt="Önizleme">
+              <div style="flex:1;">
+                <div id="galFileName" style="font-weight:600; font-size:13px;">foto.jpg</div>
+                <div style="font-size:11px; color:var(--success); font-weight:600;">✓ Yüklemeye Hazır</div>
+              </div>
+              <button type="button" class="btn-danger btn-sm" onclick="removeGalImage()">Kaldır</button>
+            </div>
+            <input type="hidden" id="gal_image_url" value="/resim/logo.png">
+          </div>
+
+          <div style="margin-bottom:24px;">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; font-weight:700; color:var(--navy); background:#F0FDF4; padding:8px 14px; border-radius:6px; border:1px solid #BBF7D0; width:fit-content;">
+              <input type="checkbox" id="gal_anasayfa" checked> 🏠 Ana Sayfa Galeri Vitrininde Göster
+            </label>
+          </div>
+
+          <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn-gold" id="btnGalSave">💾 Galeriye Kaydet ve Yayınla</button>
+            <button type="button" class="btn-secondary" onclick="switchGalSubTab('list')">İptal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 
   <!-- ══════════════════════════════════════════════════════════ -->
   <!-- TAB 5: BLOG / MAKALELER -->
   <!-- ══════════════════════════════════════════════════════════ -->
   <div class="tab-section" id="tab-blog">
-    <div class="admin-card">
-      <div class="admin-card-header">
-        <div>
-          <div class="admin-card-title">📝 Blog & Faydalı Bilgiler Yönetimi</div>
-          <div class="admin-card-desc">Membran kapak bakımı, seçim rehberi ve sektörel makalelerinizi yönetin.</div>
-        </div>
+    
+    <!-- SUB-TABS -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
+      <div style="display:flex; gap:8px;">
+        <button class="btn-primary btn-sm" id="btnBlogSubList" onclick="switchBlogSubTab('list')">📋 Makale Listesi</button>
+        <button class="btn-gold btn-sm" id="btnBlogSubAdd" onclick="startNewBlog()">➕ Yeni Makale Ekle</button>
       </div>
-
-      <div class="form-group">
-        <label>Makale Başlığı</label>
-        <input type="text" class="form-control" id="blog_title" placeholder="Örn: Membran Kapak Temizliği ve Bakımında Dikkat Edilecekler">
-      </div>
-
-      <div class="form-group">
-        <label>Makale Özeti (Katalogda Görünecek Metin)</label>
-        <input type="text" class="form-control" id="blog_ozet" placeholder="Membran kapakların uzun ömürlü kullanımı için pratik ipuçları...">
-      </div>
-
-      <div class="form-group">
-        <label>Makale İçeriği (Detaylı Metin)</label>
-        <textarea class="form-control" id="blog_body" rows="6" placeholder="Yazınızın detaylı metnini buraya yazın..."></textarea>
-      </div>
-
-      <button class="btn-gold" onclick="saveBlogPost()">💾 Makaleyi Yayınla</button>
+      <input type="text" class="form-control" id="blogSearchBox" placeholder="🔍 Makale ara..." style="width:220px; padding:6px 12px; font-size:13px;" oninput="filterAdminBlogs()">
     </div>
+
+    <!-- LIST VIEW -->
+    <div id="subview-blog-list">
+      <div id="blogLoadingIndicator" style="text-align:center; padding:60px 20px; color:var(--text-muted);">
+        <div class="spinner" style="width:28px; height:28px; border-color:var(--navy); border-top-color:transparent; margin-bottom:12px;"></div>
+        <p style="font-weight:600;">Makaleler yükleniyor...</p>
+      </div>
+      <div class="product-grid" id="blogGrid" style="display:none;"></div>
+      <div id="blogEmptyState" style="display:none; text-align:center; padding:60px 20px; background:#fff; border-radius:var(--radius-md); border:1px dashed var(--border);">
+        <div style="font-size:40px; margin-bottom:12px;">📝</div>
+        <h3 style="font-family:'Montserrat',sans-serif; color:var(--navy); margin-bottom:6px;">Henüz Makale Eklenmedi</h3>
+        <p style="color:var(--text-muted); font-size:13px; margin-bottom:18px;">Membran kapak bakımı ve rehber yazıları ekleyerek ziyaretçilerinizi bilgilendirin.</p>
+        <button class="btn-gold" onclick="startNewBlog()">➕ İlk Makaleyi Yaz</button>
+      </div>
+    </div>
+
+    <!-- FORM VIEW -->
+    <div id="subview-blog-form" style="display:none;">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div>
+            <div class="admin-card-title" id="blogFormTitle">➕ Yeni Makale Ekle</div>
+            <div class="admin-card-desc">Yazdığınız makale anında blog ve ana sayfanızda yayına girer.</div>
+          </div>
+          <button class="btn-secondary btn-sm" onclick="switchBlogSubTab('list')">← Listeye Dön</button>
+        </div>
+
+        <form id="blogForm" onsubmit="saveBlogItem(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Makale Başlığı <span class="req">*</span></label>
+              <input type="text" class="form-control" id="b_title" placeholder="Örn: Membran Kapak Temizliği ve Bakımında Dikkat Edilecekler" required oninput="autoGenerateBlogSlug()">
+            </div>
+            <div class="form-group">
+              <label>Kategori <span class="req">*</span></label>
+              <select class="form-control" id="b_kategori" required>
+                <option value="Rehber & Bakım">Rehber & Bakım</option>
+                <option value="Dekorasyon Fikirleri">Dekorasyon Fikirleri</option>
+                <option value="Üretim & Teknoloji">Üretim & Teknoloji</option>
+                <option value="Sektörel Haberler">Sektörel Haberler</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Bağlantı Adresi (Slug)</label>
+            <input type="text" class="form-control" id="b_slug" placeholder="membran-kapak-temizligi" required>
+          </div>
+
+          <div class="form-group">
+            <label>Kısa Özet (Katalogda ve Kartta Görünecek Metin) <span class="req">*</span></label>
+            <input type="text" class="form-control" id="b_ozet" placeholder="Membran kapakların uzun ömürlü kullanımı için pratik temizlik ve koruma ipuçları..." required>
+          </div>
+
+          <!-- KAPAK GÖRSELİ -->
+          <div class="form-group">
+            <label>Makale Kapak Fotoğrafı</label>
+            <div class="upload-zone" id="blogUploadZone" onclick="document.getElementById('blogFileInput').click()">
+              <input type="file" id="blogFileInput" accept="image/*" style="display:none" onchange="handleBlogFileSelect(event)">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <h4>Kapak Fotoğrafı Seçin veya Sürükleyin</h4>
+              <p>JPG, PNG, WebP desteklenir</p>
+            </div>
+            <div id="blogPreviewBox" class="upload-preview" style="display:none;">
+              <img id="blogPreviewImg" src="/resim/logo.png" alt="Önizleme">
+              <div style="flex:1;">
+                <div id="blogFileName" style="font-weight:600; font-size:13px;">kapak.jpg</div>
+                <div style="font-size:11px; color:var(--success); font-weight:600;">✓ Yüklemeye Hazır</div>
+              </div>
+              <button type="button" class="btn-danger btn-sm" onclick="removeBlogImage()">Kaldır</button>
+            </div>
+            <input type="hidden" id="b_image_url" value="/resim/logo.png">
+          </div>
+
+          <div class="form-group">
+            <label>Detaylı Makale İçeriği <span class="req">*</span></label>
+            <textarea class="form-control" id="b_body" rows="8" placeholder="Makalenizin detaylı paragraflarını buraya yazın..." required></textarea>
+          </div>
+
+          <div style="margin-bottom:24px;">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; font-weight:700; color:var(--navy); background:#F0FDF4; padding:8px 14px; border-radius:6px; border:1px solid #BBF7D0; width:fit-content;">
+              <input type="checkbox" id="b_anasayfa" checked> 🏠 Ana Sayfa Blog Vitrininde Göster
+            </label>
+          </div>
+
+          <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn-gold" id="btnBlogSave">💾 Makaleyi Yayınla</button>
+            <button type="button" class="btn-secondary" onclick="switchBlogSubTab('list')">İptal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 
   <!-- ══════════════════════════════════════════════════════════ -->
@@ -1704,12 +1835,310 @@ async function saveHomeSettings() {
 }
 
 // ══════════════════════════════════════════════════════════
-// GALLERY & BLOG MODULES
+// GALLERY MODULE (FULL CRUD)
 // ══════════════════════════════════════════════════════════
-function handleGalleryFileSelect(e) {
+let allGallery = [];
+let editGalMode = false;
+let editingGalSlug = '';
+let editingGalSha = '';
+let galUploadedBase64 = null;
+let galUploadedFileName = '';
+
+function switchGalSubTab(view) {
+  const listBtn = document.getElementById('btnGalSubList');
+  const addBtn = document.getElementById('btnGalSubAdd');
+  const listView = document.getElementById('subview-gal-list');
+  const formView = document.getElementById('subview-gal-form');
+
+  if (view === 'list') {
+    listBtn.className = 'btn-primary btn-sm';
+    addBtn.className = 'btn-gold btn-sm';
+    listView.style.display = 'block';
+    formView.style.display = 'none';
+  } else {
+    listBtn.className = 'btn-secondary btn-sm';
+    addBtn.className = 'btn-primary btn-sm';
+    listView.style.display = 'none';
+    formView.style.display = 'block';
+  }
+}
+
+async function loadAllGallery() {
+  const loading = document.getElementById('galLoadingIndicator');
+  const grid = document.getElementById('galGrid');
+  const empty = document.getElementById('galEmptyState');
+  loading.style.display = 'block';
+  grid.style.display = 'none';
+  empty.style.display = 'none';
+
+  try {
+    let files = [];
+    const token = localStorage.getItem('gkm_gh_token');
+    const headers = token ? { 'Authorization': `token ${token}` } : {};
+
+    try {
+      const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/galeri?t=${Date.now()}`, { headers });
+      if (r.ok) {
+        const list = await r.json();
+        files = list.filter(f => f.name.endsWith('.json'));
+      }
+    } catch(e) {}
+
+    let loaded = [];
+    if (files.length > 0) {
+      const promises = files.map(async (file) => {
+        try {
+          const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/galeri/${file.name}?t=${Date.now()}`, { headers });
+          if (res.ok) {
+            const data = await res.json();
+            const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+            content.slug = file.name.replace('.json', '');
+            content.sha = data.sha;
+            return content;
+          }
+        } catch(e) {}
+        return null;
+      });
+      loaded = (await Promise.all(promises)).filter(g => g);
+    }
+
+    // Fallback: Local
+    if (loaded.length === 0) {
+      const sampleIds = ['galeri-1', 'galeri-2', 'galeri-3'];
+      const promises = sampleIds.map(async (id) => {
+        try {
+          const r = await fetch(`/_data/galeri/${id}.json?t=${Date.now()}`);
+          if (r.ok) {
+            const d = await r.json();
+            d.slug = id;
+            return d;
+          }
+        } catch(e) {}
+        return null;
+      });
+      loaded = (await Promise.all(promises)).filter(g => g);
+    }
+
+    allGallery = loaded;
+    renderAdminGalleryGrid(allGallery);
+
+  } catch(err) {
+    showToast('Galeri yüklenirken hata oluştu', 'error');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+function renderAdminGalleryGrid(items) {
+  const grid = document.getElementById('galGrid');
+  const empty = document.getElementById('galEmptyState');
+
+  if (!items || items.length === 0) {
+    grid.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  grid.style.display = 'grid';
+
+  grid.innerHTML = items.map(g => `
+    <div class="product-card">
+      <img class="product-card-img" src="${g.resim || '/resim/logo.png'}" alt="${g.baslik}" onerror="this.src='/resim/logo.png'">
+      <div class="product-card-body">
+        <div class="product-card-cat">${g.kategori || 'Proje'}</div>
+        <div class="product-card-title">${g.baslik || 'Başlıksız Görsel'}</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">
+          ${g.anasayfada_goster !== false ? '🏠 Ana Sayfa Vitrininde Aktif' : '📁 Sadece Galeride'}
+        </div>
+        <div class="product-card-actions">
+          <button class="btn-secondary btn-sm" style="flex:1;" onclick="editGallery('${g.slug}')">✏️ Düzenle</button>
+          <button class="btn-danger btn-sm" onclick="deleteGalleryItem('${g.slug}', '${g.sha || ''}')">🗑️ Sil</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterAdminGallery() {
+  const q = document.getElementById('galSearchBox').value.toLowerCase().trim();
+  const cat = document.getElementById('galFilterCat').value;
+
+  const filtered = allGallery.filter(g => {
+    const matchQ = (g.baslik && g.baslik.toLowerCase().includes(q));
+    const matchCat = cat === 'all' || g.kategori === cat;
+    return matchQ && matchCat;
+  });
+
+  renderAdminGalleryGrid(filtered);
+}
+
+function startNewGallery() {
+  editGalMode = false;
+  editingGalSlug = '';
+  editingGalSha = '';
+  document.getElementById('galFormTitle').textContent = '➕ Yeni Galeri Fotoğrafı Ekle';
+  document.getElementById('btnGalSave').textContent = '💾 Galeriye Kaydet ve Yayınla';
+  document.getElementById('galForm').reset();
+  document.getElementById('gal_image_url').value = '/resim/logo.png';
+  document.getElementById('gal_anasayfa').checked = true;
+  removeGalImage();
+  switchGalSubTab('form');
+}
+
+function editGallery(slug) {
+  const g = allGallery.find(x => x.slug === slug);
+  if (!g) return;
+
+  editGalMode = true;
+  editingGalSlug = slug;
+  editingGalSha = g.sha || '';
+
+  document.getElementById('galFormTitle').textContent = `✏️ "${g.baslik}" Fotoğrafını Düzenle`;
+  document.getElementById('btnGalSave').textContent = '💾 Değişiklikleri Kaydet & Yayınla';
+
+  document.getElementById('gal_title').value = g.baslik || '';
+  document.getElementById('gal_cat').value = g.kategori || 'Mutfak';
+  document.getElementById('gal_anasayfa').checked = g.anasayfada_goster !== false;
+  document.getElementById('gal_image_url').value = g.resim || '/resim/logo.png';
+
+  if (g.resim) {
+    document.getElementById('galPreviewImg').src = g.resim;
+    document.getElementById('galFileName').textContent = g.resim.split('/').pop();
+    document.getElementById('galPreviewBox').style.display = 'flex';
+  } else {
+    removeGalImage();
+  }
+
+  switchGalSubTab('form');
+}
+
+async function saveGalleryItem(e) {
+  if (e) e.preventDefault();
+
+  const token = localStorage.getItem('gkm_gh_token');
+  if (!token) { openTokenModal(); showToast('GitHub API Token giriniz!', 'error'); return; }
+
+  const title = document.getElementById('gal_title').value.trim();
+  let slug = editGalMode ? editingGalSlug : ('galeri-' + Date.now());
+  if (!title) { showToast('Lütfen fotoğraf başlığını yazın!', 'error'); return; }
+
+  const btn = document.getElementById('btnGalSave');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Kaydediliyor...';
+
+  try {
+    let finalImageUrl = document.getElementById('gal_image_url').value.trim();
+
+    // 1. Upload photo if selected
+    if (galUploadedBase64) {
+      btn.innerHTML = '<div class="spinner"></div> Fotoğraf Yükleniyor...';
+      const cleanExt = galUploadedFileName.split('.').pop().toLowerCase() || 'jpg';
+      const imgPath = `resim/galeri-resimleri/${slug}.${cleanExt}`;
+
+      const imgRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${imgPath}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `Upload gallery image for ${slug}`, content: galUploadedBase64, branch: BRANCH })
+      });
+      if (imgRes.ok) finalImageUrl = '/' + imgPath;
+    }
+
+    // 2. Prepare JSON
+    const galData = {
+      baslik: title,
+      kategori: document.getElementById('gal_cat').value,
+      resim: finalImageUrl || '/resim/logo.png',
+      anasayfada_goster: document.getElementById('gal_anasayfa').checked,
+      siralama: Date.now()
+    };
+
+    // 3. Get SHA if editing
+    let currentSha = editGalMode ? editingGalSha : '';
+    if (editGalMode && !currentSha) {
+      try {
+        const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/galeri/${slug}.json`, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+        if (getRes.ok) {
+          const d = await getRes.json();
+          currentSha = d.sha;
+        }
+      } catch(e) {}
+    }
+
+    // 4. Commit to GitHub
+    const jsonBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(galData, null, 2))));
+    const commitBody = {
+      message: editGalMode ? `Update gallery item: ${title}` : `Add gallery item: ${title}`,
+      content: jsonBase64,
+      branch: BRANCH
+    };
+    if (currentSha) commitBody.sha = currentSha;
+
+    const saveRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/galeri/${slug}.json`, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(commitBody)
+    });
+
+    if (!saveRes.ok) throw new Error('Galeri fotoğrafı kaydedilemedi');
+
+    editGalMode = false;
+    editingGalSlug = '';
+    editingGalSha = '';
+
+    showToast('🎉 Fotoğraf galeriye başarıyla eklendi!', 'success');
+    setTimeout(() => {
+      loadAllGallery();
+      switchGalSubTab('list');
+    }, 800);
+
+  } catch(err) {
+    showToast('Hata: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 Galeriye Kaydet ve Yayınla';
+  }
+}
+
+async function deleteGalleryItem(slug, sha) {
+  if (!confirm(`Bu galeri fotoğrafını silmek istediğinize emin misiniz?`)) return;
+
+  const token = localStorage.getItem('gkm_gh_token');
+  if (!token) { openTokenModal(); showToast('GitHub Token giriniz!', 'error'); return; }
+
+  try {
+    showToast('Fotoğraf siliniyor...', 'info');
+    let currentSha = sha;
+    if (!currentSha) {
+      const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/galeri/${slug}.json`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      if (getRes.ok) {
+        const d = await getRes.json();
+        currentSha = d.sha;
+      }
+    }
+
+    await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/galeri/${slug}.json`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `Delete gallery: ${slug}`, sha: currentSha, branch: BRANCH })
+    });
+
+    showToast('Fotoğraf başarıyla silindi!', 'success');
+    loadAllGallery();
+
+  } catch(err) {
+    showToast('Hata: ' + err.message, 'error');
+  }
+}
+
+function handleGalFileSelect(e) {
   const file = e.target.files[0];
   if (!file) return;
-  galUploadedName = file.name;
+  galUploadedFileName = file.name;
   const reader = new FileReader();
   reader.onload = (evt) => {
     galUploadedBase64 = evt.target.result.split(',')[1];
@@ -1720,91 +2149,424 @@ function handleGalleryFileSelect(e) {
   reader.readAsDataURL(file);
 }
 
-async function uploadGalleryItem() {
-  const token = localStorage.getItem('gkm_gh_token');
-  if (!token) { openTokenModal(); showToast('GitHub Token giriniz!', 'error'); return; }
-  if (!galUploadedBase64) { showToast('Lütfen bir fotoğraf seçin!', 'error'); return; }
+function removeGalImage() {
+  galUploadedBase64 = null;
+  galUploadedFileName = '';
+  document.getElementById('galFileInput').value = '';
+  document.getElementById('galPreviewBox').style.display = 'none';
+  document.getElementById('galPreviewImg').src = '/resim/logo.png';
+}
 
-  const title = document.getElementById('gal_title').value.trim() || 'Galeri Fotoğrafı';
-  const cat = document.getElementById('gal_cat').value;
-  const slug = 'galeri-' + Date.now();
+// ══════════════════════════════════════════════════════════
+// BLOG MODULE (FULL CRUD)
+// ══════════════════════════════════════════════════════════
+let allBlogs = [];
+let editBlogMode = false;
+let editingBlogSlug = '';
+let editingBlogSha = '';
+let blogUploadedBase64 = null;
+let blogUploadedFileName = '';
 
-  showToast('Fotoğraf galeriye yükleniyor...', 'info');
+function switchBlogSubTab(view) {
+  const listBtn = document.getElementById('btnBlogSubList');
+  const addBtn = document.getElementById('btnBlogSubAdd');
+  const listView = document.getElementById('subview-blog-list');
+  const formView = document.getElementById('subview-blog-form');
+
+  if (view === 'list') {
+    listBtn.className = 'btn-primary btn-sm';
+    addBtn.className = 'btn-gold btn-sm';
+    listView.style.display = 'block';
+    formView.style.display = 'none';
+  } else {
+    listBtn.className = 'btn-secondary btn-sm';
+    addBtn.className = 'btn-primary btn-sm';
+    listView.style.display = 'none';
+    formView.style.display = 'block';
+  }
+}
+
+async function loadAllBlogs() {
+  const loading = document.getElementById('blogLoadingIndicator');
+  const grid = document.getElementById('blogGrid');
+  const empty = document.getElementById('blogEmptyState');
+  loading.style.display = 'block';
+  grid.style.display = 'none';
+  empty.style.display = 'none';
+
   try {
-    const cleanExt = galUploadedName.split('.').pop().toLowerCase() || 'jpg';
-    const imgPath = `resim/galeri-resimleri/${slug}.${cleanExt}`;
+    let files = [];
+    const token = localStorage.getItem('gkm_gh_token');
+    const headers = token ? { 'Authorization': `token ${token}` } : {};
 
-    await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${imgPath}`, {
-      method: 'PUT',
-      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: `Upload gallery image: ${title}`, content: galUploadedBase64, branch: BRANCH })
-    });
+    try {
+      const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/blog?t=${Date.now()}`, { headers });
+      if (r.ok) {
+        const list = await r.json();
+        files = list.filter(f => f.name.endsWith('.json'));
+      }
+    } catch(e) {}
 
-    const galData = {
-      baslik: title,
-      kategori: cat,
-      resim: '/' + imgPath,
-      siralama: Date.now()
+    let loaded = [];
+    if (files.length > 0) {
+      const promises = files.map(async (file) => {
+        try {
+          const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/blog/${file.name}?t=${Date.now()}`, { headers });
+          if (res.ok) {
+            const data = await res.json();
+            const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+            content.slug = file.name.replace('.json', '');
+            content.sha = data.sha;
+            return content;
+          }
+        } catch(e) {}
+        return null;
+      });
+      loaded = (await Promise.all(promises)).filter(b => b);
+    }
+
+    // Fallback: Local
+    if (loaded.length === 0) {
+      let ids = [];
+      try {
+        const idxRes = await fetch('/_data/blog-index.json?t=' + Date.now());
+        if (idxRes.ok) ids = await idxRes.json();
+      } catch(e) {}
+      
+      const promises = (ids || []).map(async (id) => {
+        try {
+          const r = await fetch(`/_data/blog/${id}.json?t=${Date.now()}`);
+          if (r.ok) {
+            const d = await r.json();
+            d.slug = id;
+            return d;
+          }
+        } catch(e) {}
+        return null;
+      });
+      loaded = (await Promise.all(promises)).filter(b => b);
+    }
+
+    allBlogs = loaded;
+    renderAdminBlogGrid(allBlogs);
+
+  } catch(err) {
+    showToast('Makaleler yüklenirken hata oluştu', 'error');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+function renderAdminBlogGrid(posts) {
+  const grid = document.getElementById('blogGrid');
+  const empty = document.getElementById('blogEmptyState');
+
+  if (!posts || posts.length === 0) {
+    grid.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  grid.style.display = 'grid';
+
+  grid.innerHTML = posts.map(b => `
+    <div class="product-card">
+      <img class="product-card-img" src="${b.kapak_resim || '/resim/logo.png'}" alt="${b.title}" onerror="this.src='/resim/logo.png'">
+      <div class="product-card-body">
+        <div class="product-card-cat">${b.kategori || 'Makale'}</div>
+        <div class="product-card-title">${b.title || 'Başlıksız Makale'}</div>
+        <div class="product-card-desc">${b.ozet || ''}</div>
+        <div class="product-card-actions">
+          <button class="btn-secondary btn-sm" style="flex:1;" onclick="editBlog('${b.slug}')">✏️ Düzenle</button>
+          <button class="btn-danger btn-sm" onclick="deleteBlogItem('${b.slug}', '${b.sha || ''}')">🗑️ Sil</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterAdminBlogs() {
+  const q = document.getElementById('blogSearchBox').value.toLowerCase().trim();
+  const filtered = allBlogs.filter(b => (b.title && b.title.toLowerCase().includes(q)) || (b.ozet && b.ozet.toLowerCase().includes(q)));
+  renderAdminBlogGrid(filtered);
+}
+
+function startNewBlog() {
+  editBlogMode = false;
+  editingBlogSlug = '';
+  editingBlogSha = '';
+  document.getElementById('blogFormTitle').textContent = '➕ Yeni Makale Ekle';
+  document.getElementById('btnBlogSave').textContent = '💾 Makaleyi Yayınla';
+  document.getElementById('blogForm').reset();
+  document.getElementById('b_slug').value = '';
+  document.getElementById('b_slug').readOnly = false;
+  document.getElementById('b_image_url').value = '/resim/logo.png';
+  document.getElementById('b_anasayfa').checked = true;
+  removeBlogImage();
+  switchBlogSubTab('form');
+}
+
+function editBlog(slug) {
+  const b = allBlogs.find(x => x.slug === slug);
+  if (!b) return;
+
+  editBlogMode = true;
+  editingBlogSlug = slug;
+  editingBlogSha = b.sha || '';
+
+  document.getElementById('blogFormTitle').textContent = `✏️ "${b.title}" Makalesini Düzenle`;
+  document.getElementById('btnBlogSave').textContent = '💾 Değişiklikleri Kaydet & Yayınla';
+
+  document.getElementById('b_title').value = b.title || '';
+  document.getElementById('b_kategori').value = b.kategori || 'Rehber & Bakım';
+  document.getElementById('b_slug').value = slug;
+  document.getElementById('b_slug').readOnly = true;
+  document.getElementById('b_ozet').value = b.ozet || '';
+  document.getElementById('b_body').value = b.body || '';
+  document.getElementById('b_anasayfa').checked = b.anasayfada_goster !== false;
+  document.getElementById('b_image_url').value = b.kapak_resim || '/resim/logo.png';
+
+  if (b.kapak_resim) {
+    document.getElementById('blogPreviewImg').src = b.kapak_resim;
+    document.getElementById('blogFileName').textContent = b.kapak_resim.split('/').pop();
+    document.getElementById('blogPreviewBox').style.display = 'flex';
+  } else {
+    removeBlogImage();
+  }
+
+  switchBlogSubTab('form');
+}
+
+function autoGenerateBlogSlug() {
+  if (!editBlogMode) {
+    document.getElementById('b_slug').value = slugify(document.getElementById('b_title').value);
+  }
+}
+
+async function saveBlogItem(e) {
+  if (e) e.preventDefault();
+
+  const token = localStorage.getItem('gkm_gh_token');
+  if (!token) { openTokenModal(); showToast('GitHub API Token giriniz!', 'error'); return; }
+
+  const title = document.getElementById('b_title').value.trim();
+  let slug = document.getElementById('b_slug').value.trim() || slugify(title);
+  if (!title || !slug) { showToast('Lütfen makale başlığını yazın!', 'error'); return; }
+
+  if (!editBlogMode && allBlogs.some(b => b.slug === slug)) {
+    slug = `${slug}-${Date.now().toString().slice(-4)}`;
+  }
+
+  const btn = document.getElementById('btnBlogSave');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Yayınlanıyor...';
+
+  try {
+    let finalImageUrl = document.getElementById('b_image_url').value.trim();
+
+    // 1. Upload image if selected
+    if (blogUploadedBase64) {
+      btn.innerHTML = '<div class="spinner"></div> Fotoğraf Yükleniyor...';
+      const cleanExt = blogUploadedFileName.split('.').pop().toLowerCase() || 'jpg';
+      const imgPath = `resim/yonetilen/blog-${slug}-${Date.now()}.${cleanExt}`;
+
+      const imgRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${imgPath}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `Upload blog image for ${slug}`, content: blogUploadedBase64, branch: BRANCH })
+      });
+      if (imgRes.ok) finalImageUrl = '/' + imgPath;
+    }
+
+    // 2. Prepare JSON
+    const blogData = {
+      title,
+      kategori: document.getElementById('b_kategori').value,
+      tarih: new Date().toISOString(),
+      kapak_resim: finalImageUrl || '/resim/logo.png',
+      ozet: document.getElementById('b_ozet').value.trim(),
+      body: document.getElementById('b_body').value.trim(),
+      anasayfada_goster: document.getElementById('b_anasayfa').checked
     };
 
-    await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/galeri/${slug}.json`, {
+    // 3. Get SHA if editing
+    let currentSha = editBlogMode ? editingBlogSha : '';
+    if (editBlogMode && !currentSha) {
+      try {
+        const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/blog/${slug}.json`, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+        if (getRes.ok) {
+          const d = await getRes.json();
+          currentSha = d.sha;
+        }
+      } catch(e) {}
+    }
+
+    // 4. Commit to GitHub
+    const jsonBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(blogData, null, 2))));
+    const commitBody = {
+      message: editBlogMode ? `Update blog: ${title}` : `Add blog: ${title}`,
+      content: jsonBase64,
+      branch: BRANCH
+    };
+    if (currentSha) commitBody.sha = currentSha;
+
+    const saveRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/blog/${slug}.json`, {
       method: 'PUT',
       headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: `Add gallery JSON: ${title}`, content: btoa(unescape(encodeURIComponent(JSON.stringify(galData, null, 2)))), branch: BRANCH })
+      body: JSON.stringify(commitBody)
     });
 
-    showToast('🎉 Fotoğraf galeriye başarıyla eklendi!', 'success');
-    document.getElementById('galPreviewBox').style.display = 'none';
-    document.getElementById('gal_title').value = '';
-    galUploadedBase64 = null;
+    if (!saveRes.ok) throw new Error('Makale kaydedilemedi');
+
+    // 5. Update blog index JSON
+    try {
+      let indexList = [];
+      let indexSha = '';
+      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/blog-index.json`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        indexSha = data.sha;
+        indexList = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+      }
+
+      if (!indexList.includes(slug)) {
+        indexList.push(slug);
+        const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(indexList, null, 2))));
+        await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/blog-index.json`, {
+          method: 'PUT',
+          headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `Update blog-index for ${slug}`, content: newContent, sha: indexSha || undefined, branch: BRANCH })
+        });
+      }
+    } catch(e) {}
+
+    editBlogMode = false;
+    editingBlogSlug = '';
+    editingBlogSha = '';
+
+    showToast('🎉 Makale başarıyla yayınlandı!', 'success');
+    setTimeout(() => {
+      loadAllBlogs();
+      switchBlogSubTab('list');
+    }, 800);
+
+  } catch(err) {
+    showToast('Hata: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 Makaleyi Yayınla';
+  }
+}
+
+async function deleteBlogItem(slug, sha) {
+  if (!confirm(`"${slug}" makalesini silmek istediğinize emin misiniz?`)) return;
+
+  const token = localStorage.getItem('gkm_gh_token');
+  if (!token) { openTokenModal(); showToast('GitHub Token giriniz!', 'error'); return; }
+
+  try {
+    showToast('Makale siliniyor...', 'info');
+    let currentSha = sha;
+    if (!currentSha) {
+      const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/blog/${slug}.json`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      if (getRes.ok) {
+        const d = await getRes.json();
+        currentSha = d.sha;
+      }
+    }
+
+    await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/blog/${slug}.json`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `Delete blog: ${slug}`, sha: currentSha, branch: BRANCH })
+    });
+
+    // Remove from blog index
+    try {
+      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/blog-index.json`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        let indexList = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+        indexList = indexList.filter(id => id !== slug);
+        const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(indexList, null, 2))));
+        await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/blog-index.json`, {
+          method: 'PUT',
+          headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `Remove ${slug} from blog-index`, content: newContent, sha: data.sha, branch: BRANCH })
+        });
+      }
+    } catch(e) {}
+
+    showToast('Makale başarıyla silindi!', 'success');
+    loadAllBlogs();
 
   } catch(err) {
     showToast('Hata: ' + err.message, 'error');
   }
 }
 
-async function saveBlogPost() {
-  const token = localStorage.getItem('gkm_gh_token');
-  if (!token) { openTokenModal(); showToast('GitHub Token giriniz!', 'error'); return; }
+function handleBlogFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  blogUploadedFileName = file.name;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    blogUploadedBase64 = evt.target.result.split(',')[1];
+    document.getElementById('blogPreviewImg').src = evt.target.result;
+    document.getElementById('blogFileName').textContent = file.name;
+    document.getElementById('blogPreviewBox').style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+}
 
-  const title = document.getElementById('blog_title').value.trim();
-  const ozet = document.getElementById('blog_ozet').value.trim();
-  const body = document.getElementById('blog_body').value.trim();
-  if (!title) { showToast('Makale başlığı giriniz!', 'error'); return; }
-
-  const slug = slugify(title);
-  showToast('Makale yayınlanıyor...', 'info');
-  try {
-    const blogData = {
-      title,
-      tarih: new Date().toLocaleDateString('tr-TR', { day:'numeric', month:'long', year:'numeric' }),
-      kategori: 'Rehber & Bakım',
-      ana_resim: '/resim/logo.png',
-      ozet,
-      body
-    };
-
-    await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/blog/${slug}.json`, {
-      method: 'PUT',
-      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: `Add blog post: ${title}`, content: btoa(unescape(encodeURIComponent(JSON.stringify(blogData, null, 2)))), branch: BRANCH })
-    });
-
-    showToast('🎉 Makale başarıyla yayınlandı!', 'success');
-    document.getElementById('blog_title').value = '';
-    document.getElementById('blog_ozet').value = '';
-    document.getElementById('blog_body').value = '';
-
-  } catch(err) {
-    showToast('Hata: ' + err.message, 'error');
-  }
+function removeBlogImage() {
+  blogUploadedBase64 = null;
+  blogUploadedFileName = '';
+  document.getElementById('blogFileInput').value = '';
+  document.getElementById('blogPreviewBox').style.display = 'none';
+  document.getElementById('blogPreviewImg').src = '/resim/logo.png';
 }
 
 // ══════════════════════════════════════════════════════════
 // DRAG & DROP & FILE UPLOADS
 // ══════════════════════════════════════════════════════════
 function setupDragAndDrop() {
-  const zone = document.getElementById('uploadZone');
+  setupZone('uploadZone', processImageFile);
+  setupZone('galUploadZone', (file) => {
+    galUploadedFileName = file.name;
+    const r = new FileReader();
+    r.onload = (evt) => {
+      galUploadedBase64 = evt.target.result.split(',')[1];
+      document.getElementById('galPreviewImg').src = evt.target.result;
+      document.getElementById('galFileName').textContent = file.name;
+      document.getElementById('galPreviewBox').style.display = 'flex';
+    };
+    r.readAsDataURL(file);
+  });
+  setupZone('blogUploadZone', (file) => {
+    blogUploadedFileName = file.name;
+    const r = new FileReader();
+    r.onload = (evt) => {
+      blogUploadedBase64 = evt.target.result.split(',')[1];
+      document.getElementById('blogPreviewImg').src = evt.target.result;
+      document.getElementById('blogFileName').textContent = file.name;
+      document.getElementById('blogPreviewBox').style.display = 'flex';
+    };
+    r.readAsDataURL(file);
+  });
+}
+
+function setupZone(zoneId, handler) {
+  const zone = document.getElementById(zoneId);
   if (!zone) return;
 
   ['dragenter', 'dragover'].forEach(name => {
@@ -1816,7 +2578,7 @@ function setupDragAndDrop() {
 
   zone.addEventListener('drop', (e) => {
     const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) processImageFile(file);
+    if (file && file.type.startsWith('image/')) handler(file);
   });
 }
 
@@ -1844,6 +2606,19 @@ function removeSelectedImage() {
   document.getElementById('imagePreviewBox').style.display = 'none';
   document.getElementById('previewImg').src = '/resim/logo.png';
 }
+
+// ══════════════════════════════════════════════════════════
+// INIT WITH ALL MODULES
+// ══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  checkTokenStatus();
+  loadAllProducts();
+  loadCompanySettings();
+  loadHomeSettings();
+  loadAllGallery();
+  loadAllBlogs();
+  setupDragAndDrop();
+});
 
 // ══════════════════════════════════════════════════════════
 // TOKEN MODAL & REPO DISCOVERY
@@ -1889,6 +2664,8 @@ async function saveToken() {
     closeTokenModal();
     showToast('🎉 GitHub bağlantısı başarıyla kuruldu!', 'success');
     loadAllProducts();
+    loadAllGallery();
+    loadAllBlogs();
 
   } catch(err) {
     showToast(err.message, 'error');

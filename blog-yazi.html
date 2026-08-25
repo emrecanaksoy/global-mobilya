@@ -113,9 +113,25 @@ async function loadBlog() {
   }
 
   try {
-    const response = await fetch(`_data/blog/${blogId}.json`);
-    if (!response.ok) throw new Error('Yazı bulunamadı');
-    const post = await response.json();
+    const cacheBuster = '?t=' + Date.now();
+    let post = null;
+
+    // 1. GitHub API
+    try {
+      const ghRes = await fetch(`https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/blog/${blogId}.json${cacheBuster}`);
+      if (ghRes.ok) {
+        const d = await ghRes.json();
+        post = JSON.parse(decodeURIComponent(escape(atob(d.content))));
+      }
+    } catch(e) {}
+
+    // 2. Fallback: Yerel dosya
+    if (!post) {
+      const response = await fetch(`_data/blog/${blogId}.json${cacheBuster}`);
+      if (response.ok) post = await response.json();
+    }
+
+    if (!post) throw new Error('Yazı bulunamadı');
     
     document.title = `${post.title} | Global Kapak Mobilya`;
     bcBlog.textContent = post.title;
