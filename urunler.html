@@ -122,34 +122,34 @@ let currentFilter = 'all';
 
 async function loadProducts() {
   const container = document.getElementById('products-container');
+  const cacheBuster = '?t=' + Date.now();
   
   try {
-    // GitHub API'sinden _data/urunler/ klasöründeki tüm dosyaları getir
     let productIds = [];
-    try {
-      const ghRes = await fetch('https://api.github.com/repos/emrecanaksoyea34-a11y/global-kapak-mobilyaa/contents/_data/urunler');
-      if (ghRes.ok) {
-        const files = await ghRes.json();
-        productIds = files
-          .filter(f => f.name.endsWith('.json'))
-          .map(f => f.name.replace('.json', ''));
-      }
-    } catch(e) {
-      console.log('GitHub API hatası, fallback kullanılıyor:', e);
-    }
     
-    // Fallback: GitHub API çalışmazsa index dosyasını dene
-    if (productIds.length === 0) {
+    // 1. Önce doğrudan hızlı index dosyasını oku
+    try {
+      const indexResponse = await fetch('_data/urunler-index.json' + cacheBuster);
+      if (indexResponse.ok) productIds = await indexResponse.json();
+    } catch(e) {}
+
+    // 2. Fallback: GitHub API
+    if (!productIds || productIds.length === 0) {
       try {
-        const indexResponse = await fetch('_data/urunler-index.json');
-        if (indexResponse.ok) productIds = await indexResponse.json();
+        const ghRes = await fetch('https://api.github.com/repos/emrecanaksoyea34-a11y/global-kapak-mobilyaa/contents/_data/urunler');
+        if (ghRes.ok) {
+          const files = await ghRes.json();
+          productIds = files
+            .filter(f => f.name.endsWith('.json'))
+            .map(f => f.name.replace('.json', ''));
+        }
       } catch(e) {}
     }
     
     // Her bir ürünün JSON'unu yükle
     const productPromises = productIds.map(async (id) => {
       try {
-        const r = await fetch(`_data/urunler/${id}.json`);
+        const r = await fetch(`_data/urunler/${id}.json${cacheBuster}`);
         if (r.ok) {
           const data = await r.json();
           data.id = id;
