@@ -28,20 +28,33 @@
     "aktif": true
   },
   "stats": [
-    { "sayi": "15+", "etiket": "Yıl Sektör Deneyimi" },
-    { "sayi": "2K+", "etiket": "m² Fabrika Alanı" },
-    { "sayi": "5",   "etiket": "Yıl Garanti" },
-    { "sayi": "5",   "etiket": "İş Gününde Teslimat" }
+    {
+      "sayi": "15+",
+      "etiket": "Yıl Sektör Deneyimi"
+    },
+    {
+      "sayi": "2K+",
+      "etiket": "m² Fabrika Alanı"
+    },
+    {
+      "sayi": "5",
+      "etiket": "Yıl Garanti"
+    },
+    {
+      "sayi": "5",
+      "etiket": "İş Gününde Teslimat"
+    }
   ],
   "anasayfa_hakkimizda": {
-    "resim": "resim/logo.png",
+    "resim": "/resim/yonetilen/anasayfa-hakkimizda-1787725231497.png",
     "baslik_1": "Global Kapak Mobilya",
     "baslik_2": "Membran Kapak Uzmanı",
     "paragraf_1": "Global Kapak Mobilya, sektörde 15 yılı aşkın deneyime sahip uzman kadrosuyla, mobilya kapak üretiminde fark yaratan bir markadır.",
     "paragraf_2": "Müşteri memnuniyetini ön planda tutarak, her ürünümüzde kalite, dayanıklılık ve estetik bir arada sunuyoruz.",
     "paragraf_3": "Üretim süreçlerimizde çevreye duyarlı yaklaşımı benimsiyor, sürdürülebilir üretim ilkelerini uyguluyoruz.",
     "buton_yazi": "Daha Fazla Bilgi",
-    "buton_link": "hakkimizda.html"
+    "buton_link": "hakkimizda.html",
+    "etiket": "Firmamız Hakkında"
   },
   "hakkimizda_resim": {
     "resim": "resim/logo.png",
