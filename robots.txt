@@ -1,7 +1,18 @@
 # Global Kapak Mobilya - Arama Motoru Kuralları
-
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /_data/
+
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /_data/
+
+User-agent: Googlebot-Image
+Allow: /resim/
+Allow: /favicon.ico
+Allow: /favicon.png
 
 # Sitemap konumu
 Sitemap: https://globalkapakmobilya.com/sitemap.xml
