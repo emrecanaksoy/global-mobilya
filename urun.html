@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr" data-page="urun">
 <head>
 <meta charset="UTF-8">
@@ -137,7 +137,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px
 
 <script>
 const params = new URLSearchParams(window.location.search);
-const productId = params.get('id');
+const productId = (params.get('id') || params.get('slug') || '').trim();
 let galleryImages = [];
 let lbIndex = 0;
 
@@ -195,105 +195,130 @@ function selectChip(el, cls) {
 async function loadProduct() {
   const container = document.getElementById('product-container');
   if (!productId) {
-    container.innerHTML = '<div class="error"><h2>Ürün Bulunamadı</h2><p><a href="urunler.html">← Ürünlere Dön</a></p></div>';
+    container.innerHTML = '<div class="error"><h2>Ürün Belirtilmedi</h2><p><a href="urunler.html">← Ürünler Kataloğuna Dön</a></p></div>';
     return;
   }
   const cacheBuster = '?t=' + Date.now();
   let p = null;
 
-  // 1. GitHub API
+  // 1. Yerel dosya /_data/urunler/{slug}.json
   try {
-    const ghRes = await fetch(`https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/urunler/${productId}.json${cacheBuster}`);
-    if (ghRes.ok) {
-      const d = await ghRes.json();
-      p = JSON.parse(decodeURIComponent(escape(atob(d.content))));
-    }
+    const r = await fetch(`/_data/urunler/${productId}.json${cacheBuster}`);
+    if (r.ok) p = await r.json();
   } catch(e) {}
 
-  // 2. Fallback: Yerel dosya
+  // 2. Fastly CDN (GitHub Raw yedeği)
   if (!p) {
     try {
-      const r = await fetch(`_data/urunler/${productId}.json${cacheBuster}`);
-      if (r.ok) p = await r.json();
+      const cdnRes = await fetch(`https://fastly.jsdelivr.net/gh/emrecanaksoy/global-mobilya@main/_data/urunler/${productId}.json${cacheBuster}`);
+      if (cdnRes.ok) p = await cdnRes.json();
+    } catch(e) {}
+  }
+
+  // 3. Ürünler İndeks Fihristinden Arama
+  if (!p) {
+    try {
+      const idxRes = await fetch(`/_data/urunler-index.json${cacheBuster}`);
+      if (idxRes.ok) {
+        const list = await idxRes.json();
+        p = list.find(item => (item.slug === productId || item.id === productId || (item.baslik && item.baslik.toLowerCase() === productId.toLowerCase())));
+      }
+    } catch(e) {}
+  }
+
+  // 4. GitHub API (Son çare)
+  if (!p) {
+    try {
+      const ghRes = await fetch(`https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/urunler/${productId}.json${cacheBuster}`);
+      if (ghRes.ok) {
+        const d = await ghRes.json();
+        p = JSON.parse(decodeURIComponent(escape(atob(d.content))));
+      }
     } catch(e) {}
   }
 
   if (!p) {
-    container.innerHTML = '<div class="error"><h2>Ürün Bulunamadı</h2><p><a href="urunler.html">← Ürünlere Dön</a></p></div>';
+    container.innerHTML = '<div class="error"><h2>Ürün Bulunamadı</h2><p>Aradığınız ürün kaldırılmış veya güncelleniyor olabilir.</p><p><a href="urunler.html" style="color:var(--navy3); font-weight:700; text-decoration:underline;">← Tüm Ürünlere Dön</a></p></div>';
     return;
   }
 
-  document.title = p.title + ' | Global Kapak Mobilya';
-  document.getElementById('bc-product').textContent = p.title;
+  const pTitle = p.baslik || p.title || 'Membran Kapak Modeli';
+  const pDesc = p.aciklama || p.kisa_aciklama || p.body || 'Modern CNC teknolojisi ve yüksek kaliteli membran kaplama standartlarıyla üretilmiş özel ölçü kapak modeli.';
+  const pCat = p.kategori || p.category || 'Membran Kapak';
 
-    // Galeri görselleri
-    // JSON'da "gorseller": ["resim/urun1.jpg","resim/urun2.jpg"] dizisi kullanın
-    // Görsel mod: "gorsel_mod": "contain" | "cover" | "fill"
-    galleryImages = (p.gorseller && p.gorseller.length) ? p.gorseller : [p.ana_resim || 'resim/logo.png'];
+  document.title = pTitle + ' | Global Kapak Mobilya';
+  const bcEl = document.getElementById('bc-product');
+  if (bcEl) bcEl.textContent = pTitle;
 
-    const thumbHtml = galleryImages.length > 1
-      ? '<div class="pd-thumbs">' + galleryImages.map((src,i) =>
-          '<div class="pd-thumb' + (i===0?' active':'') + '" onclick="selectThumb('+i+')">' +
-          '<img src="'+src+'" alt="Görsel '+(i+1)+'" loading="lazy"></div>'
-        ).join('') + '</div>'
-      : '';
+  // Galeri görselleri (Tüm formatlarla uyumlu)
+  let imgs = [];
+  if (Array.isArray(p.gorseller) && p.gorseller.length) imgs = imgs.concat(p.gorseller);
+  if (Array.isArray(p.galeri) && p.galeri.length) imgs = imgs.concat(p.galeri);
+  if (p.resim && !imgs.includes(p.resim)) imgs.unshift(p.resim);
+  if (p.ana_resim && !imgs.includes(p.ana_resim)) imgs.unshift(p.ana_resim);
+  if (imgs.length === 0) imgs = ['/resim/logo.png'];
 
-    const renkler = p.renkler || [];
-    const renkHtml = renkler.length
-      ? '<div class="pd-colors"><span class="pd-section-label">Renk Seçenekleri</span><div class="color-list">' +
-        renkler.map((r,i) => '<div class="color-chip'+(i===0?' active':'')+'" onclick="selectChip(this,\'color-chip\')">'+r+'</div>').join('') +
-        '</div></div>' : '';
+  galleryImages = imgs;
 
-    const bedenler = p.bedenler || [];
-    const bedenHtml = bedenler.length
-      ? '<div class="pd-sizes"><span class="pd-section-label">Boyut Seçenekleri</span><div class="size-list">' +
-        bedenler.map((b,i) => {
-          const label = b.label || b;
-          const disabled = b.stok===false ? ' disabled':'';
-          return '<div class="size-chip'+(i===0?' active':'')+disabled+'" onclick="selectChip(this,\'size-chip\')">'+label+'</div>';
-        }).join('') +
-        '</div></div>' : '';
+  const thumbHtml = galleryImages.length > 1
+    ? '<div class="pd-thumbs">' + galleryImages.map((src,i) =>
+        '<div class="pd-thumb' + (i===0?' active':'') + '" onclick="selectThumb('+i+')">' +
+        '<img src="'+src+'" alt="Görsel '+(i+1)+'" loading="lazy"></div>'
+      ).join('') + '</div>'
+    : '';
 
-    const ozellikler = p.ozellikler || ['Yüksek kalite MDF + PVC membran','Su ve neme dayanıklı','Kolay temizlenebilir','5 yıl garanti','5 iş gününde teslimat'];
-    const metaTags = p.etiketler || [];
-    const metaHtml = metaTags.length ? '<div class="pd-meta-row">'+metaTags.map(t=>'<span class="pd-meta-tag">'+t+'</span>').join('')+'</div>' : '';
+  const renkler = p.renkler || ['Beyaz Mat', 'Antrasit Mat', 'Ceviz', 'Krem Soft', 'Kaşmir'];
+  const renkHtml = renkler.length
+    ? '<div class="pd-colors"><span class="pd-section-label">Renk Seçenekleri</span><div class="color-list">' +
+      renkler.map((r,i) => '<div class="color-chip'+(i===0?' active':'')+'" onclick="selectChip(this,\'color-chip\')">'+r+'</div>').join('') +
+      '</div></div>' : '';
 
-    const bodyHtml = p.body ? simpleMarkdown(p.body) : '';
-    const waMsg = encodeURIComponent('Merhaba, ' + p.title + ' ürünü hakkında bilgi almak istiyorum.');
+  const bedenler = p.bedenler || ['Özel Ölçü Üretim', 'Standart Dolap Ebatları', 'Mutfak & Banyo'];
+  const bedenHtml = bedenler.length
+    ? '<div class="pd-sizes"><span class="pd-section-label">Ölçü / Boyut</span><div class="size-list">' +
+      bedenler.map((b,i) => {
+        const label = b.label || b;
+        const disabled = b.stok===false ? ' disabled':'';
+        return '<div class="size-chip'+(i===0?' active':'')+disabled+'" onclick="selectChip(this,\'size-chip\')">'+label+'</div>';
+      }).join('') +
+      '</div></div>' : '';
 
-    container.innerHTML =
-      '<div class="pd-wrapper">' +
-        '<div class="pd-gallery">' +
-          '<div class="pd-main-img" onclick="openLightbox(0)">' +
-            '<img id="main-product-img" src="'+galleryImages[0]+'" alt="'+p.title+'">' +
-            '<div class="pd-zoom-badge">🔍</div>' +
-          '</div>' +
-          thumbHtml +
-          '<span class="img-mode-badge" id="img-mode-badge"></span>' +
+  const ozellikler = (Array.isArray(p.ozellikler) && p.ozellikler.length) ? p.ozellikler : ['Yüksek kalite 18mm MDF gövde','Çizilmeye & neme dayanıklı 1. sınıf PVC folyo','Özel ölçüye göre CNC işleme','5 yıl üretici garantisi','5 iş gününde hızlı teslimat'];
+  const metaTags = p.etiketler || [pCat, 'Özel Ölçü', 'CNC Kapak'];
+  const metaHtml = metaTags.length ? '<div class="pd-meta-row">'+metaTags.map(t=>'<span class="pd-meta-tag">'+t+'</span>').join('')+'</div>' : '';
+
+  const bodyHtml = p.body ? simpleMarkdown(p.body) : '';
+  const waMsg = encodeURIComponent('Merhaba Global Kapak Mobilya, "' + pTitle + '" ürünü hakkında fiyat teklifi ve detaylı bilgi almak istiyorum.');
+
+  container.innerHTML =
+    '<div class="pd-wrapper">' +
+      '<div class="pd-gallery">' +
+        '<div class="pd-main-img" onclick="openLightbox(0)">' +
+          '<img id="main-product-img" src="'+galleryImages[0]+'" alt="'+pTitle+'">' +
+          '<div class="pd-zoom-badge">🔍</div>' +
         '</div>' +
-        '<div class="pd-info">' +
-          '<div class="pd-cat">'+(p.kategori||'')+'</div>' +
-          '<h1>'+p.title+'</h1>' +
-          (p.sku ? '<div class="pd-sku">Ürün Kodu: <strong>'+p.sku+'</strong></div>' : '') +
-          '<div class="pd-rating"><span class="stars">★★★★★</span><span>Yeni Ürün</span></div>' +
-          '<p class="pd-desc">'+(p.kisa_aciklama||'')+'</p>' +
-          '<div class="pd-features"><h4>Öne Çıkan Özellikler</h4><ul>' +
-            ozellikler.map(o=>'<li>'+o+'</li>').join('') +
-          '</ul></div>' +
-          renkHtml + bedenHtml + metaHtml +
-          '<div class="pd-actions">' +
-            '<a href="https://wa.me/905050151035?text='+waMsg+'" target="_blank" class="btn-primary">📱 WhatsApp ile Sipariş</a>' +
-            '<a href="iletisim.html" class="btn-secondary">Teklif İste</a>' +
-          '</div>' +
+        thumbHtml +
+        '<span class="img-mode-badge" id="img-mode-badge"></span>' +
+      '</div>' +
+      '<div class="pd-info">' +
+        '<div class="pd-cat">'+pCat+'</div>' +
+        '<h1>'+pTitle+'</h1>' +
+        (p.sku ? '<div class="pd-sku">Ürün Kodu: <strong>'+p.sku+'</strong></div>' : '') +
+        '<div class="pd-rating"><span class="stars">★★★★★</span><span>5 Yıl Garanti • 5 Günde Teslimat</span></div>' +
+        '<p class="pd-desc">'+pDesc+'</p>' +
+        '<div class="pd-features"><h4>Öne Çıkan Özellikler</h4><ul>' +
+          ozellikler.map(o=>'<li>'+o+'</li>').join('') +
+        '</ul></div>' +
+        renkHtml + bedenHtml + metaHtml +
+        '<div class="pd-actions">' +
+          '<a href="https://wa.me/905050151035?text='+waMsg+'" target="_blank" class="btn-primary">💬 WhatsApp ile Sipariş / Teklif Al</a>' +
+          '<a href="iletisim.html" class="btn-secondary">İletişime Geç</a>' +
         '</div>' +
       '</div>' +
-      (bodyHtml ? '<div class="pd-body">'+bodyHtml+'</div>' : '');
+    '</div>' +
+    (bodyHtml ? '<div class="pd-body">'+bodyHtml+'</div>' : '');
 
-    applyImageMode(p.gorsel_mod || 'contain');
-
-  } catch(e) {
-    container.innerHTML = '<div class="error"><h2>⚠️ Ürün Bulunamadı</h2><p><a href="urunler.html">← Ürünlere Dön</a></p></div>';
-  }
+  applyImageMode(p.gorsel_mod || 'contain');
 }
 
 function simpleMarkdown(md) {
