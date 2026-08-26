@@ -199,48 +199,53 @@ async function loadGallery() {
   const cacheBuster = '?t=' + Date.now();
 
   try {
-    let galFiles = [];
+    let galIds = [];
+    
+    // 1. Yerel galeri index dosyasını oku
     try {
-      const ghRes = await fetch('https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/galeri' + cacheBuster);
-      if (ghRes.ok) {
-        const files = await ghRes.json();
-        galFiles = files.filter(f => f.name.endsWith('.json'));
-      }
+      const idxRes = await fetch('_data/galeri-index.json' + cacheBuster);
+      if (idxRes.ok) galIds = await idxRes.json();
     } catch(e) {}
 
-    let loaded = [];
-    if (galFiles.length > 0) {
-      const promises = galFiles.map(async (file) => {
-        try {
-          const res = await fetch(`https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/galeri/${file.name}${cacheBuster}`);
-          if (res.ok) {
-            const data = await res.json();
-            const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-            content.slug = file.name.replace('.json', '');
-            return content;
-          }
-        } catch(e) {}
-        return null;
-      });
-      loaded = (await Promise.all(promises)).filter(g => g);
+    // 2. Raw GitHub fallback
+    if (!galIds || galIds.length === 0) {
+      try {
+        const rawRes = await fetch('https://raw.githubusercontent.com/emrecanaksoy/global-mobilya/main/_data/galeri-index.json' + cacheBuster);
+        if (rawRes.ok) galIds = await rawRes.json();
+      } catch(e) {}
     }
 
-    // Fallback: Yerel galeri dosyaları
-    if (loaded.length === 0) {
-      const sampleIds = ['galeri-1', 'galeri-2', 'galeri-3'];
-      const promises = sampleIds.map(async (id) => {
-        try {
-          const r = await fetch(`_data/galeri/${id}.json${cacheBuster}`);
-          if (r.ok) {
-            const d = await r.json();
-            d.slug = id;
-            return d;
-          }
-        } catch(e) {}
-        return null;
-      });
-      loaded = (await Promise.all(promises)).filter(g => g);
+    // 3. Fallback: GitHub API
+    if (!galIds || galIds.length === 0) {
+      try {
+        const ghRes = await fetch('https://api.github.com/repos/emrecanaksoy/global-mobilya/contents/_data/galeri' + cacheBuster);
+        if (ghRes.ok) {
+          const files = await ghRes.json();
+          galIds = files.filter(f => f.name.endsWith('.json')).map(f => f.name.replace('.json', ''));
+        }
+      } catch(e) {}
     }
+
+    if (!galIds || galIds.length === 0) {
+      galIds = ['galeri-1787672363723', 'galeri-1', 'galeri-2', 'galeri-3'];
+    }
+
+    let loaded = [];
+    const promises = galIds.map(async (id) => {
+      try {
+        let res = await fetch(`_data/galeri/${id}.json${cacheBuster}`);
+        if (!res.ok) {
+          res = await fetch(`https://raw.githubusercontent.com/emrecanaksoy/global-mobilya/main/_data/galeri/${id}.json${cacheBuster}`);
+        }
+        if (res.ok) {
+          const data = await res.json();
+          data.slug = id;
+          return data;
+        }
+      } catch(e) { return null; }
+    });
+
+    loaded = (await Promise.all(promises)).filter(g => g);
 
     allGalleryItems = loaded;
     renderGallery(allGalleryItems);

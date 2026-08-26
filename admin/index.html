@@ -2076,6 +2076,30 @@ async function saveGalleryItem(e) {
 
     if (!saveRes.ok) throw new Error('Galeri fotoğrafı kaydedilemedi');
 
+    // Update galeri-index.json
+    try {
+      let galIndex = [];
+      let galIndexSha = '';
+      const idxRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/galeri-index.json`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      if (idxRes.ok) {
+        const d = await idxRes.json();
+        galIndexSha = d.sha;
+        galIndex = JSON.parse(decodeURIComponent(escape(atob(d.content))));
+      }
+
+      if (!galIndex.includes(slug)) {
+        galIndex.unshift(slug);
+        const newIndexContent = btoa(unescape(encodeURIComponent(JSON.stringify(galIndex, null, 2))));
+        await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/galeri-index.json`, {
+          method: 'PUT',
+          headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `Update galeri-index for ${slug}`, content: newIndexContent, sha: galIndexSha || undefined, branch: BRANCH })
+        });
+      }
+    } catch(e) {}
+
     editGalMode = false;
     editingGalSlug = '';
     editingGalSha = '';
@@ -2118,6 +2142,24 @@ async function deleteGalleryItem(slug, sha) {
       headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: `Delete gallery: ${slug}`, sha: currentSha, branch: BRANCH })
     });
+
+    // Remove from galeri-index.json
+    try {
+      const idxRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/galeri-index.json`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      if (idxRes.ok) {
+        const d = await idxRes.json();
+        let galIndex = JSON.parse(decodeURIComponent(escape(atob(d.content))));
+        galIndex = galIndex.filter(id => id !== slug);
+        const newIndexContent = btoa(unescape(encodeURIComponent(JSON.stringify(galIndex, null, 2))));
+        await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/galeri-index.json`, {
+          method: 'PUT',
+          headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `Remove ${slug} from galeri-index`, content: newIndexContent, sha: d.sha, branch: BRANCH })
+        });
+      }
+    } catch(e) {}
 
     showToast('Fotoğraf başarıyla silindi!', 'success');
     loadAllGallery();
