@@ -574,6 +574,9 @@ textarea.form-control { resize: vertical; min-height: 80px; }
     <button class="nav-tab-btn" onclick="switchMainTab(event, 'tab-blog')">
       📝 Blog & Makaleler <span class="badge" id="blogCountBadge">0</span>
     </button>
+    <button class="nav-tab-btn" onclick="switchMainTab(event, 'tab-suppliers')">
+      🤝 Tedarikçiler <span class="badge" id="supCountBadge">0</span>
+    </button>
     <button class="nav-tab-btn" onclick="switchMainTab(event, 'tab-guide')">
       💡 Yardım & Kullanım
     </button>
@@ -1087,7 +1090,133 @@ textarea.form-control { resize: vertical; min-height: 80px; }
   </div>
 
   <!-- ══════════════════════════════════════════════════════════ -->
-  <!-- TAB 6: YARDIM & KULLANIM -->
+  <!-- TAB 6: TEDARİKÇİ YÖNETİMİ -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div class="tab-section" id="tab-suppliers">
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
+      <div style="display:flex; gap:8px;">
+        <button class="btn-primary btn-sm" id="btnSupSubList" onclick="switchSupSubTab('list')">📋 Tedarikçi Listesi</button>
+        <button class="btn-gold btn-sm" id="btnSupSubAdd" onclick="startNewSupplier()">➕ Yeni Tedarikçi Ekle</button>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <input type="text" class="form-control" id="supSearchBox" placeholder="🔍 Tedarikçi ara..." style="width:200px; padding:6px 12px; font-size:13px;" oninput="filterAdminSuppliers()">
+        <select class="form-control" id="supFilterCat" style="width:170px; padding:6px 12px; font-size:13px;" onchange="filterAdminSuppliers()">
+          <option value="all">Tüm Kategoriler</option>
+          <option value="Membran & Folyo">Membran & Folyo</option>
+          <option value="MDF & Ahşap">MDF & Ahşap</option>
+          <option value="Yapıştırıcı">Yapıştırıcı</option>
+          <option value="Aksesuar & Menteşe">Aksesuar & Menteşe</option>
+          <option value="Boya & Vernik">Boya & Vernik</option>
+          <option value="Lojistik & Kargo">Lojistik & Kargo</option>
+          <option value="Makine & Ekipman">Makine & Ekipman</option>
+          <option value="Ambalaj">Ambalaj</option>
+          <option value="Diğer">Diğer</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- LIST VIEW -->
+    <div id="subview-sup-list">
+      <div id="supLoadingIndicator" style="text-align:center; padding:60px 20px; color:var(--text-muted); display:none;">
+        <div class="spinner" style="width:28px; height:28px; border-color:var(--navy); border-top-color:transparent; margin-bottom:12px;"></div>
+        <p style="font-weight:600;">Tedarikçiler yükleniyor...</p>
+      </div>
+      <div class="product-grid" id="supGrid" style="display:none;"></div>
+      <div id="supEmptyState" style="display:none; text-align:center; padding:60px 20px; background:#fff; border-radius:var(--radius-md); border:1px dashed var(--border);">
+        <div style="font-size:40px; margin-bottom:12px;">🤝</div>
+        <h3 style="font-family:'Montserrat',sans-serif; color:var(--navy); margin-bottom:6px;">Henüz Tedarikçi Eklenmedi</h3>
+        <p style="color:var(--text-muted); font-size:13px; margin-bottom:18px;">İş ortaklarınızı ve hammadde tedarikçilerinizi buraya ekleyin.</p>
+        <button class="btn-gold" onclick="startNewSupplier()">➕ İlk Tedarikçiyi Ekle</button>
+      </div>
+    </div>
+
+    <!-- FORM VIEW -->
+    <div id="subview-sup-form" style="display:none;">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div>
+            <div class="admin-card-title" id="supFormTitle">➕ Yeni Tedarikçi Ekle</div>
+            <div class="admin-card-desc">Tedarikçi bilgileri anında "Tedarikçilerimiz" sayfasında yayına girer.</div>
+          </div>
+          <button class="btn-secondary btn-sm" onclick="switchSupSubTab('list')">← Listeye Dön</button>
+        </div>
+
+        <form id="supForm" onsubmit="saveSupplierItem(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Firma / Tedarikçi Adı <span class="req">*</span></label>
+              <input type="text" class="form-control" id="sup_ad" placeholder="Örn: Kastamonu Entegre" required oninput="autoGenerateSupSlug()">
+            </div>
+            <div class="form-group">
+              <label>Tedarik Kategorisi <span class="req">*</span></label>
+              <select class="form-control" id="sup_cat" required>
+                <option value="Membran & Folyo">Membran & Folyo</option>
+                <option value="MDF & Ahşap">MDF & Ahşap</option>
+                <option value="Yapıştırıcı">Yapıştırıcı</option>
+                <option value="Aksesuar & Menteşe">Aksesuar & Menteşe</option>
+                <option value="Boya & Vernik">Boya & Vernik</option>
+                <option value="Lojistik & Kargo">Lojistik & Kargo</option>
+                <option value="Makine & Ekipman">Makine & Ekipman</option>
+                <option value="Ambalaj">Ambalaj</option>
+                <option value="Diğer">Diğer</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Bağlantı Adresi (Slug)</label>
+              <input type="text" class="form-control" id="sup_slug" placeholder="kastamonu-entegre" required>
+            </div>
+            <div class="form-group">
+              <label>Web Sitesi Linki (Opsiyonel)</label>
+              <input type="url" class="form-control" id="sup_link" placeholder="https://www.firmaadi.com">
+            </div>
+          </div>
+
+          <!-- LOGO GÖRSELİ -->
+          <div class="form-group">
+            <label>Firma Logosu / Fotoğrafı</label>
+            <div class="upload-zone" id="supUploadZone" onclick="document.getElementById('supFileInput').click()">
+              <input type="file" id="supFileInput" accept="image/*" style="display:none" onchange="handleSupFileSelect(event)">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <h4>Logoyu Buraya Sürükleyin veya Seçin</h4>
+              <p>PNG (Şeffaf arka plan), JPG, WebP veya SVG desteklenir</p>
+            </div>
+            <div id="supPreviewBox" class="upload-preview" style="display:none;">
+              <img id="supPreviewImg" src="/resim/logo.png" alt="Önizleme">
+              <div style="flex:1;">
+                <div id="supFileName" style="font-weight:600; font-size:13px;">logo.png</div>
+                <div style="font-size:11px; color:var(--success); font-weight:600;">✓ Yüklemeye Hazır</div>
+              </div>
+              <button type="button" class="btn-danger btn-sm" onclick="removeSupImage()">Kaldır</button>
+            </div>
+            <input type="hidden" id="sup_logo_url" value="/resim/logo.png">
+          </div>
+
+          <div class="form-group">
+            <label>Açıklama / İş Ortaklığı Tanıtımı</label>
+            <textarea class="form-control" id="sup_desc" rows="3" placeholder="Yüksek kaliteli MDF levha ve hammadde tedarikinde 10+ yıldır güvenle çalıştığımız stratejik iş ortağımız..."></textarea>
+          </div>
+
+          <div class="form-group" style="max-width:200px;">
+            <label>Görüntülenme Sıralaması</label>
+            <input type="number" class="form-control" id="sup_order" value="1" min="1" max="999">
+          </div>
+
+          <div style="display:flex; gap:12px; margin-top:20px;">
+            <button type="submit" class="btn-gold" id="btnSupSave">💾 Tedarikçiyi Kaydet ve Yayınla</button>
+            <button type="button" class="btn-secondary" onclick="switchSupSubTab('list')">İptal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- TAB 7: YARDIM & KULLANIM -->
   <!-- ══════════════════════════════════════════════════════════ -->
   <div class="tab-section" id="tab-guide">
     <div class="admin-card">
@@ -2566,6 +2695,390 @@ function removeBlogImage() {
 }
 
 // ══════════════════════════════════════════════════════════
+// SUPPLIERS MODULE (FULL CRUD)
+// ══════════════════════════════════════════════════════════
+let allSuppliers = [];
+let editSupMode = false;
+let editingSupSlug = '';
+let editingSupSha = '';
+let supUploadedBase64 = null;
+let supUploadedFileName = '';
+
+function switchSupSubTab(view) {
+  const listBtn = document.getElementById('btnSupSubList');
+  const addBtn = document.getElementById('btnSupSubAdd');
+  const listView = document.getElementById('subview-sup-list');
+  const formView = document.getElementById('subview-sup-form');
+
+  if (view === 'list') {
+    listBtn.className = 'btn-primary btn-sm';
+    addBtn.className = 'btn-gold btn-sm';
+    listView.style.display = 'block';
+    formView.style.display = 'none';
+  } else {
+    listBtn.className = 'btn-secondary btn-sm';
+    addBtn.className = 'btn-primary btn-sm';
+    listView.style.display = 'none';
+    formView.style.display = 'block';
+  }
+}
+
+async function loadAllSuppliers() {
+  const loading = document.getElementById('supLoadingIndicator');
+  const grid = document.getElementById('supGrid');
+  const empty = document.getElementById('supEmptyState');
+  loading.style.display = 'block';
+  grid.style.display = 'none';
+  empty.style.display = 'none';
+
+  try {
+    let files = [];
+    const token = localStorage.getItem('gkm_gh_token');
+    const headers = token ? { 'Authorization': `token ${token}` } : {};
+
+    try {
+      const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/tedarikciler?t=${Date.now()}`, { headers });
+      if (r.ok) {
+        const list = await r.json();
+        files = list.filter(f => f.name.endsWith('.json'));
+      }
+    } catch(e) {}
+
+    let loaded = [];
+    if (files.length > 0) {
+      const promises = files.map(async (file) => {
+        try {
+          const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/tedarikciler/${file.name}?t=${Date.now()}`, { headers });
+          if (res.ok) {
+            const data = await res.json();
+            const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+            content.slug = file.name.replace('.json', '');
+            content.sha = data.sha;
+            return content;
+          }
+        } catch(e) {}
+        return null;
+      });
+      loaded = (await Promise.all(promises)).filter(s => s);
+    }
+
+    if (loaded.length === 0) {
+      let ids = [];
+      try {
+        const idxRes = await fetch('/_data/tedarikciler-index.json?t=' + Date.now());
+        if (idxRes.ok) ids = await idxRes.json();
+      } catch(e) {}
+      
+      const promises = (ids || []).map(async (id) => {
+        try {
+          const r = await fetch(`/_data/tedarikciler/${id}.json?t=${Date.now()}`);
+          if (r.ok) {
+            const d = await r.json();
+            d.slug = id;
+            return d;
+          }
+        } catch(e) {}
+        return null;
+      });
+      loaded = (await Promise.all(promises)).filter(s => s);
+    }
+
+    allSuppliers = loaded;
+    document.getElementById('supCountBadge').textContent = allSuppliers.length;
+    renderAdminSupplierGrid(allSuppliers);
+
+  } catch(err) {
+    showToast('Tedarikçiler yüklenirken hata oluştu', 'error');
+    renderAdminSupplierGrid([]);
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+function renderAdminSupplierGrid(items) {
+  const grid = document.getElementById('supGrid');
+  const empty = document.getElementById('supEmptyState');
+
+  if (!items || items.length === 0) {
+    grid.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  grid.style.display = 'grid';
+
+  grid.innerHTML = items.map(s => `
+    <div class="product-card">
+      <div style="height:140px; background:#F8FAFC; display:flex; align-items:center; justify-content:center; padding:16px; border-bottom:1px solid var(--border);">
+        <img src="${s.logo || '/resim/logo.png'}" alt="${s.ad}" style="max-height:100%; max-width:100%; object-fit:contain;" onerror="this.src='/resim/logo.png'">
+      </div>
+      <div class="product-card-body">
+        <div class="product-card-cat">${s.kategori || 'İş Ortağımız'}</div>
+        <div class="product-card-title">${s.ad || 'Tedarikçi'}</div>
+        <div class="product-card-desc">${s.aciklama || 'Açıklama belirtilmemiş.'}</div>
+        ${s.link ? `<div style="font-size:11px; color:var(--gold); margin-bottom:10px; word-break:break-all;">🔗 ${s.link}</div>` : ''}
+        <div class="product-card-actions">
+          <button class="btn-secondary btn-sm" style="flex:1;" onclick="editSupplier('${s.slug}')">✏️ Düzenle</button>
+          <button class="btn-danger btn-sm" onclick="deleteSupplierItem('${s.slug}', '${s.sha || ''}')">🗑️ Sil</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterAdminSuppliers() {
+  const q = document.getElementById('supSearchBox').value.toLowerCase().trim();
+  const cat = document.getElementById('supFilterCat').value;
+
+  const filtered = allSuppliers.filter(s => {
+    const matchQ = (s.ad && s.ad.toLowerCase().includes(q)) || (s.aciklama && s.aciklama.toLowerCase().includes(q));
+    const matchCat = cat === 'all' || s.kategori === cat;
+    return matchQ && matchCat;
+  });
+
+  renderAdminSupplierGrid(filtered);
+}
+
+function startNewSupplier() {
+  editSupMode = false;
+  editingSupSlug = '';
+  editingSupSha = '';
+  document.getElementById('supFormTitle').textContent = '➕ Yeni Tedarikçi Ekle';
+  document.getElementById('btnSupSave').textContent = '💾 Tedarikçiyi Kaydet ve Yayınla';
+  document.getElementById('supForm').reset();
+  document.getElementById('sup_slug').value = '';
+  document.getElementById('sup_slug').readOnly = false;
+  document.getElementById('sup_logo_url').value = '/resim/logo.png';
+  document.getElementById('sup_order').value = (allSuppliers.length + 1);
+  removeSupImage();
+  switchSupSubTab('form');
+}
+
+function editSupplier(slug) {
+  const s = allSuppliers.find(x => x.slug === slug);
+  if (!s) return;
+
+  editSupMode = true;
+  editingSupSlug = slug;
+  editingSupSha = s.sha || '';
+
+  document.getElementById('supFormTitle').textContent = `✏️ "${s.ad}" Tedarikçisini Düzenle`;
+  document.getElementById('btnSupSave').textContent = '💾 Değişiklikleri Kaydet & Yayınla';
+
+  document.getElementById('sup_ad').value = s.ad || '';
+  document.getElementById('sup_cat').value = s.kategori || 'Membran & Folyo';
+  document.getElementById('sup_slug').value = slug;
+  document.getElementById('sup_slug').readOnly = true;
+  document.getElementById('sup_link').value = s.link || '';
+  document.getElementById('sup_desc').value = s.aciklama || '';
+  document.getElementById('sup_order').value = s.siralama || 1;
+  document.getElementById('sup_logo_url').value = s.logo || '/resim/logo.png';
+
+  if (s.logo && s.logo !== '/resim/logo.png') {
+    document.getElementById('supPreviewImg').src = s.logo;
+    document.getElementById('supFileName').textContent = s.logo.split('/').pop();
+    document.getElementById('supPreviewBox').style.display = 'flex';
+  } else {
+    removeSupImage();
+  }
+
+  switchSupSubTab('form');
+}
+
+function autoGenerateSupSlug() {
+  if (!editSupMode) {
+    document.getElementById('sup_slug').value = slugify(document.getElementById('sup_ad').value);
+  }
+}
+
+async function saveSupplierItem(e) {
+  if (e) e.preventDefault();
+
+  const token = localStorage.getItem('gkm_gh_token');
+  if (!token) { openTokenModal(); showToast('GitHub API Token giriniz!', 'error'); return; }
+
+  const ad = document.getElementById('sup_ad').value.trim();
+  let slug = document.getElementById('sup_slug').value.trim() || slugify(ad);
+  if (!ad || !slug) { showToast('Lütfen tedarikçi adını yazın!', 'error'); return; }
+
+  if (!editSupMode && allSuppliers.some(s => s.slug === slug)) {
+    slug = `${slug}-${Date.now().toString().slice(-4)}`;
+  }
+
+  const btn = document.getElementById('btnSupSave');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Kaydediliyor...';
+
+  try {
+    let finalLogoUrl = document.getElementById('sup_logo_url').value.trim();
+
+    if (supUploadedBase64) {
+      btn.innerHTML = '<div class="spinner"></div> Logo Yükleniyor...';
+      const cleanExt = supUploadedFileName.split('.').pop().toLowerCase() || 'png';
+      const imgPath = `resim/yonetilen/tedarikci-${slug}-${Date.now()}.${cleanExt}`;
+
+      const imgRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${imgPath}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `Upload supplier logo for ${slug}`, content: supUploadedBase64, branch: BRANCH })
+      });
+      if (imgRes.ok) finalLogoUrl = '/' + imgPath;
+    }
+
+    const supData = {
+      ad,
+      kategori: document.getElementById('sup_cat').value,
+      aciklama: document.getElementById('sup_desc').value.trim(),
+      link: document.getElementById('sup_link').value.trim() || undefined,
+      logo: finalLogoUrl || '/resim/logo.png',
+      siralama: parseInt(document.getElementById('sup_order').value, 10) || 1
+    };
+
+    let currentSha = editSupMode ? editingSupSha : '';
+    if (editSupMode && !currentSha) {
+      try {
+        const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/tedarikciler/${slug}.json`, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+        if (getRes.ok) {
+          const d = await getRes.json();
+          currentSha = d.sha;
+        }
+      } catch(e) {}
+    }
+
+    const jsonBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(supData, null, 2))));
+    const commitBody = {
+      message: editSupMode ? `Update supplier: ${ad}` : `Add supplier: ${ad}`,
+      content: jsonBase64,
+      branch: BRANCH
+    };
+    if (currentSha) commitBody.sha = currentSha;
+
+    const saveRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/tedarikciler/${slug}.json`, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(commitBody)
+    });
+
+    if (!saveRes.ok) throw new Error('Tedarikçi kaydedilemedi');
+
+    // Update tedarikciler-index.json
+    try {
+      let indexList = [];
+      let indexSha = '';
+      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/tedarikciler-index.json`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        indexSha = data.sha;
+        indexList = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+      }
+
+      if (!indexList.includes(slug)) {
+        indexList.push(slug);
+        const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(indexList, null, 2))));
+        await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/tedarikciler-index.json`, {
+          method: 'PUT',
+          headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `Update tedarikciler-index for ${slug}`, content: newContent, sha: indexSha || undefined, branch: BRANCH })
+        });
+      }
+    } catch(e) {}
+
+    editSupMode = false;
+    editingSupSlug = '';
+    editingSupSha = '';
+
+    showToast('🎉 Tedarikçi başarıyla kaydedildi!', 'success');
+    setTimeout(() => {
+      loadAllSuppliers();
+      switchSupSubTab('list');
+    }, 800);
+
+  } catch(err) {
+    showToast('Hata: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 Tedarikçiyi Kaydet ve Yayınla';
+  }
+}
+
+async function deleteSupplierItem(slug, sha) {
+  if (!confirm(`"${slug}" tedarikçisini silmek istediğinize emin misiniz?`)) return;
+
+  const token = localStorage.getItem('gkm_gh_token');
+  if (!token) { openTokenModal(); showToast('GitHub Token giriniz!', 'error'); return; }
+
+  try {
+    showToast('Tedarikçi siliniyor...', 'info');
+    let currentSha = sha;
+    if (!currentSha) {
+      const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/tedarikciler/${slug}.json`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      if (getRes.ok) {
+        const d = await getRes.json();
+        currentSha = d.sha;
+      }
+    }
+
+    await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/tedarikciler/${slug}.json`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `Delete supplier: ${slug}`, sha: currentSha, branch: BRANCH })
+    });
+
+    try {
+      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/tedarikciler-index.json`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        let indexList = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+        indexList = indexList.filter(id => id !== slug);
+        const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(indexList, null, 2))));
+        await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/tedarikciler-index.json`, {
+          method: 'PUT',
+          headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `Remove ${slug} from tedarikciler-index`, content: newContent, sha: data.sha, branch: BRANCH })
+        });
+      }
+    } catch(e) {}
+
+    showToast('Tedarikçi başarıyla silindi!', 'success');
+    loadAllSuppliers();
+
+  } catch(err) {
+    showToast('Hata: ' + err.message, 'error');
+  }
+}
+
+function handleSupFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  supUploadedFileName = file.name;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    supUploadedBase64 = evt.target.result.split(',')[1];
+    document.getElementById('supPreviewImg').src = evt.target.result;
+    document.getElementById('supFileName').textContent = file.name;
+    document.getElementById('supPreviewBox').style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeSupImage() {
+  supUploadedBase64 = null;
+  supUploadedFileName = '';
+  document.getElementById('supFileInput').value = '';
+  document.getElementById('supPreviewBox').style.display = 'none';
+  document.getElementById('supPreviewImg').src = '/resim/logo.png';
+}
+
+// ══════════════════════════════════════════════════════════
 // DRAG & DROP & FILE UPLOADS
 // ══════════════════════════════════════════════════════════
 function setupDragAndDrop() {
@@ -2589,6 +3102,17 @@ function setupDragAndDrop() {
       document.getElementById('blogPreviewImg').src = evt.target.result;
       document.getElementById('blogFileName').textContent = file.name;
       document.getElementById('blogPreviewBox').style.display = 'flex';
+    };
+    r.readAsDataURL(file);
+  });
+  setupZone('supUploadZone', (file) => {
+    supUploadedFileName = file.name;
+    const r = new FileReader();
+    r.onload = (evt) => {
+      supUploadedBase64 = evt.target.result.split(',')[1];
+      document.getElementById('supPreviewImg').src = evt.target.result;
+      document.getElementById('supFileName').textContent = file.name;
+      document.getElementById('supPreviewBox').style.display = 'flex';
     };
     r.readAsDataURL(file);
   });
@@ -2646,6 +3170,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadHomeSettings();
   loadAllGallery();
   loadAllBlogs();
+  loadAllSuppliers();
   setupDragAndDrop();
 });
 
@@ -2695,6 +3220,7 @@ async function saveToken() {
     loadAllProducts();
     loadAllGallery();
     loadAllBlogs();
+    loadAllSuppliers();
 
   } catch(err) {
     showToast(err.message, 'error');
