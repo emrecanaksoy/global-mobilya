@@ -866,18 +866,65 @@ textarea.form-control { resize: vertical; min-height: 80px; }
         </div>
       </div>
 
-      <div class="admin-card-title" style="font-size:14px; margin:24px 0 12px 0;">🏢 Ana Sayfa "Biz Kimiz?" Kurumsal Tanıtımı</div>
+      <div class="admin-card-title" style="font-size:14px; margin:28px 0 14px 0;">🏢 Ana Sayfa "Hakkımızda" (Kurumsal Tanıtım) Alanı</div>
+      
+      <!-- HAKKIMIZDA GÖRSELİ -->
       <div class="form-group">
-        <label>1. Paragraf</label>
-        <textarea class="form-control" id="h_about_p1" rows="2"></textarea>
+        <label>Hakkımızda Alanı Fotoğrafı / Fabrika Görseli</label>
+        <div class="upload-zone" id="homeAboutUploadZone" onclick="document.getElementById('homeAboutFileInput').click()">
+          <input type="file" id="homeAboutFileInput" accept="image/*" style="display:none" onchange="handleHomeAboutFileSelect(event)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <h4>Fabrika / Üretim / Showroom Görseli Seçin veya Sürükleyin</h4>
+          <p>JPG, PNG, WebP desteklenir (Görsel sitenin solunda yer alır)</p>
+        </div>
+        <div id="homeAboutPreviewBox" class="upload-preview" style="display:none;">
+          <img id="homeAboutPreviewImg" src="/resim/logo.png" alt="Önizleme">
+          <div style="flex:1;">
+            <div id="homeAboutFileName" style="font-weight:600; font-size:13px;">gorsel.jpg</div>
+            <div style="font-size:11px; color:var(--success); font-weight:600;">✓ Yüklemeye Hazır</div>
+          </div>
+          <button type="button" class="btn-danger btn-sm" onclick="removeHomeAboutImage()">Kaldır</button>
+        </div>
+        <input type="hidden" id="h_about_img_url" value="/resim/logo.png">
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Üst Etiket (Tag)</label>
+          <input type="text" class="form-control" id="h_about_tag" placeholder="Firmamız Hakkında">
+        </div>
+        <div class="form-group">
+          <label>1. Başlık (Firma Adı)</label>
+          <input type="text" class="form-control" id="h_about_b1" placeholder="Global Kapak Mobilya">
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>2. Vurgulu Başlık (Altın Renk)</label>
+          <input type="text" class="form-control" id="h_about_b2" placeholder="Membran Kapak Uzmanı">
+        </div>
+        <div class="form-group">
+          <label>Buton Metni</label>
+          <input type="text" class="form-control" id="h_about_btn_text" placeholder="Daha Fazla Bilgi">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>1. Paragraf (Şirket Profili & Deneyim)</label>
+        <textarea class="form-control" id="h_about_p1" rows="2" placeholder="Global Kapak Mobilya, sektörde 15 yılı aşkın deneyime sahip..."></textarea>
       </div>
       <div class="form-group">
-        <label>2. Paragraf</label>
-        <textarea class="form-control" id="h_about_p2" rows="2"></textarea>
+        <label>2. Paragraf (Kalite & Garanti Yaklaşımı)</label>
+        <textarea class="form-control" id="h_about_p2" rows="2" placeholder="Müşteri memnuniyetini ön planda tutarak, her ürünümüzde..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>3. Paragraf (Çevre & Teknoloji Notu)</label>
+        <textarea class="form-control" id="h_about_p3" rows="2" placeholder="Üretim süreçlerimizde çevreye duyarlı yaklaşımı benimsiyor..."></textarea>
       </div>
 
       <div style="margin-top:20px;">
-        <button class="btn-gold" onclick="saveHomeSettings()">💾 Ana Sayfa Ayarlarını Kaydet</button>
+        <button class="btn-gold" id="btnSaveHome" onclick="saveHomeSettings()">💾 Ana Sayfa Ayarlarını Kaydet ve Yayınla</button>
       </div>
     </div>
   </div>
@@ -1863,6 +1910,9 @@ async function saveCompanySettings() {
 // ══════════════════════════════════════════════════════════
 // HOMEPAGE MODULE
 // ══════════════════════════════════════════════════════════
+let homeAboutUploadedBase64 = null;
+let homeAboutUploadedFileName = '';
+
 async function loadHomeSettings() {
   try {
     const res = await fetch('/_data/ayarlar/anasayfa.json?t=' + Date.now());
@@ -1888,8 +1938,23 @@ async function loadHomeSettings() {
         document.getElementById('h_stat4_lbl').value = g.stats[3].etiket || '';
       }
       if (g.anasayfa_hakkimizda) {
-        document.getElementById('h_about_p1').value = g.anasayfa_hakkimizda.paragraf_1 || '';
-        document.getElementById('h_about_p2').value = g.anasayfa_hakkimizda.paragraf_2 || '';
+        const ab = g.anasayfa_hakkimizda;
+        document.getElementById('h_about_tag').value = ab.etiket || 'Firmamız Hakkında';
+        document.getElementById('h_about_b1').value = ab.baslik_1 || 'Global Kapak Mobilya';
+        document.getElementById('h_about_b2').value = ab.baslik_2 || 'Membran Kapak Uzmanı';
+        document.getElementById('h_about_p1').value = ab.paragraf_1 || '';
+        document.getElementById('h_about_p2').value = ab.paragraf_2 || '';
+        document.getElementById('h_about_p3').value = ab.paragraf_3 || '';
+        document.getElementById('h_about_btn_text').value = ab.buton_yazi || 'Daha Fazla Bilgi';
+        document.getElementById('h_about_img_url').value = ab.resim || '/resim/logo.png';
+
+        if (ab.resim && ab.resim !== '/resim/logo.png' && ab.resim !== 'resim/logo.png') {
+          document.getElementById('homeAboutPreviewImg').src = ab.resim;
+          document.getElementById('homeAboutFileName').textContent = ab.resim.split('/').pop();
+          document.getElementById('homeAboutPreviewBox').style.display = 'flex';
+        } else {
+          removeHomeAboutImage();
+        }
       }
     }
   } catch(e) {}
@@ -1898,6 +1963,12 @@ async function loadHomeSettings() {
 async function saveHomeSettings() {
   const token = localStorage.getItem('gkm_gh_token');
   if (!token) { openTokenModal(); showToast('GitHub Token giriniz!', 'error'); return; }
+
+  const btn = document.getElementById('btnSaveHome');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Kaydediliyor...';
+  }
 
   showToast('Ana sayfa güncelleniyor...', 'info');
   try {
@@ -1920,7 +1991,7 @@ async function saveHomeSettings() {
     await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/ayarlar/anasayfa.json`, {
       method: 'PUT',
       headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'Update homepage settings', content: btoa(unescape(encodeURIComponent(JSON.stringify(homeData, null, 2)))), sha: homeSha || undefined, branch: BRANCH })
+      body: JSON.stringify({ message: 'Update homepage hero settings', content: btoa(unescape(encodeURIComponent(JSON.stringify(homeData, null, 2)))), sha: homeSha || undefined, branch: BRANCH })
     });
 
     let genelData = {};
@@ -1941,21 +2012,75 @@ async function saveHomeSettings() {
       { sayi: document.getElementById('h_stat4_num').value.trim(), etiket: document.getElementById('h_stat4_lbl').value.trim() }
     ];
 
+    let finalAboutImg = document.getElementById('h_about_img_url').value.trim();
+    if (homeAboutUploadedBase64) {
+      if (btn) btn.innerHTML = '<div class="spinner"></div> Fotoğraf Yükleniyor...';
+      const cleanExt = homeAboutUploadedFileName.split('.').pop().toLowerCase() || 'jpg';
+      const imgPath = `resim/yonetilen/anasayfa-hakkimizda-${Date.now()}.${cleanExt}`;
+
+      const imgRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${imgPath}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'Upload homepage about image', content: homeAboutUploadedBase64, branch: BRANCH })
+      });
+      if (imgRes.ok) finalAboutImg = '/' + imgPath;
+    }
+
     genelData.anasayfa_hakkimizda = genelData.anasayfa_hakkimizda || {};
+    genelData.anasayfa_hakkimizda.resim = finalAboutImg || 'resim/logo.png';
+    genelData.anasayfa_hakkimizda.etiket = document.getElementById('h_about_tag').value.trim();
+    genelData.anasayfa_hakkimizda.baslik_1 = document.getElementById('h_about_b1').value.trim();
+    genelData.anasayfa_hakkimizda.baslik_2 = document.getElementById('h_about_b2').value.trim();
     genelData.anasayfa_hakkimizda.paragraf_1 = document.getElementById('h_about_p1').value.trim();
     genelData.anasayfa_hakkimizda.paragraf_2 = document.getElementById('h_about_p2').value.trim();
+    genelData.anasayfa_hakkimizda.paragraf_3 = document.getElementById('h_about_p3').value.trim();
+    genelData.anasayfa_hakkimizda.buton_yazi = document.getElementById('h_about_btn_text').value.trim() || 'Daha Fazla Bilgi';
+    genelData.anasayfa_hakkimizda.buton_link = 'hakkimizda.html';
 
     await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_data/ayarlar/genel.json`, {
       method: 'PUT',
       headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'Update stats and about texts', content: btoa(unescape(encodeURIComponent(JSON.stringify(genelData, null, 2)))), sha: genelSha || undefined, branch: BRANCH })
+      body: JSON.stringify({ message: 'Update homepage about and stats', content: btoa(unescape(encodeURIComponent(JSON.stringify(genelData, null, 2)))), sha: genelSha || undefined, branch: BRANCH })
     });
 
-    showToast('🎉 Ana sayfa içerikleri başarıyla güncellendi!', 'success');
+    homeAboutUploadedBase64 = null;
+    homeAboutUploadedFileName = '';
+
+    showToast('🎉 Ana sayfa Hakkımızda ve Manşet içerikleri başarıyla güncellendi!', 'success');
 
   } catch(err) {
     showToast('Hata: ' + err.message, 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '💾 Ana Sayfa Ayarlarını Kaydet ve Yayınla';
+    }
   }
+}
+
+function handleHomeAboutFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  homeAboutUploadedFileName = file.name;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    homeAboutUploadedBase64 = evt.target.result.split(',')[1];
+    document.getElementById('homeAboutPreviewImg').src = evt.target.result;
+    document.getElementById('homeAboutFileName').textContent = file.name;
+    document.getElementById('homeAboutPreviewBox').style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeHomeAboutImage() {
+  homeAboutUploadedBase64 = null;
+  homeAboutUploadedFileName = '';
+  const input = document.getElementById('homeAboutFileInput');
+  if (input) input.value = '';
+  const box = document.getElementById('homeAboutPreviewBox');
+  if (box) box.style.display = 'none';
+  const previewImg = document.getElementById('homeAboutPreviewImg');
+  if (previewImg) previewImg.src = '/resim/logo.png';
 }
 
 // ══════════════════════════════════════════════════════════
@@ -3113,6 +3238,17 @@ function setupDragAndDrop() {
       document.getElementById('supPreviewImg').src = evt.target.result;
       document.getElementById('supFileName').textContent = file.name;
       document.getElementById('supPreviewBox').style.display = 'flex';
+    };
+    r.readAsDataURL(file);
+  });
+  setupZone('homeAboutUploadZone', (file) => {
+    homeAboutUploadedFileName = file.name;
+    const r = new FileReader();
+    r.onload = (evt) => {
+      homeAboutUploadedBase64 = evt.target.result.split(',')[1];
+      document.getElementById('homeAboutPreviewImg').src = evt.target.result;
+      document.getElementById('homeAboutFileName').textContent = file.name;
+      document.getElementById('homeAboutPreviewBox').style.display = 'flex';
     };
     r.readAsDataURL(file);
   });

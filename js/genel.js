@@ -95,6 +95,10 @@
   if (aboutImg && aboutData.resim) {
     aboutImg.style.backgroundImage = `url('${aboutData.resim}')`;
   }
+  if (aboutData.etiket) {
+    const tag = document.querySelector('.about-text .sec-tag');
+    if (tag) tag.textContent = aboutData.etiket;
+  }
   if (aboutData.baslik_1 || aboutData.baslik_2) {
     const h2 = document.querySelector('.about-text h2');
     if (h2 && aboutData.baslik_1) {
