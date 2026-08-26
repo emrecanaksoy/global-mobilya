@@ -10,17 +10,45 @@
     "buton_2_link": "iletisim.html"
   },
   "slider": [
-    { "resim": "/resim/anasayfa-resimleri/anasayfa1.png", "baslik": "Modern Mutfak", "alt_yazi": "Yeni nesil membran kapaklarla hayalinizdeki mutfak" },
-    { "resim": "/resim/anasayfa-resimleri/anasayfa2.png", "baslik": "Şık Tasarım", "alt_yazi": "Estetik ve dayanıklılığı bir arada" },
-    { "resim": "/resim/anasayfa-resimleri/anasayfa3.png", "baslik": "Özel Ölçü", "alt_yazi": "İhtiyacınıza özel boyutlarda üretim" }
+    {
+      "resim": "/resim/anasayfa-resimleri/anasayfa1.png",
+      "baslik": "Modern Mutfak",
+      "alt_yazi": "Yeni nesil membran kapaklarla hayalinizdeki mutfak"
+    },
+    {
+      "resim": "/resim/anasayfa-resimleri/anasayfa2.png",
+      "baslik": "Şık Tasarım",
+      "alt_yazi": "Estetik ve dayanıklılığı bir arada"
+    },
+    {
+      "resim": "/resim/anasayfa-resimleri/anasayfa3.png",
+      "baslik": "Özel Ölçü",
+      "alt_yazi": "İhtiyacınıza özel boyutlarda üretim"
+    }
   ],
   "neden_biz": {
     "baslik": "Neden Bizi Seçmelisiniz?",
     "kartlar": [
-      { "ikon": "🏆", "baslik": "15+ Yıl Deneyim", "aciklama": "Sektörde 15 yılı aşkın uzman kadromuz" },
-      { "ikon": "🏭", "baslik": "Modern Fabrika", "aciklama": "2.000 m² modern üretim tesisi" },
-      { "ikon": "🛡️", "baslik": "5 Yıl Garanti", "aciklama": "Tüm ürünlerimizde 5 yıl garanti" },
-      { "ikon": "🚚", "baslik": "Hızlı Teslimat", "aciklama": "5 iş gününde teslim" }
+      {
+        "ikon": "🏆",
+        "baslik": "15+ Yıl Deneyim",
+        "aciklama": "Sektörde 15 yılı aşkın uzman kadromuz"
+      },
+      {
+        "ikon": "🏭",
+        "baslik": "Modern Fabrika",
+        "aciklama": "2.000 m² modern üretim tesisi"
+      },
+      {
+        "ikon": "🛡️",
+        "baslik": "5 Yıl Garanti",
+        "aciklama": "Tüm ürünlerimizde 5 yıl garanti"
+      },
+      {
+        "ikon": "🚚",
+        "baslik": "Hızlı Teslimat",
+        "aciklama": "5 iş gününde teslim"
+      }
     ]
   },
   "yesil_bant": {
