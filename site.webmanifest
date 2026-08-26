@@ -1,0 +1,20 @@
+{
+  "name": "Global Kapak Mobilya",
+  "short_name": "Global Kapak",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B1F4B",
+  "theme_color": "#0B1F4B",
+  "icons": [
+    {
+      "src": "/resim/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/resim/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
