@@ -406,8 +406,9 @@
 
       let order = null;
 
-      // 1. Check cloud endpoint if configured
-      const cloudEndpoint = localStorage.getItem('global_cloud_endpoint');
+      // 1. Check cloud endpoint (Google Firebase Realtime Database)
+      const DEFAULT_FIREBASE_URL = 'https://global-kapak-default-rtdb.firebaseio.com/siparisler.json';
+      const cloudEndpoint = localStorage.getItem('global_cloud_endpoint') || DEFAULT_FIREBASE_URL;
       if (cloudEndpoint) {
         try {
           const res = await fetch(cloudEndpoint);

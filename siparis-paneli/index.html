@@ -758,7 +758,8 @@ const STAGES = [
   let currentTab = 'kanban';
   let orders = JSON.parse(localStorage.getItem('global_kapak_orders') || 'null');
   let users = JSON.parse(localStorage.getItem('global_kapak_users') || 'null');
-  let cloudEndpoint = localStorage.getItem('global_cloud_endpoint') || '';
+  const DEFAULT_FIREBASE_URL = 'https://global-kapak-default-rtdb.firebaseio.com/siparisler.json';
+  let cloudEndpoint = localStorage.getItem('global_cloud_endpoint') || DEFAULT_FIREBASE_URL;
 
   if (!users) {
     users = [
@@ -2285,6 +2286,10 @@ function renderTable(container) {
   // CLOUD STORAGE MODAL
   function openCloudModal() {
     document.getElementById('cloudEndpointInput').value = cloudEndpoint;
+    const statusEl = document.getElementById('cloudSyncStatus');
+    if (statusEl) {
+      statusEl.innerHTML = `🟢 <strong>Canlı Bulut Veritabanı Bağlı:</strong><br><code style="word-break:break-all; font-size:0.75rem;">${cloudEndpoint}</code>`;
+    }
     openModal('cloudModal');
   }
 
@@ -2296,26 +2301,30 @@ function renderTable(container) {
     if (cloudEndpoint) syncWithCloud();
   }
 
-  async function syncWithCloud() {
-    if (!cloudEndpoint) { showToast('Lütfen geçerli bir bulut URL girin.', '#EF4444'); return; }
+  async function syncWithCloud(silent = false) {
+    if (!cloudEndpoint) {
+      if (!silent) showToast('Lütfen geçerli bir bulut URL girin.', '#EF4444');
+      return;
+    }
     try {
-      showToast('Buluttan senkronize ediliyor...', 'info');
+      if (!silent) showToast('Bulut veritabanına bağlanılıyor...', 'info');
       const res = await fetch(cloudEndpoint);
       if (res.ok) {
         const remoteData = await res.json();
-        if (Array.isArray(remoteData) && remoteData.length > 0) {
+        if (Array.isArray(remoteData)) {
           orders = remoteData;
-          saveOrders(false);
+          localStorage.setItem('global_kapak_orders', JSON.stringify(orders));
           renderView();
-          showToast('Bulut verileri başarıyla eşitlendi!', '#10B981');
+          renderStats();
+          if (!silent) showToast('Canlı bulut verileri eşitlendi: ' + orders.length + ' sipariş', '#10B981');
         } else {
-          // Push current to cloud
+          // Eğer bulut boşsa yerel siparişleri buluta yükle
           saveOrders(true);
-          showToast('Mevcut siparişler buluta yüklendi!', '#10B981');
+          if (!silent) showToast('Mevcut siparişler buluta yüklendi!', '#10B981');
         }
       }
     } catch (e) {
-      showToast('Bulut bağlantı hatası: ' + e.message, '#EF4444');
+      if (!silent) showToast('Bulut bağlantı hatası: ' + e.message, '#EF4444');
     }
   }
 
@@ -2357,9 +2366,16 @@ function renderTable(container) {
   }
 
   // INIT
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('DOMContentLoaded', async () => {
     updateRoleUI();
     renderView();
+    renderStats();
+
+    // Sayfa açılır açılmaz Firebase bulut veritabanından en güncel siparişleri çek
+    if (cloudEndpoint) {
+      await syncWithCloud(true);
+      setupCloudStream();
+    }
 
     const urlParams = new URLSearchParams(window.location.search);
     const codeParam = urlParams.get('kod') || urlParams.get('code');
@@ -2409,24 +2425,35 @@ function renderTable(container) {
     reader.readAsText(file);
   }
 
-  // REALTIME CLOUD STREAM LISTENER (Firebase / SSE / Polling fallback)
+  // REALTIME CLOUD STREAM LISTENER (Firebase SSE + Polling Fallback)
   let cloudEventSource = null;
   function setupCloudStream() {
     if (!cloudEndpoint) return;
     try {
       if (cloudEventSource) cloudEventSource.close();
-      // If endpoint is a Firebase REST URL ending with .json
-      if (cloudEndpoint.includes('firebaseio.com')) {
-        // SSE stream on Firebase
+      if (cloudEndpoint.includes('firebaseio.com') || cloudEndpoint.includes('firebasedatabase.app')) {
         cloudEventSource = new EventSource(cloudEndpoint);
         cloudEventSource.addEventListener('put', (e) => {
           try {
             const parsed = JSON.parse(e.data);
-            if (parsed && parsed.data && Array.isArray(parsed.data)) {
-              orders = parsed.data;
-              saveOrders(false);
-              renderView();
-              showToast('Buluttan canlı sipariş güncellendi!', '#2563eb');
+            if (parsed) {
+              if (parsed.data && Array.isArray(parsed.data)) {
+                orders = parsed.data;
+                saveOrders(false);
+                renderView();
+                renderStats();
+                showToast('⚡ Canlı Güncelleme: Siparişler eşitlendi!', '#2563eb');
+              } else {
+                // Kısmi güncelleme geldiyse güncel listeyi anında çek
+                fetch(cloudEndpoint).then(r => r.json()).then(d => {
+                  if (Array.isArray(d)) {
+                    orders = d;
+                    saveOrders(false);
+                    renderView();
+                    renderStats();
+                  }
+                }).catch(() => {});
+              }
             }
           } catch(err) {}
         });
@@ -2436,10 +2463,22 @@ function renderTable(container) {
     }
   }
 
-  // Start cloud stream if endpoint configured
-  if (cloudEndpoint) {
-    setTimeout(setupCloudStream, 1500);
-  }
+  // Otomatik Periyodik Kontrol (Sekme açıkken 10 sn'de bir canlı kontrol)
+  setInterval(() => {
+    if (cloudEndpoint && document.visibilityState === 'visible') {
+      fetch(cloudEndpoint)
+        .then(res => res.json())
+        .then(remoteData => {
+          if (Array.isArray(remoteData) && JSON.stringify(remoteData) !== JSON.stringify(orders)) {
+            orders = remoteData;
+            saveOrders(false);
+            renderView();
+            renderStats();
+          }
+        })
+        .catch(() => {});
+    }
+  }, 10000);
 
 </script>
   <!-- MODAL: GÖRSEL BÜYÜTÜCÜ / ÇİZİM & FİŞ İNCELEME -->
