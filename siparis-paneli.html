@@ -319,7 +319,7 @@
       <button id="roleSwitchBtn" class="btn btn-navy" onclick="toggleUserRole()">👑 Yönetici Girişi</button>
       
       <button class="btn btn-gold admin-only" onclick="openModal('newOrderModal')">+ Yeni Sipariş</button>
-      <button class="btn btn-white admin-only" onclick="openUsersModal()">👥 Kullanıcılar</button>
+      <button class="btn btn-white admin-only" onclick="openUsersModal()">👥 Kullanıcılar & Şifre</button>
       <button class="btn btn-white" onclick="openCloudModal()" title="Bulut Veritabanı & Senkronizasyon">☁️ Bulut</button>
       <button class="btn btn-white admin-only" onclick="exportBackup()" title="Yedek İndir">💾 Yedek</button>
     </div>
@@ -558,6 +558,32 @@
         <button class="btn btn-navy" style="padding:2px 8px;" onclick="closeModal('usersModal')">✕</button>
       </div>
       <div class="modal-body">
+        <!-- ANA YÖNETİCİ ŞİFRE DEĞİŞTİRME FORMU -->
+        <div style="background: linear-gradient(135deg, #fffbeb 0%, #fff 100%); border: 2px solid var(--gold); border-radius: 10px; padding: 14px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(200,169,110,0.15);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 6px;">
+              🔑 Ana Yönetici Şifresini Değiştir
+            </h4>
+            <span id="currentAdminPassLabel" style="font-size: 0.8rem; color: #854d0e; font-weight: 700; background: var(--gold-light); padding: 2px 8px; border-radius: 4px;"></span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">
+            Buradan belirleyeceğiniz yeni şifre ile sağ üstteki Yönetici Girişi'nden panele erişebilirsiniz.
+          </p>
+          <form id="changeAdminPassForm" onsubmit="handleChangeAdminPassword(event)">
+            <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+              <div style="flex: 1; min-width: 170px;">
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--navy); display: block; margin-bottom: 4px;">Yeni Yönetici Şifresi *</label>
+                <input type="password" id="newAdminPasswordInput" class="form-input" placeholder="Yeni şifrenizi yazın" required style="padding: 8px 12px; font-size: 0.9rem;" />
+              </div>
+              <div style="flex: 1; min-width: 170px;">
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--navy); display: block; margin-bottom: 4px;">Yeni Şifre (Tekrar) *</label>
+                <input type="password" id="confirmAdminPasswordInput" class="form-input" placeholder="Şifreyi tekrar yazın" required style="padding: 8px 12px; font-size: 0.9rem;" />
+              </div>
+              <button type="submit" class="btn btn-gold" style="padding: 9px 18px; font-size: 0.9rem; font-weight: 700;">💾 Şifreyi Kaydet</button>
+            </div>
+          </form>
+        </div>
+
         <div style="background:var(--bg-main); border:1px solid var(--border); border-radius:8px; padding:12px;">
           <h4 style="font-size:0.85rem; font-weight:700; color:var(--navy); margin-bottom:8px;">+ Yeni Personel / Kullanıcı Ekle</h4>
           <form id="newUserForm" onsubmit="handleCreateUser(event)">
@@ -787,23 +813,33 @@ const STAGES = [
     }
   }
 
-  function submitLogin() {
-    const pass = document.getElementById('adminPassInput').value;
-    const found = users.find(u => u.password === pass && u.role === 'admin');
-    if (found || pass === '123' || pass === 'global123') {
+    function submitLogin() {
+    const pass = document.getElementById('adminPassInput').value.trim();
+    const customPass = localStorage.getItem('global_admin_pass');
+
+    // Eğer yönetici şifresi değiştirilmişse yalnızca o geçerlidir. Henüz hiç değiştirilmediyse 123 veya global123 geçerlidir.
+    let isValid = false;
+    if (customPass) {
+      isValid = (pass === customPass);
+    } else {
+      const found = users.find(u => u.password === pass && u.role === 'admin');
+      isValid = Boolean(found) || (pass === '123') || (pass === 'global123');
+    }
+
+    if (isValid) {
       userRole = 'admin';
       localStorage.setItem('global_kapak_role', 'admin');
       closeModal('loginModal');
       document.getElementById('adminPassInput').value = '';
       updateRoleUI();
       renderView();
-      showToast('Yönetici girişi başarılı! Şirket cirosu ve yönetim yetkileri açıldı.', '#10B981');
+      showToast('Yönetici girişi başarılı! Tüm yetkiler ve ciro açıldı.', '#10B981');
     } else {
-      showToast('Hatalı şifre!', '#EF4444');
+      showToast('Hatalı şifre! Lütfen tekrar deneyin.', '#EF4444');
     }
   }
 
-function setTab(tab) {
+  function setTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.nav-tab-btn').forEach(b => {
       b.classList.toggle('active', b.getAttribute('data-tab') === tab);
@@ -1438,6 +1474,10 @@ function renderTable(container) {
 
   function loadUsersList() {
     const box = document.getElementById('usersListContainer');
+    const customPass = localStorage.getItem('global_admin_pass') || '123';
+    const label = document.getElementById('currentAdminPassLabel');
+    if (label) label.innerText = 'Aktif Şifre: ' + customPass;
+
     box.innerHTML = users.map(u => `
       <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#fff; border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
         <div>
@@ -1446,13 +1486,61 @@ function renderTable(container) {
             ${u.role === 'admin' ? '👑 Yönetici' : '👁️ İzleyici'}
           </span>
         </div>
-        <div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <button class="btn btn-white" style="padding:3px 8px; font-size:0.75rem; border:1px solid var(--border);" onclick="promptChangeUserPassword('${u.id}')">🔑 Şifre Değiştir</button>
           ${u.username !== 'yonetici' ? `
-            <button class="btn btn-danger" style="padding:2px 8px; font-size:0.75rem;" onclick="deleteUser('${u.id}')">Sil</button>
-          ` : '<span style="font-size:0.75rem; color:var(--text-muted);">Ana Yönetici</span>'}
+            <button class="btn btn-danger" style="padding:3px 8px; font-size:0.75rem;" onclick="deleteUser('${u.id}')">Sil</button>
+          ` : '<span style="font-size:0.75rem; color:var(--text-muted); padding:3px 6px;">(Ana Yönetici)</span>'}
         </div>
       </div>
     `).join('');
+  }
+
+  function handleChangeAdminPassword(e) {
+    e.preventDefault();
+    const newPass = document.getElementById('newAdminPasswordInput').value.trim();
+    const confirmPass = document.getElementById('confirmAdminPasswordInput').value.trim();
+
+    if (!newPass) {
+      showToast('Lütfen geçerli bir şifre girin!', '#EF4444');
+      return;
+    }
+    if (newPass !== confirmPass) {
+      showToast('Şifreler uyuşmuyor! Lütfen iki kutuya da aynı şifreyi yazın.', '#EF4444');
+      return;
+    }
+
+    localStorage.setItem('global_admin_pass', newPass);
+
+    let adminU = users.find(u => u.username === 'yonetici' || u.role === 'admin');
+    if (adminU) {
+      adminU.password = newPass;
+    } else {
+      users.push({ id: 'u_1', username: 'yonetici', displayName: 'Ana Yönetici', role: 'admin', password: newPass });
+    }
+    localStorage.setItem('global_kapak_users', JSON.stringify(users));
+
+    document.getElementById('newAdminPasswordInput').value = '';
+    document.getElementById('confirmAdminPasswordInput').value = '';
+    loadUsersList();
+    showToast('Ana yönetici şifreniz başarıyla kaydedildi! Yeni şifre: ' + newPass, '#10B981');
+  }
+
+  function promptChangeUserPassword(userId) {
+    const u = users.find(x => x.id === userId);
+    if (!u) return;
+    const currentP = (u.username === 'yonetici' && localStorage.getItem('global_admin_pass')) ? localStorage.getItem('global_admin_pass') : (u.password || '');
+    const newP = prompt(`${u.displayName} (@${u.username}) için yeni şifreyi giriniz:`, currentP);
+    if (newP !== null && newP.trim() !== '') {
+      const cleanP = newP.trim();
+      u.password = cleanP;
+      if (u.username === 'yonetici' || u.role === 'admin') {
+        localStorage.setItem('global_admin_pass', cleanP);
+      }
+      localStorage.setItem('global_kapak_users', JSON.stringify(users));
+      loadUsersList();
+      showToast(`${u.displayName} şifresi güncellendi: ${cleanP}`, '#10B981');
+    }
   }
 
   function handleCreateUser(e) {
