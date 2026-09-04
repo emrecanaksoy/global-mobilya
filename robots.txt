@@ -8,6 +8,8 @@ User-agent: Googlebot
 Allow: /
 Disallow: /admin/
 Disallow: /_data/
+Disallow: /siparis-paneli/
+Disallow: /siparis-paneli.html
 
 User-agent: Googlebot-Image
 Allow: /resim/

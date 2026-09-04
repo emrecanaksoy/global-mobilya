@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Kapak Mobilya — Sipariş & Üretim Takip Paneli</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body data-theme="light">
+
+  <!-- Main Navigation Header -->
+  <header class="header">
+    <div class="header-container">
+      <div class="logo-area">
+        <div class="logo-icon">🪚</div>
+        <div>
+          <div class="company-title">Global Kapak Mobilya</div>
+          <div class="company-sub">
+            <span>Üretim & Sipariş Takip Paneli</span>
+            <span class="live-badge"><span class="live-dot"></span> Canlı Ağ Bağlantısı</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav Switcher Tabs -->
+      <div class="nav-tabs">
+        <button class="nav-btn active" data-view="kanban">📋 Pano (Kanban)</button>
+        <button class="nav-btn" data-view="table">📑 Liste</button>
+        <button class="nav-btn" data-view="kiosk">📺 Büyük TV Modu</button>
+        <button class="nav-btn" data-view="scanner">📷 QR Tara</button>
+      </div>
+
+      <!-- Action Buttons & Roles -->
+      <div class="header-actions">
+        <span id="userRoleBadge" class="role-badge role-admin">👑 Yönetici (Yetkili)</span>
+        <button id="userSwitchBtn" class="btn btn-secondary" onclick="switchUserRole()">İzleyici Moduna Geç</button>
+        
+        <button class="btn btn-primary admin-only" onclick="openModal('newOrderModal')">
+          + Yeni Sipariş Ekle
+        </button>
+
+        <a href="/takip" target="_blank" class="btn btn-secondary" title="Müşteri Takip Sayfası">
+          🔗 Müşteri Ekranı
+        </a>
+
+        <button class="btn btn-secondary admin-only" onclick="window.location.href='/api/backup/download'" title="Tam Veritabanı Yedeği İndir">
+          💾 Yedek
+        </button>
+
+        <button class="btn btn-secondary admin-only" onclick="openUsersModal()" title="Kullanıcı Kaydı ve Yönetimi">
+          👥 Kullanıcılar
+        </button>
+
+        <button id="themeToggleBtn" class="btn-icon" title="Temayı Değiştir">🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Live Statistics Bar -->
+  <div class="stats-bar">
+    <div id="statsGrid" class="stats-grid">
+      <!-- Dynamically filled by renderStats() -->
+    </div>
+  </div>
+
+  <!-- Search & Filter Bar -->
+  <div style="max-width:1700px; margin:1rem auto 0; padding:0 1.25rem; width:100%;">
+    <div class="filter-bar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Müşteri adı, takip kodu (SIP-...), membran rengi veya model ara..." />
+      </div>
+
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+        <select id="stageSelect" class="filter-select">
+          <option value="all">Tüm Aşamalar</option>
+          <option value="cizim">1. Çizim</option>
+          <option value="cnc">2. CNC Kesim</option>
+          <option value="zimpara">3. Zımpara</option>
+          <option value="tutkal">4. Tutkal</option>
+          <option value="membran">5. Membran</option>
+          <option value="sevkiyat">6. Sevkiyat</option>
+          <option value="tamamlandi">Tamamlandı</option>
+        </select>
+
+        <select id="prioritySelect" class="filter-select">
+          <option value="all">Tüm Aciliyetler</option>
+          <option value="normal">Normal</option>
+          <option value="acil">Acil</option>
+          <option value="kritik">Kritik</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main View Container -->
+  <main id="viewContainer" class="main-content">
+    <!-- Rendered dynamically -->
+  </main>
+
+  <!-- MODAL: YENİ SİPARİŞ EKLE -->
+  <div id="newOrderModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size:1.15rem; font-weight:700;">+ Yeni Sipariş & Üretim Girişi</h3>
+        <button class="btn-icon" onclick="closeModal('newOrderModal')">✕</button>
+      </div>
+      <form id="newOrderForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Müşteri Adı / Ünvanı *</label>
+              <input type="text" name="customerName" class="form-input" placeholder="Örn: Kuzey Mobilya (Ahmet Bey)" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Müşteri Telefon Numarası</label>
+              <input type="text" name="customerPhone" class="form-input" placeholder="0532 123 45 67" />
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">Sipariş Başlığı *</label>
+              <input type="text" name="productTitle" class="form-input" placeholder="Örn: Mutfak Dolabı Membran Kapaklar" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Membran / Folyo Rengi</label>
+              <input type="text" name="membraneColor" class="form-input" placeholder="Örn: AGT 601 Mat Beyaz" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Model / Desen</label>
+              <input type="text" name="modelPattern" class="form-input" placeholder="Örn: Country Fitilli / Düz" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">MDF Kalınlığı</label>
+              <select name="mdfThickness" class="form-select">
+                <option value="18mm">18 mm</option>
+                <option value="22mm">22 mm</option>
+                <option value="25mm">25 mm</option>
+                <option value="8mm">8 mm</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Freze / Kulp Tipi</label>
+              <input type="text" name="millingProfile" class="form-input" placeholder="Örn: R3 Pah / Boy Kulp Kanalı" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Kapak / Parça Sayısı</label>
+              <input type="number" name="partCount" class="form-input" placeholder="Örn: 24" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Toplam Metrekare (m²)</label>
+              <input type="number" step="0.01" name="totalAreaM2" class="form-input" placeholder="Örn: 14.5" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Termin (Teslim) Tarihi</label>
+              <input type="date" name="estimatedDelivery" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Öncelik Durumu</label>
+              <select name="priority" class="form-select">
+                <option value="normal">Normal</option>
+                <option value="acil">Acil</option>
+                <option value="kritik">Kritik (Gecikmeli)</option>
+              </select>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">Fiş, Çizim veya Fatura Görseli / PDF Yükle</label>
+              <input type="file" name="receiptFile" accept="image/*,.pdf" class="form-input" />
+            </div>
+
+            <!-- Finansal Alanlar (Sadece Yönetici) -->
+            <div class="form-group admin-only">
+              <label class="form-label">Toplam Fiyat (TL)</label>
+              <input type="number" step="0.01" name="totalPrice" class="form-input" placeholder="0.00" />
+            </div>
+            <div class="form-group admin-only">
+              <label class="form-label">Alınan Peşinat (TL)</label>
+              <input type="number" step="0.01" name="deposit" class="form-input" placeholder="0.00" />
+            </div>
+            <div class="form-group col-span-2 admin-only">
+              <label class="form-label">Ödeme Durumu</label>
+              <select name="paymentStatus" class="form-select">
+                <option value="bekliyor">Ödeme Bekliyor</option>
+                <option value="kismi">Kısmi Ödeme (Bakiye Var)</option>
+                <option value="odendi">Tamamı Ödendi</option>
+                <option value="cari">Cari / Açık Hesap</option>
+                <option value="kapida">Teslimatta / Kapıda Ödeme</option>
+              </select>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">WhatsApp Bildirimleri</label>
+              <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer;">
+                <input type="checkbox" name="whatsappEnabled" value="true" checked />
+                <span>Bu müşteri için WhatsApp durum bildirim butonunu aktif et</span>
+              </label>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">Sipariş & Ölçü Detay Notları</label>
+              <textarea name="productDetails" class="form-textarea" placeholder="Parça ölçüleri, yönler, özel detaylar..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('newOrderModal')">İptal</button>
+          <button type="submit" class="btn btn-primary">Siparişi Kaydet ve Çizime Al ➔</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: SİPARİŞ DETAY VE ZAMAN ÇİZELGESİ -->
+  <div id="orderDetailsModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size:1.15rem; font-weight:700;">Sipariş Detayı & Üretim Durumu</h3>
+        <button class="btn-icon" onclick="closeModal('orderDetailsModal')">✕</button>
+      </div>
+      <div id="orderDetailsBody" class="modal-body">
+        <!-- Dynamically filled -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('orderDetailsModal')">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CANLI SEVKİYAT VE BAKIYE UYARISI (YÖNETİCİ EKRANI) -->
+  <div id="dispatchAlertModal" class="modal-overlay">
+    <div class="modal-card" style="max-width:550px;">
+      <div id="dispatchAlertContent" class="modal-body">
+        <!-- Dynamically filled by handleDispatchScanAlert() -->
+      </div>
+      <div class="modal-footer" style="justify-content:center; gap:1rem;">
+        <button class="btn btn-primary" onclick="closeModal('dispatchAlertModal')">Anladım / Onayla</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: FİRE / YENİDEN KESİM BİLDİR -->
+  <div id="fireModal" class="modal-overlay">
+    <div class="modal-card" style="max-width:500px;">
+      <div class="modal-header">
+        <h3 style="font-size:1.15rem; font-weight:700; color:var(--danger);">⚠️ Fire / Hatalı Parça Bildir</h3>
+        <button class="btn-icon" onclick="closeModal('fireModal')">✕</button>
+      </div>
+      <form id="fireForm">
+        <input type="hidden" id="fireOrderId" />
+        <div class="modal-body">
+          <p style="font-size:0.85rem; color:var(--text-muted);">
+            Hasar gören veya hatalı üretilen parçayı bildirdiğinizde, Çizim ve CNC ekranına anında kırmızı uyarı düşer.
+          </p>
+          <div class="form-group">
+            <label class="form-label">Fire Veren Parça Adedi *</label>
+            <input type="number" id="firePieceCount" class="form-input" value="1" min="1" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fire Nedeni & Açıklama *</label>
+            <textarea id="fireReason" class="form-textarea" placeholder="Örn: 1 adet 72x45 kapakta tutkal tutmadı, folyo yandı." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('fireModal')">İptal</button>
+          <button type="submit" class="btn btn-danger">Fireyi Bildir ⚠️</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: FİŞ GÖRSELİ ÖNİZLEME -->
+  <div id="imageModal" class="modal-overlay">
+    <div class="modal-card" style="max-width:850px; text-align:center;">
+      <div class="modal-header">
+        <h3 style="font-size:1rem;">Fiş / Çizim Görseli</h3>
+        <button class="btn-icon" onclick="closeModal('imageModal')">✕</button>
+      </div>
+      <div class="modal-body" style="padding:0.5rem; justify-content:center; align-items:center;">
+        <img id="previewImg" src="" style="max-width:100%; max-height:75vh; border-radius:6px; object-fit:contain;" />
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: YÖNETİCİ GİRİŞİ -->
+  <div id="loginModal" class="modal-overlay">
+    <div class="modal-card" style="max-width:400px;">
+      <div class="modal-header">
+        <h3 style="font-size:1.1rem;">👑 Yönetici Girişi</h3>
+        <button class="btn-icon" onclick="closeModal('loginModal')">✕</button>
+      </div>
+      <form id="loginForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Kullanıcı Adı</label>
+            <input type="text" id="loginUser" class="form-input" value="yonetici" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Şifre</label>
+            <input type="password" id="loginPass" class="form-input" placeholder="Varsayılan: 123" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('loginModal')">İptal</button>
+          <button type="submit" class="btn btn-primary">Giriş Yap</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: KULLANICI YÖNETİMİ & YENİ KAYIT (ADMIN ONLY) -->
+  <div id="usersModal" class="modal-overlay">
+    <div class="modal-card" style="max-width:650px;">
+      <div class="modal-header">
+        <h3 style="font-size:1.15rem; font-weight:700;">👥 Kullanıcı Kaydı & Yetki Yönetimi</h3>
+        <button class="btn-icon" onclick="closeModal('usersModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px; padding:1rem;">
+          <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:0.75rem;">+ Yeni Kullanıcı / Personel Ekle</h4>
+          <form id="newUserForm" onsubmit="handleCreateUser(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Kullanıcı Adı *</label>
+                <input type="text" id="nu_username" class="form-input" placeholder="Örn: ahmet_usta" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Ad Soyad / Görev *</label>
+                <input type="text" id="nu_displayName" class="form-input" placeholder="Örn: Ahmet Usta (CNC)" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Yetki / Rol *</label>
+                <select id="nu_role" class="form-select">
+                  <option value="viewer">👁️ İzleyici (Atölye / Satış - Fiyatlar ve Ciro Gizli)</option>
+                  <option value="admin">👑 Yönetici (Tam Yetki - Fiyatları ve Ciroyu Görür)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Giriş Şifresi *</label>
+                <input type="password" id="nu_password" class="form-input" placeholder="En az 3 karakter" required />
+              </div>
+            </div>
+            <div style="margin-top:0.75rem; text-align:right;">
+              <button type="submit" class="btn btn-primary">+ Kullanıcıyı Kaydet</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:0.5rem;">Kayıtlı Kullanıcılar</h4>
+          <div id="usersListContainer" style="display:flex; flex-direction:column; gap:0.5rem;">
+            <!-- Rendered by openUsersModal() -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('usersModal')">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Print Area (Hidden until window.print()) -->
+  <div id="printArea" class="print-area"></div>
+
+  <!-- Scripts -->
+  <script src="/js/audio.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/kanban.js"></script>
+  <script src="/js/modals.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

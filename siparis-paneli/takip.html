@@ -1,0 +1,309 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canlı Sipariş Takip Portalı</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    body {
+      background: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1rem;
+    }
+    .track-card {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+      border: 1px solid #e2e8f0;
+      width: 100%;
+      max-width: 850px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .step-timeline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      margin: 2.5rem 0 2rem;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+    }
+    .step-timeline::before {
+      content: "";
+      position: absolute;
+      top: 22px;
+      left: 30px;
+      right: 30px;
+      height: 4px;
+      background: #e2e8f0;
+      z-index: 1;
+    }
+    .timeline-progress {
+      position: absolute;
+      top: 22px;
+      left: 30px;
+      height: 4px;
+      background: #10b981;
+      z-index: 2;
+      transition: width 0.4s ease;
+    }
+    .step-item {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 80px;
+    }
+    .step-node {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #64748b;
+      margin-bottom: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    .step-item.completed .step-node {
+      border-color: #10b981;
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .step-item.active .step-node {
+      border-color: #2563eb;
+      background: #dbeafe;
+      color: #1d4ed8;
+      transform: scale(1.15);
+      box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.2);
+    }
+    .step-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #64748b;
+      text-align: center;
+    }
+    .step-item.active .step-label {
+      color: #1d4ed8;
+      font-weight: 800;
+    }
+    .step-item.completed .step-label {
+      color: #065f46;
+    }
+    .embed-box {
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="track-card" style="text-align:center;">
+    <div style="font-size:2.5rem; margin-bottom:0.25rem;">🏭</div>
+    <h1 style="font-size:1.6rem; font-weight:800; color:#0f172a;" id="companyNameDisplay">Akdeniz Ahşap & Membran</h1>
+    <p style="color:#64748b; font-size:0.95rem; margin-top:0.2rem;">Canlı Sipariş & İmalat Takip Portalı</p>
+
+    <!-- Search Form -->
+    <div style="margin-top:1.5rem; display:flex; max-width:550px; margin-left:auto; margin-right:auto; gap:0.5rem;">
+      <input type="text" id="trackInput" placeholder="Sipariş Takip Kodunuzu Giriniz (Örn: SIP-2026-X8K9)" 
+        style="flex:1; padding:0.75rem 1rem; border:2px solid #cbd5e1; border-radius:8px; font-size:1rem; text-transform:uppercase; font-family:monospace; font-weight:bold;" />
+      <button class="btn btn-primary" style="padding:0.75rem 1.5rem; font-size:1rem;" onclick="queryOrder()">
+        Sorgula ➔
+      </button>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <div id="resultContainer" style="display:none; width:100%; max-width:850px;">
+    <div class="track-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; border-bottom:1px solid #e2e8f0; padding-bottom:1rem; margin-bottom:1.5rem;">
+        <div>
+          <span style="color:#64748b; font-size:0.85rem;">Sipariş Takip No:</span>
+          <h2 style="font-size:1.4rem; font-weight:800; font-family:monospace; color:#2563eb;" id="resTrackingCode">-</h2>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.85rem; color:#64748b;">Müşteri / Ünvan:</div>
+          <div style="font-size:1.15rem; font-weight:700;" id="resCustomerName">-</div>
+        </div>
+      </div>
+
+      <!-- Current Stage Banner -->
+      <div id="currentStageBanner" style="background:#dbeafe; border:1px solid #bfdbfe; border-radius:10px; padding:1rem 1.25rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.5rem;">
+        <div>
+          <span style="color:#1e40af; font-size:0.8rem; font-weight:600; text-transform:uppercase;">GÜNCEL DURUM:</span>
+          <div style="font-size:1.3rem; font-weight:800; color:#1e3a8a;" id="resCurrentStageName">-</div>
+        </div>
+        <div style="text-align:right;">
+          <span style="color:#1e40af; font-size:0.8rem; font-weight:600;">TAHMİNİ TESLİM TARİHİ:</span>
+          <div style="font-size:1.1rem; font-weight:700; color:#1e3a8a;" id="resDeliveryDate">-</div>
+        </div>
+      </div>
+
+      <!-- Visual Step Progress Bar -->
+      <div class="step-timeline" id="stepTimeline">
+        <div class="timeline-progress" id="timelineProgressBar" style="width: 0%;"></div>
+        <!-- Steps rendered by JS -->
+      </div>
+
+      <!-- Order Details Grid -->
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:1.25rem; margin-top:1.5rem; display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1rem;">
+        <div>
+          <span style="color:#64748b; font-size:0.75rem;">Sipariş Başlığı:</span>
+          <div style="font-weight:700;" id="resProductTitle">-</div>
+        </div>
+        <div>
+          <span style="color:#64748b; font-size:0.75rem;">Membran Rengi:</span>
+          <div style="font-weight:700; color:#8b5cf6;" id="resMembraneColor">-</div>
+        </div>
+        <div>
+          <span style="color:#64748b; font-size:0.75rem;">Model / Desen:</span>
+          <div style="font-weight:700;" id="resModelPattern">-</div>
+        </div>
+        <div>
+          <span style="color:#64748b; font-size:0.75rem;">Kapak / Parça Sayısı:</span>
+          <div style="font-weight:700;" id="resPartCount">-</div>
+        </div>
+      </div>
+
+      <!-- Stage History Logs -->
+      <div style="margin-top:2rem;">
+        <h4 style="font-size:1rem; font-weight:700; margin-bottom:1rem; color:#0f172a;">Aşama Günlüğü & Tarihçe</h4>
+        <div id="resTimelineLogs" style="padding-left:0.5rem;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Website Integration / Embed Instructions -->
+  <div class="track-card" style="margin-top:1rem;">
+    <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:0.4rem;">🌐 Web Sitenize Entegre Edin (Widget Kodu)</h3>
+    <p style="font-size:0.85rem; color:#64748b;">
+      Bu takip sayfasını kendi kurumsal web sitenize (WordPress, özel HTML vb.) tek satır kodla yerleştirebilirsiniz:
+    </p>
+    <div class="embed-box" id="embedCodeBox">
+      &lt;iframe src="http://192.168.1.102:3000/takip" width="100%" height="750" frameborder="0" style="border:none; border-radius:12px;"&gt;&lt;/iframe&gt;
+    </div>
+    <button class="btn btn-secondary" style="margin-top:0.6rem; font-size:0.8rem;" onclick="copyEmbedCode()">📋 Kodu Kopyala</button>
+  </div>
+
+  <script>
+    const STAGES = [
+      { id: 'cizim', name: 'Çizim', icon: '📐' },
+      { id: 'cnc', name: 'CNC Kesim', icon: '🪚' },
+      { id: 'zimpara', name: 'Zımpara', icon: '🪵' },
+      { id: 'tutkal', name: 'Tutkal', icon: '🧴' },
+      { id: 'membran', name: 'Membran', icon: '🗜️' },
+      { id: 'sevkiyat', name: 'Sevkiyat', icon: '🚚' },
+      { id: 'tamamlandi', name: 'Tamamlandı', icon: '✅' }
+    ];
+
+    async function queryOrder(codeOverride) {
+      const code = codeOverride || document.getElementById('trackInput').value.trim();
+      if (!code) return;
+
+      try {
+        const res = await fetch(`/api/track/${encodeURIComponent(code)}`);
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          alert('Bu takip koduna ait sipariş bulunamadı. Lütfen kontrol ediniz.');
+          return;
+        }
+
+        renderTrackingResult(data.order, data.company);
+      } catch (err) {
+        alert('Bağlantı hatası: ' + err.message);
+      }
+    }
+
+    function renderTrackingResult(order, company) {
+      document.getElementById('resultContainer').style.display = 'block';
+      document.getElementById('resTrackingCode').innerText = order.trackingCode;
+      document.getElementById('resCustomerName').innerText = order.customerName;
+      document.getElementById('resProductTitle').innerText = order.productTitle;
+      document.getElementById('resMembraneColor').innerText = order.membraneColor || 'Standart';
+      document.getElementById('resModelPattern').innerText = order.modelPattern || 'Düz';
+      document.getElementById('resPartCount').innerText = `${order.partCount} Adet (${order.totalAreaM2} m²)`;
+      document.getElementById('resDeliveryDate').innerText = order.estimatedDelivery || 'Yakında';
+
+      if (company && company.name) {
+        document.getElementById('companyNameDisplay').innerText = company.name;
+      }
+
+      // Step Progress Bar
+      const curIdx = STAGES.findIndex(s => s.id === order.currentStage);
+      const activeStage = STAGES[curIdx] || STAGES[0];
+      document.getElementById('resCurrentStageName').innerText = `${activeStage.icon} ${activeStage.name}`;
+
+      const progressPct = curIdx >= 0 ? (curIdx / (STAGES.length - 1)) * 100 : 0;
+      document.getElementById('timelineProgressBar').style.width = `${progressPct}%`;
+
+      const timelineEl = document.getElementById('stepTimeline');
+      // Keep progress bar, rebuild items
+      timelineEl.innerHTML = `<div class="timeline-progress" style="width: ${progressPct}%;"></div>`;
+
+      STAGES.forEach((s, idx) => {
+        const isCompleted = idx < curIdx;
+        const isActive = idx === curIdx;
+        const div = document.createElement('div');
+        div.className = `step-item ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}`;
+        div.innerHTML = `
+          <div class="step-node">${isCompleted ? '✓' : s.icon}</div>
+          <div class="step-label">${s.name}</div>
+        `;
+        timelineEl.appendChild(div);
+      });
+
+      // Timeline Logs
+      const logsEl = document.getElementById('resTimelineLogs');
+      logsEl.innerHTML = (order.stageHistory || []).map(h => `
+        <div style="display:flex; gap:0.75rem; font-size:0.85rem; padding-bottom:0.75rem; border-left:2px solid #cbd5e1; padding-left:1rem; position:relative;">
+          <div style="position:absolute; left:-5px; top:2px; width:8px; height:8px; border-radius:50%; background:#2563eb;"></div>
+          <div>
+            <div style="font-weight:700; color:#1e293b;">${h.stageName || h.stage}</div>
+            <div style="color:#64748b; font-size:0.75rem;">${new Date(h.timestamp).toLocaleString('tr-TR')}</div>
+            ${h.note ? `<div style="margin-top:0.2rem; color:#334155;">${h.note}</div>` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      // Scroll to result smoothly
+      document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyEmbedCode() {
+      const origin = window.location.origin;
+      const code = `<iframe src="${origin}/takip" width="100%" height="750" frameborder="0" style="border:none; border-radius:12px;"></iframe>`;
+      navigator.clipboard.writeText(code).then(() => {
+        alert('Web sitesi entegrasyon iframe kodu panoya kopyalandı!');
+      });
+    }
+
+    // Check for ?kod= in URL parameter on load
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const kod = urlParams.get('kod') || urlParams.get('code');
+      if (kod) {
+        document.getElementById('trackInput').value = kod;
+        queryOrder(kod);
+      }
+      // Update embed box with current origin
+      document.getElementById('embedCodeBox').innerText = `<iframe src="${window.location.origin}/takip" width="100%" height="750" frameborder="0" style="border:none; border-radius:12px;"></iframe>`;
+    });
+  </script>
+</body>
+</html>
