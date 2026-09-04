@@ -532,22 +532,49 @@
     </div>
   </div>
 
-  <!-- MODAL: GİRİŞ -->
+    <!-- MODAL: KULLANICI GİRİŞİ (PERSONEL & YÖNETİCİ) -->
   <div id="loginModal" class="modal-overlay" style="display:none;">
-    <div class="modal-card" style="max-width:380px;">
+    <div class="modal-card" style="max-width:400px;">
       <div class="modal-header">
-        <h3 style="font-size:1.1rem; color:#fff;">👑 Yönetici Girişi</h3>
+        <h3 style="font-size:1.1rem; color:#fff;">🔐 Personel & Yönetici Girişi</h3>
         <button class="btn btn-navy" style="padding:2px 8px;" onclick="closeModal('loginModal')">✕</button>
       </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">Yönetici Şifresi</label>
-          <input type="password" id="adminPassInput" class="form-input" placeholder="Şifrenizi girin (Varsayılan: 123)" />
+      <form onsubmit="submitLogin(event)">
+        <div class="modal-body">
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:12px;">
+            Lütfen yetkili veya personel kullanıcı adı ve şifrenizi giriniz:
+          </p>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label class="form-label" style="font-weight:700;">Kullanıcı Adı *</label>
+            <input type="text" id="loginUsernameInput" class="form-input" placeholder="Örn: yonetici veya kullanıcı adı" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-weight:700;">Şifre *</label>
+            <input type="password" id="loginPassInput" class="form-input" placeholder="Şifrenizi giriniz" required />
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:10px; background:#f8fafc; padding:8px 10px; border-radius:6px; border:1px solid var(--border);">
+            💡 <strong>Giriş Bilgileri:</strong><br>
+            • Yönetici: <code>yonetici</code> / Şifre: <code>123</code> (veya belirlediğiniz şifre)<br>
+            • Atölye: <code>izleyici</code> / Şifre: <code>123</code>
+          </div>
         </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-white" onclick="closeModal('loginModal')">İptal</button>
+          <button type="submit" class="btn btn-gold" style="font-weight:700;">Giriş Yap</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ÖDEME AL & BAKİYE SIFIRLA -->
+  <div id="paymentModal" class="modal-overlay" style="display:none;">
+    <div class="modal-card" style="max-width:460px;">
+      <div class="modal-header" style="background:#065f46;">
+        <h3 style="font-size:1.1rem; color:#fff;">💳 Ödeme Tahsilatı & Bakiye Sıfırlama</h3>
+        <button class="btn btn-success" style="padding:2px 8px; background:rgba(255,255,255,0.2);" onclick="closeModal('paymentModal')">✕</button>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-white" onclick="closeModal('loginModal')">İptal</button>
-        <button class="btn btn-gold" onclick="submitLogin()">Giriş Yap</button>
+      <div class="modal-body" id="paymentModalBody">
+        <!-- Dynamic payment form -->
       </div>
     </div>
   </div>
@@ -785,60 +812,98 @@ const STAGES = [
     } catch (e) {}
   }
 
-  function updateRoleUI() {
+    function updateRoleUI() {
+    const activeUser = JSON.parse(localStorage.getItem('global_active_user') || 'null');
     const badge = document.getElementById('roleBadgeEl');
     const btn = document.getElementById('roleSwitchBtn');
     const adminEls = document.querySelectorAll('.admin-only');
 
     if (userRole === 'admin') {
+      const name = (activeUser && activeUser.displayName) ? activeUser.displayName : 'Yönetici (Yetkili)';
       badge.className = 'role-badge role-admin';
-      badge.innerHTML = '👑 Yönetici (Yetkili)';
-      btn.innerText = 'İzleyici Moduna Geç';
+      badge.innerHTML = `👑 ${name}`;
+      btn.innerText = '🔒 Çıkış Yap';
+      btn.className = 'btn btn-white';
       adminEls.forEach(el => el.style.display = '');
     } else {
+      const name = (activeUser && activeUser.displayName && activeUser.role === 'viewer') ? activeUser.displayName : 'İzleyici (Atölye)';
       badge.className = 'role-badge role-viewer';
-      badge.innerHTML = '👁️ İzleyici (Atölye)';
-      btn.innerText = '👑 Yönetici Girişi';
+      badge.innerHTML = `👁️ ${name}`;
+      btn.innerText = '🔐 Personel Girişi';
+      btn.className = 'btn btn-navy';
       adminEls.forEach(el => el.style.display = 'none');
     }
   }
 
   function toggleUserRole() {
-    if (userRole === 'admin') {
+    if (userRole === 'admin' || localStorage.getItem('global_active_user')) {
       userRole = 'viewer';
       localStorage.setItem('global_kapak_role', 'viewer');
+      localStorage.removeItem('global_active_user');
       updateRoleUI();
       renderView();
-      showToast('İzleyici moduna geçildi. Ciro ve bakiye bilgileri gizlendi.');
+      showToast('Çıkış yapıldı. İzleyici moduna geçildi.');
     } else {
       openModal('loginModal');
     }
   }
 
-    function submitLogin() {
-    const pass = document.getElementById('adminPassInput').value.trim();
-    const customPass = localStorage.getItem('global_admin_pass');
+  function submitLogin(event) {
+    if (event) event.preventDefault();
+    const username = (document.getElementById('loginUsernameInput')?.value || '').trim().toLowerCase();
+    const pass = (document.getElementById('loginPassInput')?.value || '').trim();
+    const customAdminPass = localStorage.getItem('global_admin_pass');
 
-    // Eğer yönetici şifresi değiştirilmişse yalnızca o geçerlidir. Henüz hiç değiştirilmediyse 123 veya global123 geçerlidir.
-    let isValid = false;
-    if (customPass) {
-      isValid = (pass === customPass);
-    } else {
-      const found = users.find(u => u.password === pass && u.role === 'admin');
-      isValid = Boolean(found) || (pass === '123') || (pass === 'global123');
+    if (!pass) {
+      showToast('Lütfen şifrenizi girin!', '#EF4444');
+      return;
     }
 
-    if (isValid) {
+    // 1. Ana Yönetici kontrolü
+    const isMainAdmin = (username === 'yonetici' || username === 'admin' || !username);
+    let adminValid = false;
+    if (isMainAdmin) {
+      if (customAdminPass) {
+        adminValid = (pass === customAdminPass);
+      } else {
+        adminValid = (pass === '123' || pass === 'global123');
+      }
+    }
+
+    if (adminValid) {
       userRole = 'admin';
+      const loggedUser = { username: 'yonetici', displayName: 'Yönetici (Yetkili)', role: 'admin' };
       localStorage.setItem('global_kapak_role', 'admin');
+      localStorage.setItem('global_active_user', JSON.stringify(loggedUser));
       closeModal('loginModal');
-      document.getElementById('adminPassInput').value = '';
+      if (document.getElementById('loginUsernameInput')) document.getElementById('loginUsernameInput').value = '';
+      if (document.getElementById('loginPassInput')) document.getElementById('loginPassInput').value = '';
       updateRoleUI();
       renderView();
-      showToast('Yönetici girişi başarılı! Tüm yetkiler ve ciro açıldı.', '#10B981');
-    } else {
-      showToast('Hatalı şifre! Lütfen tekrar deneyin.', '#EF4444');
+      showToast('👑 Yönetici girişi başarılı! Tüm yetkiler açıldı.', '#10B981');
+      return;
     }
+
+    // 2. Kayıtlı kullanıcı listesinde arama
+    const foundUser = users.find(u => u.username.toLowerCase() === username && u.password === pass);
+    if (foundUser) {
+      userRole = foundUser.role;
+      localStorage.setItem('global_kapak_role', foundUser.role);
+      localStorage.setItem('global_active_user', JSON.stringify(foundUser));
+      closeModal('loginModal');
+      if (document.getElementById('loginUsernameInput')) document.getElementById('loginUsernameInput').value = '';
+      if (document.getElementById('loginPassInput')) document.getElementById('loginPassInput').value = '';
+      updateRoleUI();
+      renderView();
+      if (foundUser.role === 'admin') {
+        showToast(`👑 Hoş geldiniz, ${foundUser.displayName}! (Yönetici)`, '#10B981');
+      } else {
+        showToast(`👤 Hoş geldiniz, ${foundUser.displayName}! (Atölye)`, '#2563eb');
+      }
+      return;
+    }
+
+    showToast('Hatalı kullanıcı adı veya şifre!', '#EF4444');
   }
 
   function setTab(tab) {
@@ -998,6 +1063,9 @@ const STAGES = [
           </td>
           ${userRole === 'admin' ? `<td style="padding:10px 14px;">${finBadge}</td>` : ''}
           <td style="padding:10px 14px; text-align:right;">
+            ${(o.remainingBalance || 0) > 0 && userRole === 'admin' ? `
+              <button class="btn btn-success" style="padding:4px 8px; font-size:0.75rem; font-weight:700; background:#065f46; margin-right:4px;" onclick="openPaymentModal('${o.id}')">💳 Ödeme Al</button>
+            ` : ''}
             <button class="btn btn-navy" style="padding:4px 8px; font-size:0.75rem;" onclick="showDetails('${o.id}')">Detay</button>
             <button class="btn btn-gold" style="padding:4px 8px; font-size:0.75rem;" onclick="printJobOrder('${o.id}')">🖨️ Fiş</button>
             ${userRole === 'admin' ? `
@@ -1116,15 +1184,17 @@ const STAGES = [
             <button class="btn btn-white" style="padding:4px 8px; font-size:0.75rem;" title="Geri Al" onclick="stepStage('${o.id}', '${prevStage.id}')">⬅️</button>
           ` : ''}
 
+          ${(o.remainingBalance || 0) > 0 && userRole === 'admin' ? `
+            <button class="btn btn-white" style="padding:4px 8px; font-size:0.75rem; border:1px solid #10b981; color:#065f46; font-weight:700;" title="Kalan Bakiyeyi Tahsil Et" onclick="openPaymentModal('${o.id}')">💳 Ödeme Al</button>
+          ` : ''}
+
           ${nextStage ? `
-            <button class="btn ${o.currentStage === 'sevkiyat' ? 'btn-success' : 'btn-step-next'}" style="${o.currentStage === 'sevkiyat' ? 'font-weight:700; background:#10B981; color:#fff;' : ''}" onclick="stepStage('${o.id}', '${nextStage.id}')">
+            <button class="${o.currentStage === 'sevkiyat' ? 'btn-success' : 'btn-step-next'}" style="${o.currentStage === 'sevkiyat' ? 'font-weight:700; background:#10B981; color:#fff;' : ''}" onclick="${o.currentStage === 'sevkiyat' ? "handleCompleteOrderClick('" + o.id + "')" : "stepStage('" + o.id + "', '" + nextStage.id + "')"}">
               ${o.currentStage === 'sevkiyat' ? '✅ Tamamlandı & Kaldır' : nextStage.name + ' ➔'}
             </button>
           ` : `
-            <button class="btn btn-success" style="flex:1; padding:4px 8px; font-size:0.75rem;" disabled>✅ Arşivlendi</button>landı</button>
+            <button class="btn btn-success" style="flex:1; padding:4px 8px; font-size:0.75rem;" disabled>✅ Arşivlendi</button>
           `}
-
-          <button class="btn btn-white" style="padding:4px 8px; font-size:0.75rem;" onclick="showDetails('${o.id}')">👁️</button>
         </div>
       </div>
     `;
@@ -1389,6 +1459,174 @@ function renderTable(container) {
       executeScan(o.trackingCode);
     }
   }
+
+  
+  // ÖDEME TAHSİLATI & BAKİYE SIFIRLAMA
+  let activePaymentOrderId = null;
+  let activePaymentCompleteAfter = false;
+
+  function openPaymentModal(orderId, andCompleteAfter = false) {
+    const o = orders.find(x => x.id === orderId);
+    if (!o) return;
+
+    activePaymentOrderId = orderId;
+    activePaymentCompleteAfter = andCompleteAfter;
+
+    const remaining = Math.max(0, parseFloat(o.remainingBalance) || 0);
+    const body = document.getElementById('paymentModalBody');
+
+    body.innerHTML = `
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:12px; margin-bottom:14px; font-size:0.85rem;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span style="color:var(--text-muted);">Müşteri:</span>
+          <strong>${o.customerName}</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span style="color:var(--text-muted);">Takip Kodu:</span>
+          <span class="track-code-badge">${o.trackingCode}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span style="color:var(--text-muted);">Toplam Sipariş Tutarı:</span>
+          <strong>${Number(o.totalPrice || 0).toLocaleString('tr-TR')} TL</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span style="color:var(--text-muted);">Daha Önce Alınan:</span>
+          <span style="color:var(--success); font-weight:700;">${Number(o.deposit || 0).toLocaleString('tr-TR')} TL</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding-top:6px; border-top:1px solid var(--border); font-size:1.05rem;">
+          <span style="font-weight:700; color:var(--danger);">Kalan Tahsil Edilecek Bakiye:</span>
+          <strong style="color:var(--danger); font-size:1.2rem;">${Number(remaining).toLocaleString('tr-TR')} TL</strong>
+        </div>
+      </div>
+
+      <form onsubmit="handleConfirmPayment(event)">
+        <div class="form-group" style="margin-bottom:12px;">
+          <label class="form-label" style="font-weight:700;">Tahsil Edilen Tutar (TL) *</label>
+          <input type="number" id="payAmountInput" class="form-input" value="${remaining}" step="any" min="0" required style="font-size:1.1rem; font-weight:700; color:#065f46;" />
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label" style="font-weight:700;">Ödeme Yöntemi *</label>
+          <select id="payMethodSelect" class="form-select" style="font-size:0.9rem;">
+            <option value="Nakit">💵 Nakit</option>
+            <option value="Havale / EFT">🏦 Banka Havale / EFT</option>
+            <option value="Kredi Kartı">💳 Kredi Kartı</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button type="button" class="btn btn-white" onclick="closeModal('paymentModal')">İptal</button>
+          <button type="submit" class="btn btn-success" style="font-weight:700; background:#065f46;">
+            ${andCompleteAfter ? '✅ Bakiyeyi Sıfırla & İşi Tamamla' : '✅ Bakiyeyi Sıfırla & Kaydet'}
+          </button>
+        </div>
+      </form>
+    `;
+
+    openModal('paymentModal');
+  }
+
+  function handleConfirmPayment(e) {
+    e.preventDefault();
+    const o = orders.find(x => x.id === activePaymentOrderId);
+    if (!o) return;
+
+    const payAmount = parseFloat(document.getElementById('payAmountInput').value) || 0;
+    const payMethod = document.getElementById('payMethodSelect').value;
+
+    const oldBalance = parseFloat(o.remainingBalance) || 0;
+    const newBalance = Math.max(0, oldBalance - payAmount);
+
+    o.deposit = (parseFloat(o.deposit) || 0) + payAmount;
+    o.remainingBalance = newBalance;
+
+    if (newBalance <= 0) {
+      o.paymentStatus = 'odendi';
+    } else {
+      o.paymentStatus = 'kismi';
+    }
+
+    o.stageHistory.push({
+      stageName: 'Tahsilat',
+      timestamp: new Date().toISOString(),
+      note: `${Number(payAmount).toLocaleString('tr-TR')} TL tahsilat alındı (${payMethod}). Kalan Bakiye: ${Number(newBalance).toLocaleString('tr-TR')} TL.`
+    });
+
+    closeModal('paymentModal');
+
+    // Eğer tamamlandı akışından çağrıldıysa işi tamamla
+    if (activePaymentCompleteAfter) {
+      closeModal('dispatchAlertModal');
+      stepStage(o.id, 'tamamlandi');
+    } else {
+      saveOrders();
+      renderView();
+      showToast(`✅ ${o.customerName} siparişinin bakiyesi güncellendi (Kalan: ${newBalance.toLocaleString('tr-TR')} TL)`, '#10B981');
+    }
+  }
+
+  // TESLİMATTAN TAMAMLANDI BUTONUNA BASILDIĞINDA BAKİYE UYARISI
+  function handleCompleteOrderClick(orderId) {
+    const o = orders.find(x => x.id === orderId);
+    if (!o) return;
+
+    const remaining = parseFloat(o.remainingBalance) || 0;
+    const hasUnpaid = remaining > 0 && o.paymentStatus !== 'odendi';
+
+    if (hasUnpaid) {
+      // SESLİ ALARM ÇAL!
+      playAlarmSound();
+
+      // UYARI PENCERESİNİ AÇ!
+      const alertBody = document.getElementById('dispatchAlertBody');
+      const balanceHtml = (userRole === 'admin')
+        ? `<div style="font-size:1.15rem; color:#7f1d1d; margin-top:6px; font-weight:800;">
+             Kalan Bakiye: <span style="font-size:1.4rem; color:#b91c1c;">${Number(remaining).toLocaleString('tr-TR')} TL</span>
+           </div>`
+        : `<div style="font-size:0.95rem; font-weight:700; color:#b91c1c; margin-top:8px; background:#fff; padding:8px 12px; border-radius:6px; display:inline-block; border:1px dashed #ef4444;">
+             🔒 Bu siparişin ödenmemiş tahsilatı bulunmaktadır! (Tutar yöneticide görünür)
+           </div>`;
+
+      alertBody.innerHTML = `
+        <div style="text-align:center; margin-bottom:14px;">
+          <span style="font-size:3.2rem;">⚠️🚨</span>
+          <h2 style="font-size:1.35rem; font-weight:800; color:#b91c1c; margin-top:4px;">DİKKAT: ÖDENMEMİŞ BAKİYE VAR!</h2>
+          <p style="color:var(--text-muted); font-size:0.88rem;">Sipariş tamamlanıp teslim edilmeden önce tahsilat kontrolü yapınız.</p>
+        </div>
+
+        <div style="background:#fee2e2; border:2px solid #ef4444; border-radius:10px; padding:14px; text-align:center; margin-bottom:14px;">
+          <div style="font-weight:700; color:#7f1d1d; font-size:1rem;">Müşteri: <strong>${o.customerName}</strong> (${o.trackingCode})</div>
+          ${balanceHtml}
+          <p style="font-size:0.8rem; color:#991b1b; margin-top:8px;">
+            Tahsilat yapılmadan ürünün fabrikadan çıkışı yapılamaz.
+          </p>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          ${userRole === 'admin' ? `
+            <button class="btn btn-success" style="padding:10px; font-weight:700; font-size:0.95rem;" onclick="openPaymentModal('${o.id}', true)">
+              💳 Şimdi Ödeme Al & İşi Tamamla
+            </button>
+            <button class="btn btn-navy" style="padding:8px; font-size:0.85rem;" onclick="closeModal('dispatchAlertModal'); stepStage('${o.id}', 'tamamlandi');">
+              ⚠️ Yönetici Onayıyla Yine de Tamamla
+            </button>
+          ` : `
+            <div style="text-align:center; font-size:0.85rem; color:#b91c1c; font-weight:700; padding:6px;">
+              Lütfen muhasebe / yönetici ile iletişime geçiniz!
+            </div>
+          `}
+          <button class="btn btn-white" style="padding:8px;" onclick="closeModal('dispatchAlertModal')">
+            ❌ İptal / Sevkiyatta Bırak
+          </button>
+        </div>
+      `;
+
+      openModal('dispatchAlertModal');
+      return;
+    }
+
+    // Bakiye yoksa doğrudan tamamla
+    stepStage(orderId, 'tamamlandi');
+  }
+
 
   function handleCreateOrder(e) {
     e.preventDefault();
