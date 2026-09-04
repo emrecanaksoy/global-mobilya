@@ -1,0 +1,5 @@
+# Netlify Redirects for Global Kapak Mobilya
+/siparis-paneli      /siparis-paneli/index.html   200
+/siparis-paneli/*    /siparis-paneli/index.html   200
+/takip               /takip.html                  200
+/takip/*             /takip.html                  200
