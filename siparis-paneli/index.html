@@ -342,14 +342,15 @@
 
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <select id="stageFilter" class="filter-select" onchange="onFilterChange()">
-          <option value="all">Tüm Aşamalar</option>
+          <option value="active" selected>🏭 Aktif Üretimdekiler (Bitenler Hariç)</option>
           <option value="cizim">1. Çizim</option>
           <option value="cnc">2. CNC Kesim</option>
           <option value="zimpara">3. Zımpara</option>
           <option value="tutkal">4. Tutkal</option>
-          <option value="membran">5. Membran</option>
+          <option value="membran">5. Membran Pres</option>
           <option value="sevkiyat">6. Sevkiyat</option>
-          <option value="tamamlandi">Tamamlandı</option>
+          <option value="tamamlandi">✅ Bitenler / Arşiv</option>
+          <option value="all">📋 Tüm Kayıtlar (Bitenler Dahil)</option>
         </select>
 
         <select id="priorityFilter" class="filter-select" onchange="onFilterChange()">
@@ -849,19 +850,21 @@ const STAGES = [
   }
 
   function renderStats() {
-    const totalOrders = orders.length;
-    const totalParts = orders.reduce((acc, o) => acc + (parseInt(o.partCount) || 0), 0);
-    const totalM2 = orders.reduce((acc, o) => acc + (parseFloat(o.totalAreaM2) || 0), 0);
-    const urgent = orders.filter(o => o.priority === 'acil' || o.priority === 'kritik').length;
+    const activeOrders = orders.filter(o => o.currentStage !== 'tamamlandi');
+    const completedOrders = orders.filter(o => o.currentStage === 'tamamlandi');
+    const totalActive = activeOrders.length;
+    const totalParts = activeOrders.reduce((acc, o) => acc + (parseInt(o.partCount) || 0), 0);
+    const totalM2 = activeOrders.reduce((acc, o) => acc + (parseFloat(o.totalAreaM2) || 0), 0);
+    const urgent = activeOrders.filter(o => o.priority === 'acil' || o.priority === 'kritik').length;
 
     let html = `
       <div class="stat-card">
         <span class="stat-icon">📦</span>
-        <div><div class="stat-num">${totalOrders}</div><div class="stat-text">Aktif Sipariş</div></div>
+        <div><div class="stat-num">${totalActive}</div><div class="stat-text">Aktif Sipariş</div></div>
       </div>
       <div class="stat-card">
         <span class="stat-icon">📐</span>
-        <div><div class="stat-num">${totalM2.toFixed(1)} m²</div><div class="stat-text">Toplam Üretim</div></div>
+        <div><div class="stat-num">${totalM2.toFixed(1)} m²</div><div class="stat-text">Aktif Alan</div></div>
       </div>
       <div class="stat-card">
         <span class="stat-icon">🪵</span>
@@ -870,6 +873,10 @@ const STAGES = [
       <div class="stat-card">
         <span class="stat-icon">⚡</span>
         <div><div class="stat-num" style="color:var(--danger)">${urgent}</div><div class="stat-text">Acil İş</div></div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">✅</span>
+        <div><div class="stat-num" style="color:var(--success)">${completedOrders.length}</div><div class="stat-text">Biten / Arşiv</div></div>
       </div>
     `;
 
@@ -904,14 +911,23 @@ const STAGES = [
 
   function getFilteredOrders() {
     const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
-    const stage = document.getElementById('stageFilter')?.value || 'all';
+    const stage = document.getElementById('stageFilter')?.value || 'active';
     const prio = document.getElementById('priorityFilter')?.value || 'all';
 
     return orders.filter(o => {
       const matchesQ = !q || (o.customerName && o.customerName.toLowerCase().includes(q)) ||
         (o.trackingCode && o.trackingCode.toLowerCase().includes(q)) ||
         (o.membraneColor && o.membraneColor.toLowerCase().includes(q));
-      const matchesStage = stage === 'all' || o.currentStage === stage;
+
+      let matchesStage = true;
+      if (stage === 'active') {
+        matchesStage = (o.currentStage !== 'tamamlandi');
+      } else if (stage === 'all') {
+        matchesStage = true;
+      } else {
+        matchesStage = (o.currentStage === stage);
+      }
+
       const matchesPrio = prio === 'all' || o.priority === prio;
       return matchesQ && matchesStage && matchesPrio;
     });
@@ -921,8 +937,20 @@ const STAGES = [
 
   function renderKanban(container) {
     const list = getFilteredOrders();
+    const stageFilterVal = document.getElementById('stageFilter')?.value || 'active';
+
+    // Varsayılan: Yalnızca aktif 6 üretim istasyonu görünür (Bitenler arşive kalkar, ekranda yer kaplamaz).
+    let kanbanStages = [];
+    if (stageFilterVal === 'tamamlandi') {
+      kanbanStages = STAGES.filter(s => s.id === 'tamamlandi');
+    } else if (stageFilterVal !== 'active' && stageFilterVal !== 'all') {
+      kanbanStages = STAGES.filter(s => s.id === stageFilterVal);
+    } else {
+      kanbanStages = STAGES.filter(s => s.id !== 'tamamlandi');
+    }
+
     let html = `<div class="kanban-board">`;
-    STAGES.forEach(stage => {
+    kanbanStages.forEach(stage => {
       const stageOrders = list.filter(o => o.currentStage === stage.id);
       html += `
         <div class="kanban-col">
@@ -986,11 +1014,11 @@ const STAGES = [
           ` : ''}
 
           ${nextStage ? `
-            <button class="btn btn-step-next" onclick="stepStage('${o.id}', '${nextStage.id}')">
-              ${nextStage.name} ➔
+            <button class="btn ${o.currentStage === 'sevkiyat' ? 'btn-success' : 'btn-step-next'}" style="${o.currentStage === 'sevkiyat' ? 'font-weight:700; background:#10B981; color:#fff;' : ''}" onclick="stepStage('${o.id}', '${nextStage.id}')">
+              ${o.currentStage === 'sevkiyat' ? '✅ Tamamlandı & Kaldır' : nextStage.name + ' ➔'}
             </button>
           ` : `
-            <button class="btn btn-success" style="flex:1; padding:4px 8px; font-size:0.75rem;" disabled>✅ Tamamlandı</button>
+            <button class="btn btn-success" style="flex:1; padding:4px 8px; font-size:0.75rem;" disabled>✅ Arşivlendi</button>landı</button>
           `}
 
           <button class="btn btn-white" style="padding:4px 8px; font-size:0.75rem;" onclick="showDetails('${o.id}')">👁️</button>
@@ -1043,7 +1071,10 @@ function renderTable(container) {
           <td style="padding:10px 14px; text-align:right;">
             <button class="btn btn-white" style="padding:3px 8px; font-size:0.75rem;" onclick="showDetails('${o.id}')">Detay</button>
             <button class="btn btn-navy" style="padding:3px 8px; font-size:0.75rem;" onclick="printJobOrder('${o.id}')">İş Emri</button>
-          </td>
+          
+            ${o.currentStage === 'tamamlandi' && userRole === 'admin' ? `
+              <button class="btn btn-white" style="padding:3px 6px; font-size:0.75rem; border:1px solid var(--border); margin-left:4px;" title="Aktif Üretime Geri Döndür" onclick="stepStage('${o.id}', 'sevkiyat')">↺ Aktife Al</button>
+            ` : ''}</td>
         </tr>
       `;
     });
@@ -1239,12 +1270,17 @@ function renderTable(container) {
     o.stageHistory.push({
       stageName: stageObj.name,
       timestamp: new Date().toISOString(),
-      note: `${stageObj.name} aşamasına geçirildi.`
+      note: targetStage === 'tamamlandi' ? 'Sipariş tamamlandı ve ekrandan kaldırılarak arşive alındı.' : `${stageObj.name} aşamasına geçirildi.`
     });
 
     saveOrders();
     renderView();
-    showToast(`${o.customerName} ➔ ${stageObj.name} aşamasına alındı.`);
+
+    if (targetStage === 'tamamlandi') {
+      showToast(`✅ ${o.customerName} tamamlandı ve ekrandan kaldırılarak arşive alındı!`, '#10B981');
+    } else {
+      showToast(`${o.customerName} ➔ ${stageObj.name} aşamasına alındı.`);
+    }
 
     if (targetStage === 'sevkiyat') {
       executeScan(o.trackingCode);
