@@ -120,6 +120,7 @@
     padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px;
   }
   .role-admin { background: var(--gold-light); color: #855d14; border: 1px solid var(--gold); }
+  .role-authorized { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
   .role-viewer { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
 
   .stats-strip { background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 10px 24px; }
@@ -263,9 +264,36 @@
   }
 
   @media print {
-    body { background: #fff !important; }
-    header, .stats-strip, .filter-wrapper, .modal-overlay, .no-print { display: none !important; }
-    #printArea { display: block !important; }
+    html, body {
+      background: #fff !important;
+      color: #000 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: visible !important;
+      width: 100% !important;
+      height: auto !important;
+    }
+    body * {
+      visibility: hidden !important;
+    }
+    #printArea, #printArea * {
+      visibility: visible !important;
+    }
+    #printArea {
+      position: absolute !important;
+      left: 0 !important;
+      top: 0 !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 15px !important;
+      display: block !important;
+      background: #fff !important;
+      z-index: 999999 !important;
+      box-sizing: border-box !important;
+    }
+    header, nav, main, footer, .stats-strip, .filter-wrapper, .modal-overlay, .no-print, #mainContent, #filterWrapper, #statsContainer {
+      display: none !important;
+    }
   }
   #printArea { display: none; }
 
@@ -319,10 +347,10 @@
       <span id="roleBadgeEl" class="role-badge role-viewer">👁️ İzleyici (Atölye)</span>
       <button id="roleSwitchBtn" class="btn btn-navy" onclick="toggleUserRole()">👑 Yönetici Girişi</button>
       
-      <button class="btn btn-gold admin-only" onclick="openModal('newOrderModal')">+ Yeni Sipariş</button>
+      <button class="btn btn-gold staff-visible" onclick="openModal('newOrderModal')">+ Yeni Sipariş</button>
       <button class="btn btn-white admin-only" onclick="openUsersModal()">👥 Kullanıcılar & Şifre</button>
       <button class="btn btn-white" onclick="openCloudModal()" title="Bulut Veritabanı & Senkronizasyon">☁️ Bulut</button>
-      <button class="btn btn-white admin-only" onclick="exportBackup()" title="Yedek İndir">💾 Yedek</button>
+      <button class="btn btn-white staff-visible" onclick="exportBackup()" title="Yedek İndir">💾 Yedek</button>
     </div>
   </header>
 
@@ -438,16 +466,16 @@
               </select>
             </div>
 
-            <!-- Finansal Alanlar (Sadece Yönetici Görür) -->
-            <div class="form-group admin-only">
+            <!-- Finansal Alanlar (Yönetici ve Yetkili Personel Görür) -->
+            <div class="form-group staff-visible">
               <label class="form-label">Toplam Fiyat (TL)</label>
               <input type="number" step="0.01" id="m_totalPrice" class="form-input" placeholder="0.00" />
             </div>
-            <div class="form-group admin-only">
+            <div class="form-group staff-visible">
               <label class="form-label">Alınan Peşinat (TL)</label>
               <input type="number" step="0.01" id="m_deposit" class="form-input" placeholder="0.00" />
             </div>
-            <div class="form-group col-span-2 admin-only">
+            <div class="form-group col-span-2 staff-visible">
               <label class="form-label">Ödeme Durumu</label>
               <select id="m_paymentStatus" class="form-select">
                 <option value="bekliyor">Ödeme Bekliyor</option>
@@ -468,6 +496,28 @@
             <div class="form-group col-span-2">
               <label class="form-label">Sipariş & İmalat Notları</label>
               <textarea id="m_productDetails" class="form-textarea" placeholder="Özel ölçüler, camlı kapaklar, yön detayları..."></textarea>
+            </div>
+
+            <!-- Sipariş Fotoğrafı / Çizim / Fiş Görseli Yükleme -->
+            <div class="form-group col-span-2">
+              <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+                <span>📷 Sipariş Fotoğrafı / CAD Çizim / Fiş Görseli</span>
+                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(İsteğe bağlı)</span>
+              </label>
+              <div style="border: 2px dashed var(--border); border-radius: 8px; padding: 14px; text-align: center; background: #f8fafc; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('m_orderImage').click()">
+                <input type="file" id="m_orderImage" accept="image/*" style="display:none;" onchange="handleImageSelect(event, 'newOrderImgPreview', 'newOrderImgContainer')" />
+                <div id="newOrderImgPlaceholder">
+                  <div style="font-size: 2rem; margin-bottom: 4px;">📸</div>
+                  <div style="font-size: 0.88rem; font-weight: 700; color: var(--navy);">Fotoğraf veya Çizim Seçmek İçin Tıklayın</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">JPG, PNG veya WEBP (Max 5MB)</div>
+                </div>
+                <div id="newOrderImgContainer" style="display:none; margin-top: 8px;">
+                  <img id="newOrderImgPreview" src="" alt="Sipariş Görseli" style="max-height: 150px; max-width: 100%; border-radius: 6px; border: 1px solid var(--border); box-shadow: 0 2px 6px rgba(0,0,0,0.1); object-fit: contain;" />
+                  <div style="margin-top: 8px;">
+                    <button type="button" class="btn btn-white" style="font-size: 0.75rem; padding: 3px 10px; color: var(--danger); border: 1px solid var(--danger);" onclick="clearNewOrderImage(event)">✕ Görseli Kaldır</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -554,8 +604,9 @@
           </div>
           <div style="font-size:0.75rem; color:var(--text-muted); margin-top:10px; background:#f8fafc; padding:8px 10px; border-radius:6px; border:1px solid var(--border);">
             💡 <strong>Giriş Bilgileri:</strong><br>
-            • Yönetici: <code>yonetici</code> / Şifre: <code>123</code> (veya belirlediğiniz şifre)<br>
-            • Atölye: <code>izleyici</code> / Şifre: <code>123</code>
+            • 👑 Yönetici: <code>yonetici</code> / Şifre: <code>123</code> (Tam Yetki & Sipariş Silme)<br>
+            • ⭐ Yetkili Personel: <code>yetkili</code> / Şifre: <code>123</code> (Ciro, Fiyat & Ödeme Görür / Silemez)<br>
+            • 👁️ Atölye / İzleyici: <code>izleyici</code> / Şifre: <code>123</code> (İmalat Takip - Fiyatlar Gizli)
           </div>
         </div>
         <div class="modal-footer">
@@ -629,7 +680,8 @@
                 <label class="form-label">Rol / Yetki *</label>
                 <select id="nu_role" class="form-select">
                   <option value="viewer">👁️ İzleyici (Atölye - Ciro ve Fiyatlar Gizli)</option>
-                  <option value="admin">👑 Yönetici (Tam Yetki - Ciro ve Fiyatları Görür)</option>
+                  <option value="staff_authorized">⭐ Yetkili Personel (Ciro, Fiyat & Ödeme Görür / Sipariş Silemez)</option>
+                  <option value="admin">👑 Yönetici (Tam Yetki - Ciro, Silme ve Hesap Yönetimi)</option>
                 </select>
               </div>
               <div class="form-group">
@@ -711,9 +763,33 @@ const STAGES = [
   if (!users) {
     users = [
       { id: 'u_1', username: 'yonetici', displayName: 'Yönetici (Yetkili)', role: 'admin', password: '123' },
-      { id: 'u_2', username: 'izleyici', displayName: 'Atölye / İzleyici', role: 'viewer', password: '123' }
+      { id: 'u_2', username: 'yetkili', displayName: 'Yetkili Personel', role: 'staff_authorized', password: '123' },
+      { id: 'u_3', username: 'izleyici', displayName: 'Atölye / İzleyici', role: 'viewer', password: '123' }
     ];
     localStorage.setItem('global_kapak_users', JSON.stringify(users));
+  } else {
+    // 'yetkili' kullanıcısı eksikse otomatik ekle
+    if (!users.some(u => u.username === 'yetkili' || u.role === 'staff_authorized')) {
+      users.push({ id: 'u_yetkili', username: 'yetkili', displayName: 'Yetkili Personel', role: 'staff_authorized', password: '123' });
+      localStorage.setItem('global_kapak_users', JSON.stringify(users));
+    }
+  }
+
+  // YETKİ KONTROL YARDIMCILARI
+  function canViewFinances() {
+    return userRole === 'admin' || userRole === 'staff_authorized';
+  }
+
+  function canCollectPayment() {
+    return userRole === 'admin' || userRole === 'staff_authorized';
+  }
+
+  function canDeleteOrders() {
+    return userRole === 'admin';
+  }
+
+  function canManageUsers() {
+    return userRole === 'admin';
   }
 
   if (!orders || orders.length === 0) {
@@ -812,11 +888,12 @@ const STAGES = [
     } catch (e) {}
   }
 
-    function updateRoleUI() {
+  function updateRoleUI() {
     const activeUser = JSON.parse(localStorage.getItem('global_active_user') || 'null');
     const badge = document.getElementById('roleBadgeEl');
     const btn = document.getElementById('roleSwitchBtn');
     const adminEls = document.querySelectorAll('.admin-only');
+    const staffEls = document.querySelectorAll('.staff-visible');
 
     if (userRole === 'admin') {
       const name = (activeUser && activeUser.displayName) ? activeUser.displayName : 'Yönetici (Yetkili)';
@@ -825,6 +902,15 @@ const STAGES = [
       btn.innerText = '🔒 Çıkış Yap';
       btn.className = 'btn btn-white';
       adminEls.forEach(el => el.style.display = '');
+      staffEls.forEach(el => el.style.display = '');
+    } else if (userRole === 'staff_authorized') {
+      const name = (activeUser && activeUser.displayName) ? activeUser.displayName : 'Yetkili Personel';
+      badge.className = 'role-badge role-authorized';
+      badge.innerHTML = `⭐ ${name}`;
+      btn.innerText = '🔒 Çıkış Yap';
+      btn.className = 'btn btn-white';
+      adminEls.forEach(el => el.style.display = 'none');
+      staffEls.forEach(el => el.style.display = '');
     } else {
       const name = (activeUser && activeUser.displayName && activeUser.role === 'viewer') ? activeUser.displayName : 'İzleyici (Atölye)';
       badge.className = 'role-badge role-viewer';
@@ -832,16 +918,18 @@ const STAGES = [
       btn.innerText = '🔐 Personel Girişi';
       btn.className = 'btn btn-navy';
       adminEls.forEach(el => el.style.display = 'none');
+      staffEls.forEach(el => el.style.display = 'none');
     }
   }
 
   function toggleUserRole() {
-    if (userRole === 'admin' || localStorage.getItem('global_active_user')) {
+    if (userRole === 'admin' || userRole === 'staff_authorized' || localStorage.getItem('global_active_user')) {
       userRole = 'viewer';
       localStorage.setItem('global_kapak_role', 'viewer');
       localStorage.removeItem('global_active_user');
       updateRoleUI();
       renderView();
+      renderStats();
       showToast('Çıkış yapıldı. İzleyici moduna geçildi.');
     } else {
       openModal('loginModal');
@@ -880,6 +968,7 @@ const STAGES = [
       if (document.getElementById('loginPassInput')) document.getElementById('loginPassInput').value = '';
       updateRoleUI();
       renderView();
+      renderStats();
       showToast('👑 Yönetici girişi başarılı! Tüm yetkiler açıldı.', '#10B981');
       return;
     }
@@ -895,8 +984,11 @@ const STAGES = [
       if (document.getElementById('loginPassInput')) document.getElementById('loginPassInput').value = '';
       updateRoleUI();
       renderView();
+      renderStats();
       if (foundUser.role === 'admin') {
         showToast(`👑 Hoş geldiniz, ${foundUser.displayName}! (Yönetici)`, '#10B981');
+      } else if (foundUser.role === 'staff_authorized') {
+        showToast(`⭐ Hoş geldiniz, ${foundUser.displayName}! (Yetkili Personel)`, '#059669');
       } else {
         showToast(`👤 Hoş geldiniz, ${foundUser.displayName}! (Atölye)`, '#2563eb');
       }
@@ -946,14 +1038,14 @@ const STAGES = [
       </div>
     `;
 
-    // CİRO VE BAKİYE KESİNLİKLE SADECE YÖNETİCİDE GÖRÜNÜR!
-    if (userRole === 'admin') {
+    // CİRO VE BAKİYE: YÖNETİCİ VE YETKİLİ PERSONEL GÖRÜR (İZLEYİCİYE GİZLİ)
+    if (canViewFinances()) {
       const totalRevenue = orders.reduce((acc, o) => acc + (parseFloat(o.totalPrice) || 0), 0);
       const totalBalance = orders.reduce((acc, o) => acc + (parseFloat(o.remainingBalance) || 0), 0);
       html += `
         <div class="stat-card">
           <span class="stat-icon">💰</span>
-          <div><div class="stat-num" style="color:var(--navy)">${totalRevenue.toLocaleString('tr-TR')} ₺</div><div class="stat-text">Toplam Ciro (Yönetici)</div></div>
+          <div><div class="stat-num" style="color:var(--navy)">${totalRevenue.toLocaleString('tr-TR')} ₺</div><div class="stat-text">Toplam Ciro</div></div>
         </div>
         <div class="stat-card">
           <span class="stat-icon">💳</span>
@@ -1022,7 +1114,7 @@ const STAGES = [
                 <th style="padding:10px 14px;">Ürün & Renk</th>
                 <th style="padding:10px 14px;">Parça & Alan</th>
                 <th style="padding:10px 14px;">Tamamlanma Tarihi</th>
-                ${userRole === 'admin' ? '<th style="padding:10px 14px;">Finans / Ödeme</th>' : ''}
+                ${canViewFinances() ? '<th style="padding:10px 14px;">Finans / Ödeme</th>' : ''}
                 <th style="padding:10px 14px; text-align:right;">İşlemler</th>
               </tr>
             </thead>
@@ -1034,7 +1126,7 @@ const STAGES = [
       const doneDate = lastHist && lastHist.timestamp ? new Date(lastHist.timestamp).toLocaleString('tr-TR') : (o.orderDate || '-');
 
       let finBadge = '';
-      if (userRole === 'admin') {
+      if (canViewFinances()) {
         const isPaid = (o.remainingBalance || 0) <= 0 || o.paymentStatus === 'odendi';
         finBadge = `<span class="spec-pill" style="${isPaid ? 'background:#d1fae5; color:#065f46;' : 'background:#fee2e2; color:#991b1b; font-weight:700;'}">
           ${isPaid ? '✅ Ödendi' : 'Bakiye: ' + Number(o.remainingBalance).toLocaleString('tr-TR') + ' ₺'}
@@ -1061,15 +1153,21 @@ const STAGES = [
           <td style="padding:10px 14px; color:var(--text-muted); font-size:0.8rem;">
             <span>📅 ${doneDate}</span>
           </td>
-          ${userRole === 'admin' ? `<td style="padding:10px 14px;">${finBadge}</td>` : ''}
+          ${canViewFinances() ? `<td style="padding:10px 14px;">${finBadge}</td>` : ''}
           <td style="padding:10px 14px; text-align:right;">
-            ${(o.remainingBalance || 0) > 0 && userRole === 'admin' ? `
+            ${o.receiptImage ? `
+              <button class="btn btn-white" style="padding:4px 7px; font-size:0.75rem; margin-right:4px;" onclick="openImageViewer('${o.receiptImage}', '${o.customerName}')" title="Görseli İncele">📷</button>
+            ` : ''}
+            ${(o.remainingBalance || 0) > 0 && canCollectPayment() ? `
               <button class="btn btn-success" style="padding:4px 8px; font-size:0.75rem; font-weight:700; background:#065f46; margin-right:4px;" onclick="openPaymentModal('${o.id}')">💳 Ödeme Al</button>
             ` : ''}
             <button class="btn btn-navy" style="padding:4px 8px; font-size:0.75rem;" onclick="showDetails('${o.id}')">Detay</button>
             <button class="btn btn-gold" style="padding:4px 8px; font-size:0.75rem;" onclick="printJobOrder('${o.id}')">🖨️ Fiş</button>
-            ${userRole === 'admin' ? `
+            ${canViewFinances() ? `
               <button class="btn btn-white" style="padding:4px 8px; font-size:0.75rem; border:1px solid var(--border); margin-left:4px;" title="Aktif Üretime Geri Döndür" onclick="stepStage('${o.id}', 'sevkiyat')">↺ Aktife Al</button>
+            ` : ''}
+            ${canDeleteOrders() ? `
+              <button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem; margin-left:4px;" title="Siparişi Kalıcı Olarak Sil (Sadece Yönetici)" onclick="deleteOrderPermanently('${o.id}')">🗑️ Sil</button>
             ` : ''}
           </td>
         </tr>
@@ -1105,6 +1203,26 @@ const STAGES = [
   }
 
   function onFilterChange() { renderView(); }
+
+    // SİPARİŞİ KALICI OLARAK SİLME (SADECE YÖNETİCİ)
+  function deleteOrderPermanently(orderId) {
+    if (!canDeleteOrders()) {
+      showToast('Sadece Ana Yönetici sipariş silebilir!', '#EF4444');
+      return;
+    }
+    const o = orders.find(x => x.id === orderId);
+    if (!o) return;
+
+    if (!confirm(`"${o.customerName}" (${o.trackingCode}) nolu siparişi kalıcı olarak SİLMEK istediğinize emin misiniz?\n\nBu işlem geri alınamaz!`)) {
+      return;
+    }
+
+    orders = orders.filter(x => x.id !== orderId);
+    saveOrders();
+    renderView();
+    renderStats();
+    showToast(`Sipariş kalıcı olarak silindi: ${o.trackingCode}`, '#10B981');
+  }
 
   function renderKanban(container) {
     const list = getFilteredOrders();
@@ -1148,7 +1266,7 @@ const STAGES = [
     const prevStage = curIdx > 0 ? STAGES[curIdx - 1] : null;
 
     let financialBadge = '';
-    if (userRole === 'admin' && o.remainingBalance !== undefined) {
+    if (canViewFinances() && o.remainingBalance !== undefined) {
       const isPaid = (o.remainingBalance || 0) <= 0 || o.paymentStatus === 'odendi';
       financialBadge = `
         <span class="spec-pill" style="${isPaid ? 'background:#d1fae5; color:#065f46;' : 'background:#fee2e2; color:#991b1b; font-weight:700;'}">
@@ -1156,6 +1274,12 @@ const STAGES = [
         </span>
       `;
     }
+
+    const imageBadge = o.receiptImage ? `
+      <span class="spec-pill" style="background:#e0e7ff; color:#3730a3; cursor:pointer; font-weight:600;" onclick="openImageViewer('${o.receiptImage}', '${o.customerName}')" title="Çizim / Görseli İncele">
+        📷 Görsel
+      </span>
+    ` : '';
 
     return `
       <div class="order-card ${o.priority === 'kritik' ? 'card-critical' : o.priority === 'acil' ? 'card-urgent' : ''}">
@@ -1172,6 +1296,7 @@ const STAGES = [
           ${o.modelPattern ? `<span class="spec-pill">📐 ${o.modelPattern}</span>` : ''}
           ${o.partCount ? `<span class="spec-pill">🔢 ${o.partCount} Parça</span>` : ''}
           ${o.totalAreaM2 ? `<span class="spec-pill">📏 ${o.totalAreaM2} m²</span>` : ''}
+          ${imageBadge}
           ${financialBadge}
         </div>
 
@@ -1180,11 +1305,11 @@ const STAGES = [
         </div>
 
         <div class="card-actions-bar">
-          ${prevStage && userRole === 'admin' ? `
+          ${prevStage && (userRole === 'admin' || userRole === 'staff_authorized') ? `
             <button class="btn btn-white" style="padding:4px 8px; font-size:0.75rem;" title="Geri Al" onclick="stepStage('${o.id}', '${prevStage.id}')">⬅️</button>
           ` : ''}
 
-          ${(o.remainingBalance || 0) > 0 && userRole === 'admin' ? `
+          ${(o.remainingBalance || 0) > 0 && canCollectPayment() ? `
             <button class="btn btn-white" style="padding:4px 8px; font-size:0.75rem; border:1px solid #10b981; color:#065f46; font-weight:700;" title="Kalan Bakiyeyi Tahsil Et" onclick="openPaymentModal('${o.id}')">💳 Ödeme Al</button>
           ` : ''}
 
@@ -1214,7 +1339,7 @@ function renderTable(container) {
                 <th style="padding:10px 14px;">Ölçü / Adet</th>
                 <th style="padding:10px 14px;">Aşama</th>
                 <th style="padding:10px 14px;">Termin</th>
-                ${userRole === 'admin' ? '<th style="padding:10px 14px;">Ödeme</th>' : ''}
+                ${canViewFinances() ? '<th style="padding:10px 14px;">Ödeme</th>' : ''}
                 <th style="padding:10px 14px; text-align:right;">İşlemler</th>
               </tr>
             </thead>
@@ -1234,7 +1359,7 @@ function renderTable(container) {
           <td style="padding:10px 14px;">${o.partCount} Adet (${o.totalAreaM2} m²)</td>
           <td style="padding:10px 14px;"><span class="spec-pill" style="background:#dbeafe; color:#1e40af; font-weight:700;">${stageObj.icon} ${stageObj.name}</span></td>
           <td style="padding:10px 14px;">${o.estimatedDelivery || o.orderDate}</td>
-          ${userRole === 'admin' ? `
+          ${canViewFinances() ? `
             <td style="padding:10px 14px;">
               <span class="spec-pill" style="${(o.remainingBalance || 0) <= 0 ? 'background:#d1fae5; color:#065f46;' : 'background:#fee2e2; color:#991b1b; font-weight:700;'}">
                 ${(o.remainingBalance || 0) <= 0 ? 'Ödendi' : 'Bakiye: ' + Number(o.remainingBalance).toLocaleString('tr-TR') + ' ₺'}
@@ -1242,12 +1367,19 @@ function renderTable(container) {
             </td>
           ` : ''}
           <td style="padding:10px 14px; text-align:right;">
+            ${o.receiptImage ? `
+              <button class="btn btn-white" style="padding:3px 7px; font-size:0.75rem; margin-right:4px;" onclick="openImageViewer('${o.receiptImage}', '${o.customerName}')" title="Görseli İncele">📷</button>
+            ` : ''}
             <button class="btn btn-white" style="padding:3px 8px; font-size:0.75rem;" onclick="showDetails('${o.id}')">Detay</button>
             <button class="btn btn-navy" style="padding:3px 8px; font-size:0.75rem;" onclick="printJobOrder('${o.id}')">İş Emri</button>
           
-            ${o.currentStage === 'tamamlandi' && userRole === 'admin' ? `
+            ${o.currentStage === 'tamamlandi' && canViewFinances() ? `
               <button class="btn btn-white" style="padding:3px 6px; font-size:0.75rem; border:1px solid var(--border); margin-left:4px;" title="Aktif Üretime Geri Döndür" onclick="stepStage('${o.id}', 'sevkiyat')">↺ Aktife Al</button>
-            ` : ''}</td>
+            ` : ''}
+            ${canDeleteOrders() ? `
+              <button class="btn btn-danger" style="padding:3px 6px; font-size:0.75rem; margin-left:4px;" title="Siparişi Sil (Sadece Yönetici)" onclick="deleteOrderPermanently('${o.id}')">🗑️</button>
+            ` : ''}
+          </td>
         </tr>
       `;
     });
@@ -1386,12 +1518,12 @@ function renderTable(container) {
 
     let warningHtml = '';
     if (hasUnpaid) {
-      const balanceHtml = (userRole === 'admin')
+      const balanceHtml = canViewFinances()
         ? `<div style="font-size:1.05rem; color:#7f1d1d; margin-top:4px;">
             Kalan Bakiye: <strong style="font-size:1.3rem;">${Number(o.remainingBalance).toLocaleString('tr-TR')} TL</strong>
            </div>`
         : `<div style="font-size:0.95rem; font-weight:700; color:#b91c1c; margin-top:6px; background:#fff; padding:6px 12px; border-radius:6px; display:inline-block; border:1px dashed #ef4444;">
-            🔒 Bu siparişin ödenmemiş tahsilatı bulunmaktadır. Lütfen yönetici / muhasebe ile iletişime geçiniz.
+            🔒 Bu siparişin ödenmemiş tahsilatı bulunmaktadır. Lütfen yetkili veya muhasebe ile iletişime geçiniz.
            </div>`;
 
       warningHtml = `
@@ -1577,12 +1709,12 @@ function renderTable(container) {
 
       // UYARI PENCERESİNİ AÇ!
       const alertBody = document.getElementById('dispatchAlertBody');
-      const balanceHtml = (userRole === 'admin')
+      const balanceHtml = canViewFinances()
         ? `<div style="font-size:1.15rem; color:#7f1d1d; margin-top:6px; font-weight:800;">
              Kalan Bakiye: <span style="font-size:1.4rem; color:#b91c1c;">${Number(remaining).toLocaleString('tr-TR')} TL</span>
            </div>`
         : `<div style="font-size:0.95rem; font-weight:700; color:#b91c1c; margin-top:8px; background:#fff; padding:8px 12px; border-radius:6px; display:inline-block; border:1px dashed #ef4444;">
-             🔒 Bu siparişin ödenmemiş tahsilatı bulunmaktadır! (Tutar yöneticide görünür)
+             🔒 Bu siparişin ödenmemiş tahsilatı bulunmaktadır! (Tutar yetkilide görünür)
            </div>`;
 
       alertBody.innerHTML = `
@@ -1601,16 +1733,16 @@ function renderTable(container) {
         </div>
 
         <div style="display:flex; flex-direction:column; gap:8px;">
-          ${userRole === 'admin' ? `
+          ${canCollectPayment() ? `
             <button class="btn btn-success" style="padding:10px; font-weight:700; font-size:0.95rem;" onclick="openPaymentModal('${o.id}', true)">
               💳 Şimdi Ödeme Al & İşi Tamamla
             </button>
             <button class="btn btn-navy" style="padding:8px; font-size:0.85rem;" onclick="closeModal('dispatchAlertModal'); stepStage('${o.id}', 'tamamlandi');">
-              ⚠️ Yönetici Onayıyla Yine de Tamamla
+              ⚠️ Onayla ve Yine de Tamamla
             </button>
           ` : `
             <div style="text-align:center; font-size:0.85rem; color:#b91c1c; font-weight:700; padding:6px;">
-              Lütfen muhasebe / yönetici ile iletişime geçiniz!
+              Lütfen muhasebe veya yetkili personele danışarak ödemeyi kapattırın!
             </div>
           `}
           <button class="btn btn-white" style="padding:8px;" onclick="closeModal('dispatchAlertModal')">
@@ -1627,6 +1759,84 @@ function renderTable(container) {
     stepStage(orderId, 'tamamlandi');
   }
 
+
+    // GÖRSEL & ÇİZİM YÖNETİM FONKSİYONLARI
+  let currentNewOrderImage = '';
+
+  function handleImageSelect(event, previewId, containerId) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('Görsel boyutu 5 MB\'dan küçük olmalıdır!', '#EF4444');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      currentNewOrderImage = e.target.result;
+      const preview = document.getElementById(previewId);
+      const container = document.getElementById(containerId);
+      const placeholder = document.getElementById('newOrderImgPlaceholder');
+      if (preview) preview.src = currentNewOrderImage;
+      if (container) container.style.display = 'block';
+      if (placeholder) placeholder.style.display = 'none';
+      showToast('Görsel yüklendi.', '#10B981');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearNewOrderImage(event) {
+    if (event) event.stopPropagation();
+    currentNewOrderImage = '';
+    const fileInput = document.getElementById('m_orderImage');
+    if (fileInput) fileInput.value = '';
+    const container = document.getElementById('newOrderImgContainer');
+    const placeholder = document.getElementById('newOrderImgPlaceholder');
+    if (container) container.style.display = 'none';
+    if (placeholder) placeholder.style.display = 'block';
+  }
+
+  function handleDetailImageUpload(event, orderId) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('Görsel boyutu 5 MB\'dan küçük olmalıdır!', '#EF4444');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const o = orders.find(x => x.id === orderId);
+      if (o) {
+        o.receiptImage = e.target.result;
+        saveOrders();
+        showDetails(orderId);
+        renderView();
+        showToast('Sipariş çizimi / görseli kaydedildi!', '#10B981');
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeDetailImage(orderId) {
+    if (!confirm('Ekli görseli kaldırmak istediğinize emin misiniz?')) return;
+    const o = orders.find(x => x.id === orderId);
+    if (o) {
+      delete o.receiptImage;
+      saveOrders();
+      showDetails(orderId);
+      renderView();
+      showToast('Görsel kaldırıldı.');
+    }
+  }
+
+  function openImageViewer(imgSrc, title) {
+    const img = document.getElementById('imageViewerImg');
+    const titleEl = document.getElementById('imageViewerTitle');
+    const downloadBtn = document.getElementById('imageDownloadBtn');
+    if (img) img.src = imgSrc;
+    if (titleEl) titleEl.innerText = title ? `📷 ${title}` : '📷 Sipariş Görseli & Çizim';
+    if (downloadBtn) downloadBtn.href = imgSrc;
+    openModal('imageViewerModal');
+  }
 
   function handleCreateOrder(e) {
     e.preventDefault();
@@ -1657,6 +1867,7 @@ function renderTable(container) {
       whatsappEnabled: document.getElementById('m_whatsappEnabled').checked,
       productDetails: document.getElementById('m_productDetails').value,
       orderDate: new Date().toISOString().split('T')[0],
+      receiptImage: currentNewOrderImage || '',
       stageHistory: [
         { stageName: 'Çizim', timestamp: new Date().toISOString(), note: 'Sipariş oluşturuldu, CAD çizimine alındı.' }
       ]
@@ -1666,7 +1877,9 @@ function renderTable(container) {
     saveOrders();
     closeModal('newOrderModal');
     document.getElementById('newOrderForm').reset();
+    clearNewOrderImage();
     renderView();
+    renderStats();
     showToast(`Yeni Sipariş Eklendi: ${newOrder.customerName} (${code})`, '#10B981');
   }
 
@@ -1691,16 +1904,54 @@ function renderTable(container) {
     }
 
     let finBlock = '';
-    if (userRole === 'admin') {
+    if (canViewFinances()) {
       finBlock = `
         <div style="background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:12px;">
-          <h4 style="font-size:0.85rem; color:var(--navy); margin-bottom:8px;">💰 Finansal Detaylar (Yöneticiye Özel)</h4>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <h4 style="font-size:0.85rem; color:var(--navy); margin:0;">💰 Finansal Detaylar</h4>
+            ${(o.remainingBalance || 0) > 0 && canCollectPayment() ? `
+              <button class="btn btn-success" style="padding:3px 8px; font-size:0.75rem; font-weight:700;" onclick="openPaymentModal('${o.id}')">💳 Ödeme Al</button>
+            ` : ''}
+          </div>
           <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; font-size:0.82rem;">
             <div>Toplam Tutar: <strong>${Number(o.totalPrice || 0).toLocaleString('tr-TR')} ₺</strong></div>
             <div>Peşinat: <strong>${Number(o.deposit || 0).toLocaleString('tr-TR')} ₺</strong></div>
             <div>Kalan Bakiye: <strong style="color:${(o.remainingBalance || 0) > 0 ? 'var(--danger)' : 'var(--success)'};">${Number(o.remainingBalance || 0).toLocaleString('tr-TR')} ₺</strong></div>
             <div>Durum: <strong>${(o.paymentStatus || 'bekliyor').toUpperCase()}</strong></div>
           </div>
+        </div>
+      `;
+    }
+
+    // Fotoğraf & Çizim Bloğu
+    let imageBlock = '';
+    if (o.receiptImage) {
+      imageBlock = `
+        <div style="background:#fff; border:1px solid var(--border); border-radius:8px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <h4 style="font-size:0.85rem; color:var(--navy); margin:0;">📷 Sipariş Görseli & Çizim</h4>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-navy" style="padding:3px 8px; font-size:0.75rem;" onclick="openImageViewer('${o.receiptImage}', '${o.customerName}')">🔍 Büyüt</button>
+              <label class="btn btn-white" style="padding:3px 8px; font-size:0.75rem; border:1px solid var(--border); cursor:pointer; margin:0;">
+                🔄 Değiştir
+                <input type="file" accept="image/*" style="display:none;" onchange="handleDetailImageUpload(event, '${o.id}')" />
+              </label>
+              <button class="btn btn-danger" style="padding:3px 8px; font-size:0.75rem;" onclick="removeDetailImage('${o.id}')">🗑️ Sil</button>
+            </div>
+          </div>
+          <div style="text-align:center; cursor:pointer;" onclick="openImageViewer('${o.receiptImage}', '${o.customerName}')">
+            <img src="${o.receiptImage}" alt="Sipariş Görseli" style="max-height:160px; max-width:100%; border-radius:6px; border:1px solid var(--border); object-fit:contain;" />
+          </div>
+        </div>
+      `;
+    } else {
+      imageBlock = `
+        <div style="background:#f8fafc; border:1px dashed var(--border); border-radius:8px; padding:12px; text-align:center;">
+          <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-size:0.82rem; font-weight:700; color:var(--navy); padding:6px 14px; background:#fff; border:1px solid var(--border); border-radius:6px; box-shadow:var(--shadow-sm);">
+            📸 Çizim / Fotoğraf / Fiş Ekle
+            <input type="file" accept="image/*" style="display:none;" onchange="handleDetailImageUpload(event, '${o.id}')" />
+          </label>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-top:4px;">Bu siparişe CAD çizimi veya numune fotoğrafı ekleyebilirsiniz.</div>
         </div>
       `;
     }
@@ -1722,10 +1973,13 @@ function renderTable(container) {
           <span class="track-code-badge">${o.trackingCode}</span>
           <span class="spec-pill" style="background:#dbeafe; color:#1e40af; font-weight:700;">${stageObj.icon} ${stageObj.name}</span>
         </div>
-        <div style="display:flex; gap:6px;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
           ${whatsappBtn}
-          <button class="btn btn-navy" onclick="printJobOrder('${o.id}')">🏷️ İş Emri</button>
+          <button class="btn btn-navy" onclick="printJobOrder('${o.id}')">🏷️ İş Emri Fişi</button>
           <button class="btn btn-danger" onclick="openFireModal('${o.id}')">⚠️ Fire Bildir</button>
+          ${canDeleteOrders() ? `
+            <button class="btn btn-white" style="border:1px solid var(--danger); color:var(--danger);" onclick="closeModal('orderDetailsModal'); deleteOrderPermanently('${o.id}')">🗑️ Sil</button>
+          ` : ''}
         </div>
       </div>
 
@@ -1735,6 +1989,8 @@ function renderTable(container) {
         <div><span style="color:var(--text-muted); font-size:0.7rem;">MDF Kalınlığı:</span><div style="font-weight:700;">${o.mdfThickness || '18mm'}</div></div>
         <div><span style="color:var(--text-muted); font-size:0.7rem;">Adet & Alan:</span><div style="font-weight:700;">${o.partCount} Adet / ${o.totalAreaM2} m²</div></div>
       </div>
+
+      ${imageBlock}
 
       ${finBlock}
 
@@ -1784,57 +2040,73 @@ function renderTable(container) {
 
     const printArea = document.getElementById('printArea');
     printArea.innerHTML = `
-      <div style="max-width:800px; margin:0 auto; padding:20px; font-family:Arial, sans-serif; border:2px solid #000;">
+      <div style="max-width:800px; margin:0 auto; padding:20px; font-family:Arial, sans-serif; border:2px solid #000; background:#fff; color:#000;">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #000; padding-bottom:12px; margin-bottom:14px;">
           <div>
-            <h1 style="font-size:22px; margin:0 0 4px 0;">GLOBAL KAPAK MOBİLYA</h1>
-            <div style="font-size:14px; font-weight:bold;">ATÖLYE İŞ EMRİ & İMALAT FİŞİ</div>
+            <h1 style="font-size:22px; margin:0 0 4px 0; letter-spacing:0.5px;">GLOBAL KAPAK MOBİLYA</h1>
+            <div style="font-size:14px; font-weight:bold; color:#222;">ATÖLYE İŞ EMRİ & İMALAT FİŞİ</div>
           </div>
-          <div style="text-align:right; font-family:monospace; font-weight:bold; font-size:16px;">
+          <div style="text-align:right; font-family:monospace; font-weight:bold; font-size:16px; border:1px solid #000; padding:6px 12px; border-radius:4px;">
             ${o.trackingCode}
           </div>
         </div>
 
         <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:13px;">
           <tr>
-            <td style="padding:6px; border:1px solid #000; font-weight:bold; width:25%;">Müşteri:</td>
-            <td style="padding:6px; border:1px solid #000; width:75%; font-size:15px; font-weight:bold;">${o.customerName}</td>
+            <td style="padding:6px 10px; border:1px solid #000; font-weight:bold; width:25%; background:#f2f2f2;">Müşteri:</td>
+            <td style="padding:6px 10px; border:1px solid #000; width:75%; font-size:15px; font-weight:bold;">${o.customerName}</td>
           </tr>
           <tr>
-            <td style="padding:6px; border:1px solid #000; font-weight:bold;">Telefon:</td>
-            <td style="padding:6px; border:1px solid #000;">${o.customerPhone || '-'}</td>
+            <td style="padding:6px 10px; border:1px solid #000; font-weight:bold; background:#f2f2f2;">Telefon:</td>
+            <td style="padding:6px 10px; border:1px solid #000;">${o.customerPhone || '-'}</td>
           </tr>
           <tr>
-            <td style="padding:6px; border:1px solid #000; font-weight:bold;">Membran Rengi:</td>
-            <td style="padding:6px; border:1px solid #000; font-size:15px; font-weight:bold;">${o.membraneColor || 'Standart'}</td>
+            <td style="padding:6px 10px; border:1px solid #000; font-weight:bold; background:#f2f2f2;">Sipariş Başlığı:</td>
+            <td style="padding:6px 10px; border:1px solid #000; font-weight:bold;">${o.productTitle || '-'}</td>
           </tr>
           <tr>
-            <td style="padding:6px; border:1px solid #000; font-weight:bold;">Model / Desen:</td>
-            <td style="padding:6px; border:1px solid #000;">${o.modelPattern || 'Düz'}</td>
+            <td style="padding:6px 10px; border:1px solid #000; font-weight:bold; background:#f2f2f2;">Membran Rengi:</td>
+            <td style="padding:6px 10px; border:1px solid #000; font-size:15px; font-weight:bold;">${o.membraneColor || 'Standart'}</td>
           </tr>
           <tr>
-            <td style="padding:6px; border:1px solid #000; font-weight:bold;">MDF Kalınlığı:</td>
-            <td style="padding:6px; border:1px solid #000;">${o.mdfThickness || '18mm'}</td>
+            <td style="padding:6px 10px; border:1px solid #000; font-weight:bold; background:#f2f2f2;">Model / Desen:</td>
+            <td style="padding:6px 10px; border:1px solid #000;">${o.modelPattern || 'Düz'}</td>
           </tr>
           <tr>
-            <td style="padding:6px; border:1px solid #000; font-weight:bold;">Adet & Alan:</td>
-            <td style="padding:6px; border:1px solid #000; font-size:15px; font-weight:bold;">${o.partCount} Adet (${o.totalAreaM2} m²)</td>
+            <td style="padding:6px 10px; border:1px solid #000; font-weight:bold; background:#f2f2f2;">MDF Kalınlığı:</td>
+            <td style="padding:6px 10px; border:1px solid #000;">${o.mdfThickness || '18mm'}</td>
           </tr>
           <tr>
-            <td style="padding:6px; border:1px solid #000; font-weight:bold;">Termin Tarihi:</td>
-            <td style="padding:6px; border:1px solid #000; font-weight:bold; color:#d00;">${o.estimatedDelivery || o.orderDate} (${o.priority.toUpperCase()})</td>
+            <td style="padding:6px 10px; border:1px solid #000; font-weight:bold; background:#f2f2f2;">Freze / Kulp:</td>
+            <td style="padding:6px 10px; border:1px solid #000;">${o.millingProfile || '-'}</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px; border:1px solid #000; font-weight:bold; background:#f2f2f2;">Adet & Alan:</td>
+            <td style="padding:6px 10px; border:1px solid #000; font-size:15px; font-weight:bold;">${o.partCount} Adet (${o.totalAreaM2} m²)</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px; border:1px solid #000; font-weight:bold; background:#f2f2f2;">Termin Tarihi:</td>
+            <td style="padding:6px 10px; border:1px solid #000; font-weight:bold; color:#b91c1c;">${o.estimatedDelivery || o.orderDate} (${(o.priority || 'NORMAL').toUpperCase()})</td>
           </tr>
         </table>
 
         ${o.productDetails ? `
-          <div style="border:1px solid #000; padding:10px; margin-bottom:14px; font-size:12px;">
-            <strong>Sipariş & İmalat Notları:</strong> ${o.productDetails}
+          <div style="border:1px solid #000; padding:10px 12px; margin-bottom:14px; font-size:12px; background:#fafafa;">
+            <strong style="display:block; margin-bottom:4px;">Sipariş & İmalat Notları:</strong>
+            ${o.productDetails.replace(/\n/g, '<br>')}
+          </div>
+        ` : ''}
+
+        ${o.receiptImage ? `
+          <div style="border:1px solid #000; padding:10px; margin-bottom:14px; text-align:center;">
+            <div style="font-weight:bold; font-size:12px; margin-bottom:6px; text-align:left;">Ekli Çizim / Numune Görseli:</div>
+            <img src="${o.receiptImage}" alt="Çizim Görseli" style="max-height:280px; max-width:100%; object-fit:contain;" />
           </div>
         ` : ''}
 
         <div style="margin-top:20px; border-top:2px solid #000; padding-top:10px; display:flex; justify-content:space-between; font-size:12px;">
           <div>Global Kapak Mobilya - İmalat Takip Kodu: <strong>${o.trackingCode}</strong></div>
-          <div>Tarih: ${new Date().toLocaleDateString('tr-TR')}</div>
+          <div>Yazdırma: ${new Date().toLocaleDateString('tr-TR')} ${new Date().toLocaleTimeString('tr-TR')}</div>
         </div>
       </div>
     `;
@@ -1849,28 +2121,40 @@ function renderTable(container) {
     openModal('usersModal');
   }
 
-  function loadUsersList() {
+    function loadUsersList() {
     const box = document.getElementById('usersListContainer');
     const customPass = localStorage.getItem('global_admin_pass') || '123';
     const label = document.getElementById('currentAdminPassLabel');
     if (label) label.innerText = 'Aktif Şifre: ' + customPass;
 
-    box.innerHTML = users.map(u => `
-      <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#fff; border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
-        <div>
-          <strong>${u.displayName}</strong> <span style="color:var(--text-muted); font-size:0.75rem;">(@${u.username})</span>
-          <span class="role-badge ${u.role === 'admin' ? 'role-admin' : 'role-viewer'}" style="margin-left:6px;">
-            ${u.role === 'admin' ? '👑 Yönetici' : '👁️ İzleyici'}
-          </span>
+    box.innerHTML = users.map(u => {
+      let roleBadgeText = '👁️ İzleyici';
+      let roleBadgeClass = 'role-viewer';
+      if (u.role === 'admin') {
+        roleBadgeText = '👑 Yönetici';
+        roleBadgeClass = 'role-admin';
+      } else if (u.role === 'staff_authorized') {
+        roleBadgeText = '⭐ Yetkili Personel';
+        roleBadgeClass = 'role-authorized';
+      }
+
+      return `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#fff; border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
+          <div>
+            <strong>${u.displayName}</strong> <span style="color:var(--text-muted); font-size:0.75rem;">(@${u.username})</span>
+            <span class="role-badge ${roleBadgeClass}" style="margin-left:6px;">
+              ${roleBadgeText}
+            </span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <button class="btn btn-white" style="padding:3px 8px; font-size:0.75rem; border:1px solid var(--border);" onclick="promptChangeUserPassword('${u.id}')">🔑 Şifre Değiştir</button>
+            ${u.username !== 'yonetici' ? `
+              <button class="btn btn-danger" style="padding:3px 8px; font-size:0.75rem;" onclick="deleteUser('${u.id}')">Sil</button>
+            ` : '<span style="font-size:0.75rem; color:var(--text-muted); padding:3px 6px;">(Ana Yönetici)</span>'}
+          </div>
         </div>
-        <div style="display:flex; align-items:center; gap:6px;">
-          <button class="btn btn-white" style="padding:3px 8px; font-size:0.75rem; border:1px solid var(--border);" onclick="promptChangeUserPassword('${u.id}')">🔑 Şifre Değiştir</button>
-          ${u.username !== 'yonetici' ? `
-            <button class="btn btn-danger" style="padding:3px 8px; font-size:0.75rem;" onclick="deleteUser('${u.id}')">Sil</button>
-          ` : '<span style="font-size:0.75rem; color:var(--text-muted); padding:3px 6px;">(Ana Yönetici)</span>'}
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   function handleChangeAdminPassword(e) {
@@ -2110,5 +2394,22 @@ function renderTable(container) {
   }
 
 </script>
+  <!-- MODAL: GÖRSEL BÜYÜTÜCÜ / ÇİZİM & FİŞ İNCELEME -->
+  <div id="imageViewerModal" class="modal-overlay" style="display:none;">
+    <div class="modal-card" style="max-width:850px; background:#0b1f4b; color:#fff;">
+      <div class="modal-header" style="background:#0b1f4b; border-bottom:1px solid rgba(255,255,255,0.15);">
+        <h3 id="imageViewerTitle" style="font-size:1.1rem; color:#fff;">📷 Sipariş Görseli & Çizim</h3>
+        <button class="btn btn-white" style="padding:2px 8px;" onclick="closeModal('imageViewerModal')">✕</button>
+      </div>
+      <div class="modal-body" style="text-align:center; padding:16px; background:#07122b; max-height:75vh; overflow:auto;">
+        <img id="imageViewerImg" src="" alt="Tam Boyut Görsel" style="max-width:100%; max-height:70vh; object-fit:contain; border-radius:6px; box-shadow:0 4px 20px rgba(0,0,0,0.5);" />
+      </div>
+      <div class="modal-footer" style="background:#0b1f4b; border-top:1px solid rgba(255,255,255,0.15); display:flex; justify-content:space-between; align-items:center;">
+        <a id="imageDownloadBtn" href="#" download="siparis-cizim.jpg" class="btn btn-white" style="font-size:0.8rem;">💾 Görseli İndir</a>
+        <button class="btn btn-gold" onclick="closeModal('imageViewerModal')">Kapat</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
