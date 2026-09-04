@@ -1146,12 +1146,18 @@ function renderTable(container) {
 
     let warningHtml = '';
     if (hasUnpaid) {
+      const balanceHtml = (userRole === 'admin')
+        ? `<div style="font-size:1.05rem; color:#7f1d1d; margin-top:4px;">
+            Kalan Bakiye: <strong style="font-size:1.3rem;">${Number(o.remainingBalance).toLocaleString('tr-TR')} TL</strong>
+           </div>`
+        : `<div style="font-size:0.95rem; font-weight:700; color:#b91c1c; margin-top:6px; background:#fff; padding:6px 12px; border-radius:6px; display:inline-block; border:1px dashed #ef4444;">
+            🔒 Bu siparişin ödenmemiş tahsilatı bulunmaktadır. Lütfen yönetici / muhasebe ile iletişime geçiniz.
+           </div>`;
+
       warningHtml = `
         <div style="background:#fee2e2; border:2px solid #ef4444; border-radius:10px; padding:14px; margin-top:14px; text-align:center;">
           <div style="font-size:1.4rem; font-weight:800; color:#b91c1c;">⚠️ DİKKAT: TAHSİLAT YAPILMADI!</div>
-          <div style="font-size:1.05rem; color:#7f1d1d; margin-top:4px;">
-            Kalan Bakiye: <strong style="font-size:1.3rem;">${Number(o.remainingBalance).toLocaleString('tr-TR')} TL</strong>
-          </div>
+          ${balanceHtml}
           <p style="font-size:0.8rem; color:#991b1b; margin-top:6px;">
             Ürün araca yüklenmeden veya teslim edilmeden önce muhasebe/tahsilat kontrolü yapınız!
           </p>
