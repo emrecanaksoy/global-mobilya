@@ -307,9 +307,10 @@
 
     <!-- TABS -->
     <div class="nav-tabs">
-      <button class="nav-tab-btn active" data-tab="kanban" onclick="setTab('kanban')">📋 Pano</button>
+      <button class="nav-tab-btn active" data-tab="kanban" onclick="setTab('kanban')">📋 Pano (Canlı Üretim)</button>
       <button class="nav-tab-btn" data-tab="table" onclick="setTab('table')">📑 Liste</button>
-      <button class="nav-tab-btn" data-tab="kiosk" onclick="setTab('kiosk')">📺 Büyük Ekran</button>
+      <button class="nav-tab-btn" data-tab="archive" onclick="setTab('archive')">📁 Bitenler (Arşiv)</button>
+      <button class="nav-tab-btn" data-tab="kiosk" onclick="setTab('kiosk')">📺 Büyük TV Modu</button>
       <button class="nav-tab-btn" data-tab="scanner" onclick="setTab('scanner')">📷 QR Tara</button>
       <button class="nav-tab-btn" data-tab="track" onclick="setTab('track')">🔍 Müşteri Takip</button>
     </div>
@@ -845,7 +846,7 @@ const STAGES = [
     document.querySelectorAll('.nav-tab-btn').forEach(b => {
       b.classList.toggle('active', b.getAttribute('data-tab') === tab);
     });
-    document.getElementById('filterWrapper').style.display = (tab === 'kanban' || tab === 'table' || tab === 'kiosk') ? 'block' : 'none';
+    document.getElementById('filterWrapper').style.display = (tab === 'kanban' || tab === 'table' || tab === 'archive' || tab === 'kiosk') ? 'block' : 'none';
     renderView();
   }
 
@@ -874,9 +875,9 @@ const STAGES = [
         <span class="stat-icon">⚡</span>
         <div><div class="stat-num" style="color:var(--danger)">${urgent}</div><div class="stat-text">Acil İş</div></div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card" style="cursor:pointer;" title="Biten İşleri İncelemek İçin Tıklayın" onclick="setTab('archive')">
         <span class="stat-icon">✅</span>
-        <div><div class="stat-num" style="color:var(--success)">${completedOrders.length}</div><div class="stat-text">Biten / Arşiv</div></div>
+        <div><div class="stat-num" style="color:var(--success)">${completedOrders.length}</div><div class="stat-text">Biten / Arşiv ➔</div></div>
       </div>
     `;
 
@@ -904,9 +905,111 @@ const STAGES = [
     const container = document.getElementById('mainContent');
     if (currentTab === 'kanban') renderKanban(container);
     else if (currentTab === 'table') renderTable(container);
+    else if (currentTab === 'archive') renderArchive(container);
     else if (currentTab === 'kiosk') renderKiosk(container);
     else if (currentTab === 'scanner') renderScanner(container);
     else if (currentTab === 'track') renderTrackView(container);
+  }
+
+  function renderArchive(container) {
+    const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+    const completedList = orders.filter(o => {
+      const isDone = (o.currentStage === 'tamamlandi');
+      const matchesQ = !q || 
+        (o.customerName && o.customerName.toLowerCase().includes(q)) ||
+        (o.trackingCode && o.trackingCode.toLowerCase().includes(q)) ||
+        (o.membraneColor && o.membraneColor.toLowerCase().includes(q));
+      return isDone && matchesQ;
+    });
+
+    let html = `
+      <div style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h2 style="font-size:1.25rem; font-weight:800; color:var(--navy);">📁 Biten Siparişler Arşivi</h2>
+          <p style="font-size:0.85rem; color:var(--text-muted);">Tamamlanan ve teslim edilen tüm geçmiş siparişler burada güvenle saklanır.</p>
+        </div>
+        <div style="background:#d1fae5; border:1px solid #10b981; border-radius:8px; padding:6px 14px; font-weight:700; color:#065f46; font-size:0.85rem;">
+          Toplam Arşiv: ${completedList.length} Adet Biten İş
+        </div>
+      </div>
+    `;
+
+    if (completedList.length === 0) {
+      html += `
+        <div style="background:#fff; border-radius:12px; border:1px solid var(--border); padding:50px 20px; text-align:center; box-shadow:var(--shadow-sm);">
+          <div style="font-size:3rem; margin-bottom:10px;">📭</div>
+          <h3 style="font-size:1.1rem; color:var(--navy); font-weight:700;">Henüz Arşivlenmiş / Biten Sipariş Yok</h3>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-top:6px;">Sevkiyat istasyonundaki siparişler "Tamamlandı & Kaldır" yapıldığında otomatik olarak buraya taşınır.</p>
+        </div>
+      `;
+      container.innerHTML = html;
+      return;
+    }
+
+    html += `
+      <div style="background:#fff; border-radius:10px; border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadow-sm);">
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.85rem; text-align:left;">
+            <thead>
+              <tr style="background:var(--navy); color:#fff; font-family:'Montserrat',sans-serif;">
+                <th style="padding:10px 14px;">Takip Kodu</th>
+                <th style="padding:10px 14px;">Müşteri</th>
+                <th style="padding:10px 14px;">Ürün & Renk</th>
+                <th style="padding:10px 14px;">Parça & Alan</th>
+                <th style="padding:10px 14px;">Tamamlanma Tarihi</th>
+                ${userRole === 'admin' ? '<th style="padding:10px 14px;">Finans / Ödeme</th>' : ''}
+                <th style="padding:10px 14px; text-align:right;">İşlemler</th>
+              </tr>
+            </thead>
+            <tbody>
+    `;
+
+    completedList.forEach(o => {
+      const lastHist = (o.stageHistory && o.stageHistory.length > 0) ? o.stageHistory[o.stageHistory.length - 1] : null;
+      const doneDate = lastHist && lastHist.timestamp ? new Date(lastHist.timestamp).toLocaleString('tr-TR') : (o.orderDate || '-');
+
+      let finBadge = '';
+      if (userRole === 'admin') {
+        const isPaid = (o.remainingBalance || 0) <= 0 || o.paymentStatus === 'odendi';
+        finBadge = `<span class="spec-pill" style="${isPaid ? 'background:#d1fae5; color:#065f46;' : 'background:#fee2e2; color:#991b1b; font-weight:700;'}">
+          ${isPaid ? '✅ Ödendi' : 'Bakiye: ' + Number(o.remainingBalance).toLocaleString('tr-TR') + ' ₺'}
+        </span>`;
+      }
+
+      html += `
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:10px 14px;">
+            <span class="track-code-badge" onclick="showDetails('${o.id}')" style="cursor:pointer;">${o.trackingCode}</span>
+          </td>
+          <td style="padding:10px 14px; font-weight:700; color:var(--navy);">
+            ${o.customerName}
+            ${o.customerPhone ? `<div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">${o.customerPhone}</div>` : ''}
+          </td>
+          <td style="padding:10px 14px;">
+            <div>${o.productTitle || '-'}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${o.membraneColor || ''} ${o.modelPattern ? '• ' + o.modelPattern : ''}</div>
+          </td>
+          <td style="padding:10px 14px;">
+            <span style="font-weight:600;">${o.partCount ? o.partCount + ' Parça' : '-'}</span>
+            ${o.totalAreaM2 ? `<span style="color:var(--text-muted); font-size:0.75rem; margin-left:4px;">(${o.totalAreaM2} m²)</span>` : ''}
+          </td>
+          <td style="padding:10px 14px; color:var(--text-muted); font-size:0.8rem;">
+            <span>📅 ${doneDate}</span>
+          </td>
+          ${userRole === 'admin' ? `<td style="padding:10px 14px;">${finBadge}</td>` : ''}
+          <td style="padding:10px 14px; text-align:right;">
+            <button class="btn btn-navy" style="padding:4px 8px; font-size:0.75rem;" onclick="showDetails('${o.id}')">Detay</button>
+            <button class="btn btn-gold" style="padding:4px 8px; font-size:0.75rem;" onclick="printJobOrder('${o.id}')">🖨️ Fiş</button>
+            ${userRole === 'admin' ? `
+              <button class="btn btn-white" style="padding:4px 8px; font-size:0.75rem; border:1px solid var(--border); margin-left:4px;" title="Aktif Üretime Geri Döndür" onclick="stepStage('${o.id}', 'sevkiyat')">↺ Aktife Al</button>
+            ` : ''}
+          </td>
+        </tr>
+      `;
+    });
+
+    html += `</tbody></table></div></div>`;
+    container.innerHTML = html;
   }
 
   function getFilteredOrders() {
