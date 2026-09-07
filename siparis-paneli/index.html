@@ -759,7 +759,53 @@ const STAGES = [
   let orders = JSON.parse(localStorage.getItem('global_kapak_orders') || 'null');
   let users = JSON.parse(localStorage.getItem('global_kapak_users') || 'null');
   const DEFAULT_FIREBASE_URL = 'https://global-kapak-default-rtdb.firebaseio.com/siparisler.json';
+  const DEFAULT_USERS_FIREBASE_URL = 'https://global-kapak-default-rtdb.firebaseio.com/kullanicilar.json';
   let cloudEndpoint = localStorage.getItem('global_cloud_endpoint') || DEFAULT_FIREBASE_URL;
+  let usersCloudEndpoint = DEFAULT_USERS_FIREBASE_URL;
+
+  function normalizeLoginStr(str) {
+    return String(str || '')
+      .trim()
+      .replace(/İ/g, 'i')
+      .replace(/I/g, 'ı')
+      .toLowerCase();
+  }
+
+  function saveUsers(pushToCloud = true) {
+    localStorage.setItem('global_kapak_users', JSON.stringify(users));
+    if (pushToCloud && usersCloudEndpoint) {
+      fetch(usersCloudEndpoint, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(users)
+      }).catch(err => console.warn('Kullanıcı bulut kayıt hatası:', err));
+    }
+  }
+
+  async function syncUsersFromCloud() {
+    if (!usersCloudEndpoint) return;
+    try {
+      const res = await fetch(usersCloudEndpoint);
+      if (res.ok) {
+        const remoteUsers = await res.json();
+        if (Array.isArray(remoteUsers) && remoteUsers.length > 0) {
+          const merged = [...remoteUsers];
+          users.forEach(localU => {
+            if (!merged.some(r => normalizeLoginStr(r.username) === normalizeLoginStr(localU.username))) {
+              merged.push(localU);
+            }
+          });
+          users = merged;
+          localStorage.setItem('global_kapak_users', JSON.stringify(users));
+          if (document.getElementById('usersModal')?.classList.contains('open')) {
+            loadUsersList();
+          }
+        }
+      }
+    } catch(e) {
+      console.warn('Kullanıcı bulut senkronizasyon hatası:', e);
+    }
+  }
 
   if (!users) {
     users = [
@@ -937,10 +983,12 @@ const STAGES = [
     }
   }
 
-  function submitLogin(event) {
+  async function submitLogin(event) {
     if (event) event.preventDefault();
-    const username = (document.getElementById('loginUsernameInput')?.value || '').trim().toLowerCase();
-    const pass = (document.getElementById('loginPassInput')?.value || '').trim();
+    const rawUsername = document.getElementById('loginUsernameInput')?.value || '';
+    const rawPass = document.getElementById('loginPassInput')?.value || '';
+    const username = normalizeLoginStr(rawUsername);
+    const pass = String(rawPass).trim();
     const customAdminPass = localStorage.getItem('global_admin_pass');
 
     if (!pass) {
@@ -974,8 +1022,31 @@ const STAGES = [
       return;
     }
 
-    // 2. Kayıtlı kullanıcı listesinde arama
-    const foundUser = users.find(u => u.username.toLowerCase() === username && u.password === pass);
+    // 2. Yerel kullanıcı listesinde arama (Kullanıcı Adı VEYA Ad Soyad ile eşleşme)
+    const matchUser = (u) => {
+      const uName = normalizeLoginStr(u.username);
+      const uDisp = normalizeLoginStr(u.displayName);
+      const uPass = String(u.password || '').trim();
+      return (uName === username || uDisp === username) && (uPass === pass);
+    };
+
+    let foundUser = users.find(matchUser);
+
+    // 3. Bulunamadıysa buluttan güncel kullanıcıları hemen çekip tekrar ara
+    if (!foundUser && usersCloudEndpoint) {
+      try {
+        const res = await fetch(usersCloudEndpoint);
+        if (res.ok) {
+          const remoteUsers = await res.json();
+          if (Array.isArray(remoteUsers)) {
+            users = remoteUsers;
+            localStorage.setItem('global_kapak_users', JSON.stringify(users));
+            foundUser = users.find(matchUser);
+          }
+        }
+      } catch(e) {}
+    }
+
     if (foundUser) {
       userRole = foundUser.role;
       localStorage.setItem('global_kapak_role', foundUser.role);
@@ -996,7 +1067,7 @@ const STAGES = [
       return;
     }
 
-    showToast('Hatalı kullanıcı adı veya şifre!', '#EF4444');
+    showToast('Hatalı kullanıcı adı veya şifre! (Büyük/küçük harf ve boşlukları kontrol ediniz)', '#EF4444');
   }
 
   function setTab(tab) {
@@ -2228,7 +2299,7 @@ function renderTable(container) {
     } else {
       users.push({ id: 'u_1', username: 'yonetici', displayName: 'Ana Yönetici', role: 'admin', password: newPass });
     }
-    localStorage.setItem('global_kapak_users', JSON.stringify(users));
+    saveUsers(true);
 
     document.getElementById('newAdminPasswordInput').value = '';
     document.getElementById('confirmAdminPasswordInput').value = '';
@@ -2247,7 +2318,7 @@ function renderTable(container) {
       if (u.username === 'yonetici' || u.role === 'admin') {
         localStorage.setItem('global_admin_pass', cleanP);
       }
-      localStorage.setItem('global_kapak_users', JSON.stringify(users));
+      saveUsers(true);
       loadUsersList();
       showToast(`${u.displayName} şifresi güncellendi: ${cleanP}`, '#10B981');
     }
@@ -2255,32 +2326,42 @@ function renderTable(container) {
 
   function handleCreateUser(e) {
     e.preventDefault();
-    const username = document.getElementById('nu_username').value.trim().toLowerCase();
+    const username = normalizeLoginStr(document.getElementById('nu_username').value);
     const displayName = document.getElementById('nu_displayName').value.trim();
     const role = document.getElementById('nu_role').value;
-    const password = document.getElementById('nu_password').value;
+    const password = String(document.getElementById('nu_password').value || '').trim();
 
-    if (users.some(u => u.username === username)) {
+    if (!username || !password) {
+      showToast('Kullanıcı adı ve şifre zorunludur!', '#EF4444');
+      return;
+    }
+
+    if (users.some(u => normalizeLoginStr(u.username) === username)) {
       showToast('Bu kullanıcı adı zaten mevcut!', '#EF4444');
       return;
     }
 
-    users.push({
+    const newUser = {
       id: 'u_' + Date.now(),
-      username, displayName, role, password
-    });
-    localStorage.setItem('global_kapak_users', JSON.stringify(users));
+      username,
+      displayName: displayName || username,
+      role,
+      password
+    };
+
+    users.push(newUser);
+    saveUsers(true);
     document.getElementById('newUserForm').reset();
     loadUsersList();
-    showToast(`Yeni kullanıcı kaydedildi: ${displayName}`, '#10B981');
+    showToast(`✅ Yeni kullanıcı kaydedildi ve buluta eşitlendi: ${displayName || username}`, '#10B981');
   }
 
   function deleteUser(id) {
     if (!confirm('Kullanıcıyı silmek istediğinize emin misiniz?')) return;
     users = users.filter(u => u.id !== id);
-    localStorage.setItem('global_kapak_users', JSON.stringify(users));
+    saveUsers(true);
     loadUsersList();
-    showToast('Kullanıcı silindi.', 'info');
+    showToast('Kullanıcı silindi ve buluttan kaldırıldı.', 'info');
   }
 
   // CLOUD STORAGE MODAL
@@ -2371,11 +2452,17 @@ function renderTable(container) {
     renderView();
     renderStats();
 
-    // Sayfa açılır açılmaz Firebase bulut veritabanından en güncel siparişleri çek
+    // Sayfa açılır açılmaz Firebase bulut veritabanından kullanıcıları ve siparişleri çek
+    if (usersCloudEndpoint) {
+      await syncUsersFromCloud();
+    }
     if (cloudEndpoint) {
       await syncWithCloud(true);
       setupCloudStream();
     }
+
+    // Kullanıcı listesini de 30 saniyede bir buluttan tazele
+    setInterval(syncUsersFromCloud, 30000);
 
     const urlParams = new URLSearchParams(window.location.search);
     const codeParam = urlParams.get('kod') || urlParams.get('code');
